@@ -22,7 +22,7 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
     }
 
     @Override
-    public IFinder<?> get(Class<?> id) {
+    public IFinder get(Class<?> id) {
         IFinder<?> finder = null;
 
         if (id == User.class) {

@@ -29,4 +29,27 @@ public class Token extends Model {
         // Do nothing...
     }
 
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public Calendar getSince() {
+        return since;
+    }
+
+    public void setSince(Calendar since) {
+        this.since = since;
+    }
 }
