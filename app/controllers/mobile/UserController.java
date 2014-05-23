@@ -39,7 +39,7 @@ public class UserController extends AbstractApplication {
                     if (login.isEmpty() || mail.isEmpty())
                         throw new JSONBodyException();
 
-                    if (RegexUtil.isValidMail(mail))
+                    if (!RegexUtil.isValidMail(mail))
                         throw new InvalidMailException();
 
                     if (UserUtil.check(login, mail)) {
