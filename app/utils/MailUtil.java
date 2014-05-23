@@ -1,5 +1,7 @@
 package utils;
 
+import models.exceptions.InvalidMailException;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -64,34 +66,45 @@ public abstract class MailUtil {
      * @param subject
      * @param content
      */
-    public static synchronized void send(String to, String subject, String content) {
-        SecurityManager security = System.getSecurityManager();
-        Session session;
-        if (security == null) {
-            session = Session.getInstance(PROPERTIES, new javax.mail.Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(USERNAME, PASSWORD);
-                }
-            });
-        } else {
-            session = Session.getDefaultInstance(PROPERTIES, new javax.mail.Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(USERNAME, PASSWORD);
-                }
-            });
-        }
+    public static synchronized void send(String to, String subject, String content) throws InvalidMailException {
+        if (!RegexUtil.isValidMail(to))
+            throw new InvalidMailException();
 
-        MimeMessage mimeMessage = new MimeMessage(session);
-        try {
-            mimeMessage.setFrom(USERNAME);
-            mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            mimeMessage.setSubject(subject, CHARSET);
-            mimeMessage.setContent(content, CONTENT_TYPE);
+        Thread thread = new Thread() {
 
-            Transport.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+            @Override
+            public void run() {
+                super.run();
+                SecurityManager security = System.getSecurityManager();
+                Session session;
+                if (security == null) {
+                    session = Session.getInstance(PROPERTIES, new javax.mail.Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(USERNAME, PASSWORD);
+                        }
+                    });
+                } else {
+                    session = Session.getDefaultInstance(PROPERTIES, new javax.mail.Authenticator() {
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(USERNAME, PASSWORD);
+                        }
+                    });
+                }
+
+                MimeMessage mimeMessage = new MimeMessage(session);
+                try {
+                    mimeMessage.setFrom(USERNAME);
+                    mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
+                    mimeMessage.setSubject(subject, CHARSET);
+                    mimeMessage.setContent(content, CONTENT_TYPE);
+
+                    Transport.send(mimeMessage);
+                } catch (MessagingException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        thread.start();
     }
 
     /**

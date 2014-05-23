@@ -16,7 +16,7 @@ public class User extends Model implements IMobileUser {
     public static final String SEQUENCE_NAME = "user_id_seq";
 
     public enum Gender {
-        MALE, FEMALE;
+        FEMALE, MALE;
     }
 
     public enum Status {

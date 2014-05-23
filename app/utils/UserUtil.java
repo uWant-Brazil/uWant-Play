@@ -1,8 +1,13 @@
 package utils;
 
+import controllers.AbstractApplication;
 import models.classes.User;
+import models.database.FinderFactory;
+import models.database.IFinder;
 import models.exceptions.AuthenticationException;
+import models.exceptions.InvalidMailException;
 import models.exceptions.UWException;
+import models.exceptions.UserAlreadyExistException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -72,15 +77,11 @@ public abstract  class UserUtil {
             // TODO HTML para confirmação do e-mail do usuário.
             final String content = "Confirme seu email: http://192.168.1.36:9000/user/confirmMail?h=" + hash + "&m=" + mail;
 
-            Thread thread = new Thread() {
-
-                @Override
-                public void run() {
-                    super.run();
-                    MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
-                }
-            };
-            thread.start();
+            try {
+                MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
+            } catch (InvalidMailException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -102,6 +103,30 @@ public abstract  class UserUtil {
             default:
                 throw new AuthenticationException();
         }
+    }
+
+    public static boolean check(String login, String email) throws UserAlreadyExistException {
+        FinderFactory factory = FinderFactory.getInstance();
+        IFinder<User> finder = factory.get(User.class);
+
+        User user;
+        user = finder.selectUnique(new String[] { AbstractApplication.FinderKey.LOGIN }, new Object[] { login });
+        if (user != null) {
+            throw new UserAlreadyExistException();
+        }
+
+        user = finder.selectUnique(new String[] { AbstractApplication.FinderKey.MAIL }, new Object[] { email });
+        if (user != null) {
+            throw new UserAlreadyExistException();
+        }
+
+//        IFinder<SocialProfile.Login> finderSocial = factory.get(SocialProfile.Login.class);
+//        SocialProfile.Login socialLogin = finderSocial.selectUnique(new String[] { FinderKey.LOGIN}, new Object[] { email });
+//        if (socialLogin != null && socialLogin.getProfile().getStatus() == SocialProfile.Status.ACTIVE) {
+//            throw new UserAlreadyExistException();
+//        }
+
+        return true;
     }
 
 }
