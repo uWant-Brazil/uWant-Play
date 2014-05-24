@@ -64,4 +64,24 @@ public class AuthenticationController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    public static Result logoff() {
+        ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user;
+            if ((user = authenticateToken()) != null && UserUtil.isAvailable(user)) {
+                removeToken(user);
+
+                jsonResponse.put(ParameterKey.STATUS, true);
+                jsonResponse.put(ParameterKey.MESSAGE, "O usuário saiu do sistema com sucesso.");
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+        }
+
+        return ok(jsonResponse);
+    }
+
 }

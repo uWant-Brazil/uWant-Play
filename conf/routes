@@ -4,6 +4,7 @@
 
 # Mobile methods
 POST    /v1/mobile/authorize            controllers.mobile.AuthenticationController.authorize()
+POST    /v1/mobile/logoff               controllers.mobile.AuthenticationController.logoff()
 POST    /v1/mobile/user/register        controllers.mobile.UserController.register()
 POST    /v1/mobile/social/signUp        controllers.mobile.SocialController.signUp()
 
