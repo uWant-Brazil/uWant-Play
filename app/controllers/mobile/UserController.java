@@ -3,6 +3,7 @@ package controllers.mobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
+import models.classes.SocialProfile;
 import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
@@ -93,21 +94,26 @@ public class UserController extends AbstractApplication {
 
                                 UserUtil.confirmEmail(user);
 
-//                                if (body.hasNonNull(ParameterKey.ACCESS_TOKEN) && body.hasNonNull(ParameterKey.PROVIDER)) {
-//                                    String accessToken = body.get(ParameterKey.ACCESS_TOKEN).asText();
-//                                    String provider = body.get(ParameterKey.PROVIDER).asText();
-//
-//                                    IFinder<SocialProfile> finderProfile = factory.get(SocialProfile.class);
-//                                    SocialProfile socialProfile = finderProfile.selectUnique(new String[] { FinderKey.ACCESS_TOKEN, FinderKey.PROVIDER }, new Object[] { accessToken, provider });
-//                                    if (socialProfile != null) {
-//                                        socialProfile.setStatus(SocialProfile.Status.ACTIVE);
-//                                        socialProfile.setUser(user);
-//                                        socialProfile.update();
-//                                    }
+                                if (body.hasNonNull(ParameterKey.SOCIAL_PROFILE)) {
+                                    JsonNode nodeSocial = body.get(ParameterKey.SOCIAL_PROFILE);
+
+                                    if (nodeSocial.hasNonNull(ParameterKey.TOKEN) && nodeSocial.hasNonNull(ParameterKey.SOCIAL_PROVIDER)) {
+                                        String accessToken = nodeSocial.get(ParameterKey.TOKEN).asText();
+                                        int providerOrdinal = nodeSocial.get(ParameterKey.SOCIAL_PROVIDER).asInt();
+
+                                        IFinder<SocialProfile> finderProfile = factory.get(SocialProfile.class);
+                                        SocialProfile socialProfile = finderProfile.selectUnique(new String[] { FinderKey.TOKEN, FinderKey.SOCIAL_PROVIDER }, new Object[] { accessToken, providerOrdinal });
+                                        if (socialProfile != null) {
+                                            socialProfile.setStatus(SocialProfile.Status.ACTIVE);
+                                            socialProfile.setUser(user);
+                                            socialProfile.update();
+                                        }
+                                    }
+                                }
                             }
 
                             jsonResponse.put(ParameterKey.STATUS, true);
-                            jsonResponse.put(ParameterKey.MESSAGE, "Usuário registrado com sucesso.");
+                            jsonResponse.put(ParameterKey.MESSAGE, "O usuário (" + login + ") foi registrado com sucesso.");
                         } else {
                             throw new UserAlreadyExistException();
                         }

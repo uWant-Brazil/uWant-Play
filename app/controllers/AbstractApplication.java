@@ -26,6 +26,10 @@ public class AbstractApplication extends Controller {
         public static final String GENDER = "gender";
         public static final String MAIL = "mail";
         public static final String BIRTHDAY = "birthday";
+        public static final String SOCIAL_PROFILE = "socialProfile";
+        public static final String SOCIAL_PROVIDER = "socialProvider";
+        public static final String TOKEN = "token";
+        public static final String REGISTERED = "registered";
     }
 
     public static class FinderKey {
@@ -35,6 +39,8 @@ public class AbstractApplication extends Controller {
         public static final String LOGIN = "login";
         public static final String PASSWORD = "password";
         public static final String MAIL = "mail";
+        public static final String SOCIAL_PROVIDER = "socialProvider";
+        public static final String STATUS = "status";
     }
 
     /**
