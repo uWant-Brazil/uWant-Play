@@ -3,7 +3,7 @@ package utils;
 import controllers.AbstractApplication;
 import models.classes.SocialProfile;
 import models.classes.User;
-import models.classes.UserConfirmMail;
+import models.classes.UserMailInteraction;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.AuthenticationException;
@@ -64,18 +64,18 @@ public abstract  class UserUtil {
         final String mail = user.getMail();
         try {
             hash = MailUtil.generateHash();
-
-            UserConfirmMail userConfirmMail = new UserConfirmMail();
-            userConfirmMail.setStatus(UserConfirmMail.Status.WAITING_CONFIRMATION);
-            userConfirmMail.setHash(hash);
-            userConfirmMail.setEmail(mail);
-            userConfirmMail.setUser(user);
-            userConfirmMail.save();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
+            UserMailInteraction userMailInteraction = new UserMailInteraction();
+            userMailInteraction.setStatus(UserMailInteraction.Status.WAITING);
+            userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
+            userMailInteraction.setEmail(mail);
+            userMailInteraction.setUser(user);
+            userMailInteraction.save();
+
             // TODO HTML para confirmação do e-mail do usuário.
             final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
 
@@ -132,6 +132,30 @@ public abstract  class UserUtil {
     }
 
     public static void recoveryPassword(User user) {
-        // TODO Metodo de recuperacao...
+        String hash = null;
+        final String mail = user.getMail();
+        try {
+            hash = MailUtil.generateHash();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } finally {
+            UserMailInteraction userMailInteraction = new UserMailInteraction();
+            userMailInteraction.setStatus(UserMailInteraction.Status.WAITING);
+            userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
+            userMailInteraction.setEmail(mail);
+            userMailInteraction.setUser(user);
+            userMailInteraction.save();
+
+            // TODO HTML para confirmação do e-mail do usuário.
+            final String content = "Recupere sua senha:<br /><br /> http://homologacao.uwant.com.br/user/recoveryPassword?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
+
+            try {
+                MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
+            } catch (InvalidMailException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

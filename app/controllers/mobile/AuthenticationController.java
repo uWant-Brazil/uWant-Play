@@ -3,15 +3,13 @@ package controllers.mobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
-import models.classes.IMobileUser;
 import models.classes.User;
-import models.classes.UserConfirmMail;
+import models.classes.UserMailInteraction;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
 import play.libs.Json;
 import play.mvc.Result;
-import utils.MailUtil;
 import utils.RegexUtil;
 import utils.UserUtil;
 
@@ -102,9 +100,9 @@ public class AuthenticationController extends AbstractApplication {
                         }
 
                         if (UserUtil.isAvailable(user)) {
-                            UserConfirmMail confirmation = user.getConfirmation();
-                            UserConfirmMail.Status confirmationStatus = confirmation.getStatus();
-                            if (confirmationStatus == UserConfirmMail.Status.CONFIRMATED) {
+                            UserMailInteraction confirmation = user.getConfirmation();
+                            UserMailInteraction.Status confirmationStatus = confirmation.getStatus();
+                            if (confirmationStatus == UserMailInteraction.Status.DONE) {
                                 UserUtil.recoveryPassword(user);
                             } else {
                                 throw new UnconfirmedMailException();
