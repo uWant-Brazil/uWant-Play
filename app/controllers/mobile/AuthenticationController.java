@@ -5,13 +5,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
 import models.classes.IMobileUser;
 import models.classes.User;
+import models.classes.UserConfirmMail;
 import models.database.FinderFactory;
 import models.database.IFinder;
-import models.exceptions.AuthenticationException;
-import models.exceptions.JSONBodyException;
-import models.exceptions.UWException;
+import models.exceptions.*;
 import play.libs.Json;
 import play.mvc.Result;
+import utils.MailUtil;
+import utils.RegexUtil;
 import utils.UserUtil;
 
 /**
@@ -73,6 +74,49 @@ public class AuthenticationController extends AbstractApplication {
 
                 jsonResponse.put(ParameterKey.STATUS, true);
                 jsonResponse.put(ParameterKey.MESSAGE, "O usuário saiu do sistema com sucesso.");
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+        }
+
+        return ok(jsonResponse);
+    }
+
+    public static Result recoveryPassword() {
+        ObjectNode jsonResponse = Json.newObject();
+        try {
+            JsonNode body = request().body().asJson();
+            if (body != null) {
+                if (body.hasNonNull(ParameterKey.MAIL)) {
+                    String mail = body.get(ParameterKey.MAIL).asText();
+
+                    if (!mail.isEmpty() && RegexUtil.isValidMail(mail)) {
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<User> finderUser = factory.get(User.class);
+                        User user = finderUser.selectUnique(new String[] { FinderKey.MAIL }, new Object[] { mail });
+                        if (user == null) {
+                            throw new UserDoesntExistException();
+                        }
+
+                        if (UserUtil.isAvailable(user)) {
+                            UserConfirmMail confirmation = user.getConfirmation();
+                            UserConfirmMail.Status confirmationStatus = confirmation.getStatus();
+                            if (confirmationStatus == UserConfirmMail.Status.CONFIRMATED) {
+                                UserUtil.recoveryPassword(user);
+                            } else {
+                                throw new UnconfirmedMailException();
+                            }
+                        } else {
+                            throw new AuthenticationException();
+                        }
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, "Foi enviado um e-mail para voce redefinir a sua nova senha.");
+                    }
+                }
             }
         } catch (UWException e) {
             e.printStackTrace();

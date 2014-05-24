@@ -1,7 +1,9 @@
 package utils;
 
 import controllers.AbstractApplication;
+import models.classes.SocialProfile;
 import models.classes.User;
+import models.classes.UserConfirmMail;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.AuthenticationException;
@@ -63,19 +65,19 @@ public abstract  class UserUtil {
         try {
             hash = MailUtil.generateHash();
 
-//            UserConfirmMail userConfirmMail = new UserConfirmMail();
-//            userConfirmMail.setStatus(UserConfirmMail.Status.WAITING_CONFIRMATION);
-//            userConfirmMail.setHash(hash);
-//            userConfirmMail.setEmail(mail);
-//            userConfirmMail.setUser(user);
-//            userConfirmMail.save();
+            UserConfirmMail userConfirmMail = new UserConfirmMail();
+            userConfirmMail.setStatus(UserConfirmMail.Status.WAITING_CONFIRMATION);
+            userConfirmMail.setHash(hash);
+            userConfirmMail.setEmail(mail);
+            userConfirmMail.setUser(user);
+            userConfirmMail.save();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
             // TODO HTML para confirmação do e-mail do usuário.
-            final String content = "Confirme seu email: http://192.168.1.36:9000/user/confirmMail?h=" + hash + "&m=" + mail;
+            final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
 
             try {
                 MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
@@ -120,13 +122,16 @@ public abstract  class UserUtil {
             throw new UserAlreadyExistException();
         }
 
-//        IFinder<SocialProfile.Login> finderSocial = factory.get(SocialProfile.Login.class);
-//        SocialProfile.Login socialLogin = finderSocial.selectUnique(new String[] { FinderKey.LOGIN}, new Object[] { email });
-//        if (socialLogin != null && socialLogin.getProfile().getStatus() == SocialProfile.Status.ACTIVE) {
-//            throw new UserAlreadyExistException();
-//        }
+        IFinder<SocialProfile.Login> finderSocial = factory.get(SocialProfile.Login.class);
+        SocialProfile.Login socialLogin = finderSocial.selectUnique(new String[] { AbstractApplication.FinderKey.LOGIN }, new Object[] { email });
+        if (socialLogin != null && socialLogin.getProfile().getStatus() == SocialProfile.Status.ACTIVE) {
+            throw new UserAlreadyExistException();
+        }
 
         return true;
     }
 
+    public static void recoveryPassword(User user) {
+        // TODO Metodo de recuperacao...
+    }
 }

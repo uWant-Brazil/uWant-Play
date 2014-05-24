@@ -39,6 +39,9 @@ public class User extends Model implements IMobileUser {
     @OneToOne(mappedBy = "user")
     private Token token;
 
+    @OneToOne(mappedBy = "user")
+    private UserConfirmMail confirmation;
+
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
 
@@ -122,6 +125,14 @@ public class User extends Model implements IMobileUser {
 
     public void setToken(Token token) {
         this.token = token;
+    }
+
+    public UserConfirmMail getConfirmation() {
+        return confirmation;
+    }
+
+    public void setConfirmation(UserConfirmMail confirmation) {
+        this.confirmation = confirmation;
     }
 
     public Gender getGender() {
