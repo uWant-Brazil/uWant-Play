@@ -7,10 +7,7 @@ import models.classes.SocialProfile;
 import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
-import models.exceptions.InvalidMailException;
-import models.exceptions.JSONBodyException;
-import models.exceptions.UWException;
-import models.exceptions.UserAlreadyExistException;
+import models.exceptions.*;
 import org.apache.http.impl.cookie.DateParseException;
 import play.libs.Json;
 import play.mvc.Result;
@@ -18,7 +15,6 @@ import utils.DateUtil;
 import utils.RegexUtil;
 import utils.UserUtil;
 
-import java.lang.Throwable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -139,17 +135,17 @@ public class UserController extends AbstractApplication {
     public static Result exclude() {
         ObjectNode jsonResponse = Json.newObject();
         try {
-            jsonNode body = request().body().asJson();
+            JsonNode body = request().body().asJson();
 
             if (body != null) {
-                if (body.hasNonNull(ParameterKey.TOKEN) && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER) && body.has(ParameterKey.LOGIN)) {
+                if (body.hasNonNull(ParameterKey.TOKEN) && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER)) {
                     String accessToken = body.get(ParameterKey.TOKEN).asText();
                     String providerStr = body.get(ParameterKey.SOCIAL_PROVIDER).asText();
-                    String email = body.get(ParameterKey.LOGIN).asText();
                     if (!accessToken.isEmpty() && !providerStr.isEmpty()) {
+                        FinderFactory factory = FinderFactory.getInstance();
                         IFinder<SocialProfile> finder = factory.get(SocialProfile.class);
-                        SocialProfile profile = finder.selectUnique(new String[] { FinderKey.TOKEN, FinderKey.SOCIAL_PROVIDER },
-                                new Object[] { accessToken, provider});
+                        SocialProfile profile = finder.selectUnique(new String[] { FinderKey.TOKEN },
+                                new Object[] { accessToken });
 
                         if (profile != null) {
 
