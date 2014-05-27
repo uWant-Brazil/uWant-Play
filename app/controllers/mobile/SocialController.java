@@ -7,6 +7,7 @@ import models.classes.SocialProfile;
 import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
+import models.exceptions.AuthenticationException;
 import models.exceptions.JSONBodyException;
 import models.exceptions.UWException;
 import models.exceptions.UnknownException;
@@ -54,6 +55,8 @@ public class SocialController extends AbstractApplication {
                                 jsonResponse.put(ParameterKey.STATUS, true);
                                 jsonResponse.put(ParameterKey.MESSAGE, "Este usuário já existe no sistema. Ele está autenticado para acessar o sistema.");
                                 jsonResponse.put(ParameterKey.REGISTERED, true);
+                            } else {
+                                throw new AuthenticationException();
                             }
                         } else {
                             IFinder<SocialProfile.Login> finderLogin = factory.get(SocialProfile.Login.class);
@@ -84,6 +87,8 @@ public class SocialController extends AbstractApplication {
                                         jsonResponse.put(ParameterKey.STATUS, true);
                                         jsonResponse.put(ParameterKey.MESSAGE, "Este usuário já existe no sistema. Ele está autenticado para acessar o sistema.");
                                         jsonResponse.put(ParameterKey.REGISTERED, true);
+                                    } else {
+                                        throw new AuthenticationException();
                                     }
                                 } else {
                                     throw new UnknownException();

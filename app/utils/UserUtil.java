@@ -93,7 +93,7 @@ public abstract  class UserUtil {
      * @return true
      * @throws UWException
      */
-    public static boolean isAvailable(User user) throws UWException {
+    public static boolean isAvailable(User user) {
         User.Status status = user.getStatus();
         switch (status) {
             case ACTIVE:
@@ -103,7 +103,7 @@ public abstract  class UserUtil {
             case BLOCKED:
             case REMOVED:
             default:
-                throw new AuthenticationException();
+                return false;
         }
     }
 

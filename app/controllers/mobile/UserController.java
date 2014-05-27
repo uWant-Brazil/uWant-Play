@@ -138,38 +138,20 @@ public class UserController extends AbstractApplication {
             JsonNode body = request().body().asJson();
 
             if (body != null) {
-                if (body.hasNonNull(ParameterKey.TOKEN) && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER)) {
-                    String accessToken = body.get(ParameterKey.TOKEN).asText();
-                    String providerStr = body.get(ParameterKey.SOCIAL_PROVIDER).asText();
-                    if (!accessToken.isEmpty() && !providerStr.isEmpty()) {
-                        FinderFactory factory = FinderFactory.getInstance();
-                        IFinder<SocialProfile> finder = factory.get(SocialProfile.class);
-                        SocialProfile profile = finder.selectUnique(new String[] { FinderKey.TOKEN },
-                                new Object[] { accessToken });
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+                        user.setStatus(User.Status.REMOVED);
+                        user.update();
 
-                        if (profile != null) {
-
-                            User user = profile.getUser();
-                            if (user != null) {
-                                user.setStatus(User.Status.REMOVED);
-                                user.update();
-
-                                jsonResponse.put(ParameterKey.STATUS, true);
-                                jsonResponse.put(ParameterKey.MESSAGE, "Usuário excluido com sucesso.");
-                                jsonResponse.put(ParameterKey.EXCLUDE, true);
-                            } else {
-                                throw new UserDoesntExistException();
-                            }
-
-                        } else {
-                            throw new UnknownException();
-                        }
-
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, "Usuário excluido com sucesso.");
+                        jsonResponse.put(ParameterKey.EXCLUDE, true);
                     } else {
-                        throw new JSONBodyException();
+                        throw new AuthenticationException();
                     }
                 } else {
-                    throw new JSONBodyException();
+                    throw new TokenException();
                 }
             } else {
                 throw new JSONBodyException();
