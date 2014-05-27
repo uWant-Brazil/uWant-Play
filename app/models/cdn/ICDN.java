@@ -1,7 +1,5 @@
 package models.cdn;
 
-import models.classes.Multimedia;
-
 import java.io.File;
 
 /**
