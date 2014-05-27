@@ -66,7 +66,7 @@ public abstract class MailUtil {
      * @param subject
      * @param content
      */
-    public static synchronized void send(String to, String subject, String content) throws InvalidMailException {
+    public static synchronized void send(final String to, final String subject, final String content) throws InvalidMailException {
         if (!RegexUtil.isValidMail(to))
             throw new InvalidMailException();
 
