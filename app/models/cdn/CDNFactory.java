@@ -12,6 +12,9 @@ public class CDNFactory extends AbstractFactory<AbstractCDN.Type, ICDN>{
 
         switch (id) {
             case AMAZON_S3:
+                icdn = new AmazonS3CDN();
+                break;
+
             default:
                 icdn = null;
                 break;
