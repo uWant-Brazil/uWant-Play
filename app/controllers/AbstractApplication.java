@@ -30,6 +30,7 @@ public class AbstractApplication extends Controller {
         public static final String SOCIAL_PROVIDER = "socialProvider";
         public static final String TOKEN = "token";
         public static final String REGISTERED = "registered";
+        public static final String EXCLUDE = "exclude";
     }
 
     public static class FinderKey {

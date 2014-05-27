@@ -9,7 +9,7 @@ import java.util.Calendar;
  * Created by felipebonezi on 21/05/14.
  */
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @SequenceGenerator(name = User.SEQUENCE_NAME, sequenceName = User.SEQUENCE_NAME, initialValue = 1, allocationSize = 11)
 public class User extends Model implements IMobileUser {
 

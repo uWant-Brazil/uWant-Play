@@ -2,6 +2,7 @@ package controllers.mobile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.oracle.javafx.jmx.json.JSONException;
 import controllers.AbstractApplication;
 import models.classes.SocialProfile;
 import models.classes.User;
@@ -18,6 +19,7 @@ import utils.DateUtil;
 import utils.RegexUtil;
 import utils.UserUtil;
 
+import java.lang.Throwable;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -125,6 +127,50 @@ public class UserController extends AbstractApplication {
                 }
             } else {
                 throw new JSONBodyException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+        return ok(jsonResponse);
+    }
+
+    public static Result exclude() {
+        ObjectNode jsonResponse = Json.newObject();
+        try {
+            jsonNode body = request().body().asJson();
+
+            if (body != null) {
+                if (body.hasNonNull(ParameterKey.TOKEN) && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER) && body.has(ParameterKey.LOGIN)) {
+                    String accessToken = body.get(ParameterKey.TOKEN).asText();
+                    String providerStr = body.get(ParameterKey.SOCIAL_PROVIDER).asText();
+                    String email = body.get(ParameterKey.LOGIN).asText();
+                    if (!accessToken.isEmpty() && !providerStr.isEmpty()) {
+                        IFinder<SocialProfile> finder = factory.get(SocialProfile.class);
+                        SocialProfile profile = finder.selectUnique(new String[] { FinderKey.TOKEN, FinderKey.SOCIAL_PROVIDER },
+                                new Object[] { accessToken, provider});
+
+                        if (profile != null) {
+                            profile.setStatus(SocialProfile.Status.REMOVED);
+                            profile.update();
+
+                            jsonResponse.put(ParameterKey.STATUS, true);
+                            jsonResponse.put(ParameterKey.MESSAGE, "Usuário excluido com sucesso.");
+                            jsonResponse.put(ParameterKey.EXCLUDE, true);
+                        } else {
+                            throw new UserDoesntExistException();
+                        }
+
+                    } else {
+                        throw new JSONException();
+                    }
+                } else {
+                    throw new JSONException();
+                }
+            } else {
+                throw new JSONException();
             }
         } catch (UWException e) {
             e.printStackTrace();
