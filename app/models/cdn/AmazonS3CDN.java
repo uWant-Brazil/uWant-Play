@@ -3,12 +3,11 @@ package models.cdn;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
-import models.classes.Multimedia;
 
 import java.io.File;
 
 /**
- * Created by infocusWeb2 on 27/05/14.
+ * Created by Cleibson Gomes on 27/05/14.
  */
 public class AmazonS3CDN extends AbstractCDN implements ICDN {
 
