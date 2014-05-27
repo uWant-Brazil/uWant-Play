@@ -2,7 +2,6 @@ package controllers.mobile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.oracle.javafx.jmx.json.JSONException;
 import controllers.AbstractApplication;
 import models.classes.SocialProfile;
 import models.classes.User;
@@ -153,24 +152,31 @@ public class UserController extends AbstractApplication {
                                 new Object[] { accessToken, provider});
 
                         if (profile != null) {
-                            profile.setStatus(SocialProfile.Status.REMOVED);
-                            profile.update();
 
-                            jsonResponse.put(ParameterKey.STATUS, true);
-                            jsonResponse.put(ParameterKey.MESSAGE, "Usuário excluido com sucesso.");
-                            jsonResponse.put(ParameterKey.EXCLUDE, true);
+                            User user = profile.getUser();
+                            if (user != null) {
+                                user.setStatus(User.Status.REMOVED);
+                                user.update();
+
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, "Usuário excluido com sucesso.");
+                                jsonResponse.put(ParameterKey.EXCLUDE, true);
+                            } else {
+                                throw new UserDoesntExistException();
+                            }
+
                         } else {
-                            throw new UserDoesntExistException();
+                            throw new UnknownException();
                         }
 
                     } else {
-                        throw new JSONException();
+                        throw new JSONBodyException();
                     }
                 } else {
-                    throw new JSONException();
+                    throw new JSONBodyException();
                 }
             } else {
-                throw new JSONException();
+                throw new JSONBodyException();
             }
         } catch (UWException e) {
             e.printStackTrace();
