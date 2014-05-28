@@ -1,5 +1,7 @@
 package controllers.mobile;
 
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
@@ -9,14 +11,17 @@ import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
 import org.apache.http.impl.cookie.DateParseException;
+import play.db.ebean.Model;
 import play.libs.Json;
 import play.mvc.Result;
 import utils.DateUtil;
 import utils.RegexUtil;
 import utils.UserUtil;
 
+import java.beans.Expression;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by felipebonezi on 22/05/14.
@@ -51,10 +56,6 @@ public class UserController extends AbstractApplication {
                                 || birthdayStr.isEmpty())
                             throw new JSONBodyException();
 
-                        String[] splitNames = UserUtil.partsOfName(fullName);
-                        String firstName = splitNames[0];
-                        String middleName = splitNames[1];
-                        String lastName = splitNames[2];
                         User.Gender gender = User.Gender.values()[genderOrdinal];
 
                         Date birthdayDate = null;
@@ -80,9 +81,7 @@ public class UserController extends AbstractApplication {
                                 user = new User();
                                 user.setLogin(login);
                                 user.setPassword(password);
-                                user.setFirstName(firstName);
-                                user.setMiddleName(middleName);
-                                user.setLastName(lastName);
+                                user.setName(fullName);
                                 user.setMail(mail);
                                 user.setBirthday(birthday);
                                 user.setGender(gender);
@@ -152,6 +151,58 @@ public class UserController extends AbstractApplication {
                     }
                 } else {
                     throw new TokenException();
+                }
+            } else {
+                throw new JSONBodyException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+        return ok(jsonResponse);
+    }
+
+    public static Result search() {
+        ObjectNode jsonResponse = Json.newObject();
+        JsonNode body = request().body().asJson();
+        try {
+            if (body != null) {
+                User user = authenticateToken();
+                if (body.hasNonNull(ParameterKey.QUERY)) {
+                    FinderFactory factory = FinderFactory.getInstance();
+                    IFinder<User> userFinder = factory.get(User.class);
+                    Model.Finder<Long, User> finder = userFinder.getFinder();
+                    
+                    String query = body.get(ParameterKey.QUERY).asText();
+                    ExpressionList<User> expression;
+                    if (query.isEmpty()) {
+                        expression = finder.where().ne(FinderKey.ID, user.getId());
+                    } else {
+                        expression = finder.where().or(Expr.or(Expr.like(FinderKey.LOGIN, query), Expr.like(FinderKey.MAIL, query)), Expr.like(FinderKey.NAME, query));
+                    }
+                    
+                    if (body.hasNonNull(ParameterKey.START_INDEX) && body.hasNonNull(ParameterKey.END_INDEX)) {
+                        int startIndex = body.get(ParameterKey.START_INDEX).asInt();
+                        int endIndex = body.get(ParameterKey.END_INDEX).asInt();
+
+                        if (startIndex < endIndex || startIndex > endIndex) {
+                            throw new IndexOutOfBoundException();
+                        }
+
+                        expression.setFirstRow(startIndex);
+                        expression.setMaxRows(endIndex - startIndex);
+                    }
+
+                    List<User> users = expression.findList();
+                    JsonNode usersNode = Json.toJson(users);
+
+                    jsonResponse.put(ParameterKey.STATUS, true);
+                    jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
+                    jsonResponse.put(ParameterKey.USERS, usersNode);
+                } else {
+                    throw new JSONBodyException();
                 }
             } else {
                 throw new JSONBodyException();

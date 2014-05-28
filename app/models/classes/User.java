@@ -1,5 +1,6 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -30,9 +31,7 @@ public class User extends Model implements IMobileUser {
     private String login;
     private String password;
     private String mail;
-    private String firstName;
-    private String middleName;
-    private String lastName;
+    private String name;
     private Calendar birthday;
     private Calendar since;
 
@@ -55,6 +54,7 @@ public class User extends Model implements IMobileUser {
         // Do nothing...
     }
 
+    @JsonIgnore
     public long getId() {
         return id;
     }
@@ -67,6 +67,7 @@ public class User extends Model implements IMobileUser {
         this.login = login;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -75,6 +76,7 @@ public class User extends Model implements IMobileUser {
         this.password = password;
     }
 
+    @JsonIgnore
     public String getMail() {
         return mail;
     }
@@ -83,30 +85,11 @@ public class User extends Model implements IMobileUser {
         this.mail = mail;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
-    public void setMiddleName(String middleName) {
-        this.middleName = middleName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
+    @JsonIgnore
     public Calendar getBirthday() {
         return birthday;
     }
@@ -115,6 +98,7 @@ public class User extends Model implements IMobileUser {
         this.birthday = birthday;
     }
 
+    @JsonIgnore
     public Calendar getSince() {
         return since;
     }
@@ -127,6 +111,7 @@ public class User extends Model implements IMobileUser {
         this.token = token;
     }
 
+    @JsonIgnore
     public UserMailInteraction getConfirmation() {
         return confirmation;
     }
@@ -135,6 +120,7 @@ public class User extends Model implements IMobileUser {
         this.confirmation = confirmation;
     }
 
+    @JsonIgnore
     public Gender getGender() {
         return gender;
     }
@@ -143,6 +129,7 @@ public class User extends Model implements IMobileUser {
         this.gender = gender;
     }
 
+    @JsonIgnore
     public Status getStatus() {
         return status;
     }
@@ -165,12 +152,13 @@ public class User extends Model implements IMobileUser {
     }
 
     @Override
+    @JsonIgnore
     public Token getToken() {
         return this.token;
     }
 
     @Override
     public String getName() {
-        return this.firstName.concat(" ").concat(this.lastName);
+        return this.name;
     }
 }

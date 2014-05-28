@@ -31,6 +31,10 @@ public class AbstractApplication extends Controller {
         public static final String TOKEN = "token";
         public static final String REGISTERED = "registered";
         public static final String EXCLUDE = "exclude";
+        public static final String QUERY = "query";
+        public static final String START_INDEX = "startIndex";
+        public static final String END_INDEX = "endIndex";
+        public static final String USERS = "users";
     }
 
     public static class FinderKey {
@@ -42,6 +46,7 @@ public class AbstractApplication extends Controller {
         public static final String MAIL = "mail";
         public static final String SOCIAL_PROVIDER = "socialProvider";
         public static final String STATUS = "status";
+        public static final String NAME = "name";
     }
 
     /**

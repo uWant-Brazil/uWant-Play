@@ -1,5 +1,7 @@
 package models.database;
 
+import play.db.ebean.Model;
+
 import java.util.List;
 
 /**
@@ -35,5 +37,11 @@ public interface IFinder<K> {
      * @return
      */
     List<K> selectAll(String[] columns, Object[] columnsArgs);
+
+    /**
+     * Retorna a instancia do finder para executar queries mais complexas.
+     * @return finder
+     */
+    Model.Finder<Long, K> getFinder();
 
 }
