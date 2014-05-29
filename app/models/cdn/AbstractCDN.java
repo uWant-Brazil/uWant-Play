@@ -5,14 +5,10 @@ package models.cdn;
  */
 abstract class AbstractCDN {
 
-    public enum Type {
-        AMAZON_S3
-    }
-
    private String host;
-   private Type type;
+   private CDNType type;
 
-    public AbstractCDN(String host, Type type) {
+    public AbstractCDN(String host, CDNType type) {
         this.host = host;
         this.type = type;
     }
@@ -23,7 +19,7 @@ abstract class AbstractCDN {
         return host;
     }
 
-    public Type getType() {
+    public CDNType getType() {
         return type;
     }
 

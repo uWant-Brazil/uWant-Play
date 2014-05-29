@@ -1,28 +1,26 @@
 package models.classes;
 
-import models.cdn.CDNType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.util.Calendar;
 
 /**
- * Created by Cleibson Gomes on 27/05/14.
- * @see 1.1
+ * Created by Cleibson Gomes on 21/05/14.
+ * @See 1.0
  */
 @Entity
-@Table(name = "multimedia")
+@Table(name = "manufacturer")
 @SequenceGenerator(name = Manufacturer.SEQUENCE_NAME, sequenceName = Manufacturer.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
-public class Multimedia extends Model {
+public class Manufacturer extends Model{
 
-    public static final String SEQUENCE_NAME = "multimedia_id_seq";
+    public static final String SEQUENCE_NAME = "manufacturer_id_seq";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
     private long id;
 
-    private String fileName;
-    private String url;
+    private String name;
 
-    @Enumerated(EnumType.ORDINAL)
-    private CDNType cdn;
 }

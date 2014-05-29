@@ -5,9 +5,9 @@ import models.AbstractFactory;
 /**
  * Created by Cleibson Gomes on 27/05/14.
  */
-public class CDNFactory extends AbstractFactory<AbstractCDN.Type, ICDN>{
+public class CDNFactory extends AbstractFactory<CDNType, ICDN>{
     @Override
-    public ICDN get(AbstractCDN.Type id) {
+    public ICDN get(CDNType id) {
         ICDN icdn;
 
         switch (id) {
