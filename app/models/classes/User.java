@@ -7,11 +7,12 @@ import javax.persistence.*;
 import java.util.Calendar;
 
 /**
- * Created by felipebonezi on 21/05/14.
+ * Created by Cleibson Gomes on 21/05/14.
+ * @see 1.0
  */
 @Entity
 @Table(name = "user")
-@SequenceGenerator(name = User.SEQUENCE_NAME, sequenceName = User.SEQUENCE_NAME, initialValue = 1, allocationSize = 11)
+@SequenceGenerator(name = User.SEQUENCE_NAME, sequenceName = User.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
 public class User extends Model implements IMobileUser {
 
     public static final String SEQUENCE_NAME = "user_id_seq";
