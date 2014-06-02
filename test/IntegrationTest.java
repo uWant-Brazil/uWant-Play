@@ -133,6 +133,8 @@ public class IntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
+                assertAuthenticationHeader(result);
+
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
@@ -140,6 +142,11 @@ public class IntegrationTest {
             }
 
         });
+    }
+
+    private void assertAuthenticationHeader(Result result) {
+        String authenticationToken = header(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, result);
+        assertThat(authenticationToken).isNotNull().isNotEmpty();
     }
 
     private void assertStatusMessage(JsonNode jsonResponse, boolean status) {
