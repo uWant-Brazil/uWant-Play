@@ -3,6 +3,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
 import models.classes.SocialProfile;
 import models.classes.User;
+import models.database.FinderFactory;
+import models.database.IFinder;
 import org.junit.Test;
 import play.core.j.JavaResultExtractor;
 import play.libs.Json;
@@ -60,6 +62,7 @@ public class IntegrationTest {
         });
     }
 
+    @Test
     public void successfulRegisterWithSocialTest() {
         running(fakeApplication(), new Runnable() {
 
@@ -87,6 +90,40 @@ public class IntegrationTest {
                 jsonSocialProfile.put(AbstractApplication.ParameterKey.TOKEN, uniqueIdentifier);
 
                 body.put(AbstractApplication.ParameterKey.SOCIAL_PROFILE, jsonSocialProfile);
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/register").withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulLoginTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+
+                String login = user.getLogin();
+                String password = user.getPassword();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.LOGIN, login);
+                body.put(AbstractApplication.ParameterKey.PASSWORD, password);
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/register").withJsonBody(body);
                 Result result = route(fakeRequest);
