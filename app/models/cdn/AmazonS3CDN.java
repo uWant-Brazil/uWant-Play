@@ -27,7 +27,7 @@ public class AmazonS3CDN extends AbstractCDN implements ICDN {
     private AWSCredentials credentials;
 
     public AmazonS3CDN() {
-        super(HOST, Type.AMAZON_S3);
+        super(HOST, CDNType.AMAZON_S3);
         this.credentials = new AWSCredentials() {
 
             @Override
