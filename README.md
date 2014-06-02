@@ -2,7 +2,7 @@ uWant @ Play! Framework
 =====================================
 Copyright @ 2014-2015.
 
-![alt tag](https://raw.github.com/uWant-Brazil/uWant-Play/master/logo.png)
+![alt tag](https://raw.githubusercontent.com/uWant-Brazil/uWant-Play/master/public/images/uwant_logo.jpg?token=1410319__eyJzY29wZSI6IlJhd0Jsb2I6dVdhbnQtQnJhemlsL3VXYW50LVBsYXkvbWFzdGVyL3B1YmxpYy9pbWFnZXMvdXdhbnRfbG9nby5qcGciLCJleHBpcmVzIjoxNDAyMjc0OTQ4fQ%3D%3D--de112f8e26184686279c5555f701e7a5b2cab6f0)
 
 ## Instalação ##
 ### Windows ###
