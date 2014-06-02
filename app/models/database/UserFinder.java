@@ -40,4 +40,9 @@ public class UserFinder extends AbstractFinder<User> implements IFinder<User> {
         return (expressionList != null ? expressionList.findList() : null);
     }
 
+    @Override
+    public User selectLast() {
+        return getFinder().where().setMaxRows(1).setFirstRow(getFinder().findRowCount()).findUnique();
+    }
+
 }

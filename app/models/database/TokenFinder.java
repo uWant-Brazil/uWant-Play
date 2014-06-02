@@ -41,4 +41,10 @@ public class TokenFinder extends AbstractFinder<Token> implements IFinder<Token>
         return (expressionList != null ? expressionList.findList() : null);
     }
 
+    @Override
+    public Token selectLast() {
+        // TODO ...
+        return null;
+    }
+
 }

@@ -39,6 +39,12 @@ public interface IFinder<K> {
     List<K> selectAll(String[] columns, Object[] columnsArgs);
 
     /**
+     * Select do último bean adicionado ao banco de dados.
+     * @return
+     */
+    K selectLast();
+
+    /**
      * Retorna a instancia do finder para executar queries mais complexas.
      * @return finder
      */
