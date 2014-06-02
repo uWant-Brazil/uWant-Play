@@ -1,7 +1,3 @@
-uWant @ Play! Framework
-=====================================
-Copyright @ 2014-2015.
-
 ![alt tag](https://raw.githubusercontent.com/uWant-Brazil/uWant-Play/master/public/images/uwant_logo.jpg?token=1410319__eyJzY29wZSI6IlJhd0Jsb2I6dVdhbnQtQnJhemlsL3VXYW50LVBsYXkvbWFzdGVyL3B1YmxpYy9pbWFnZXMvdXdhbnRfbG9nby5qcGciLCJleHBpcmVzIjoxNDAyMjc0OTQ4fQ%3D%3D--de112f8e26184686279c5555f701e7a5b2cab6f0)
 
 ## Instalação ##
@@ -33,3 +29,6 @@ Mais informações em [Documentation - Installing](http://www.playframework.com/
 
 
 Play instalado, Eclipse configurado, agora é só rodar utilizando *play ~run* na linha de comando. Mais informações em [Documentation - IDE](http://www.playframework.com/documentation/2.2.x/IDE) e [Documentation](http://www.playframework.com/documentation/2.2.x/Home).  
+
+
+Copyright @ 2014-2015.
