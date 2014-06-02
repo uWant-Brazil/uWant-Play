@@ -174,6 +174,138 @@ public class IntegrationTest {
         });
     }
 
+    @Test
+    public void successfulMailUserSearchTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+                Token token = user.getToken();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.QUERY, user.getMail());
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/search")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+
+                assertThat(jsonResponse.has(AbstractApplication.ParameterKey.USERS)).isTrue();
+
+                JsonNode jsonUsers = jsonResponse.get(AbstractApplication.ParameterKey.USERS);
+                assertThat(jsonUsers.isArray()).isTrue();
+
+                for (int i = 0;i < jsonUsers.size();i++) {
+                    JsonNode jsonUser = jsonUsers.get(i);
+                    assertThat(jsonUser).isNotNull();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.LOGIN)).isTrue();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.MAIL)).isTrue();
+                }
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulLoginUserSearchTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+                Token token = user.getToken();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.QUERY, user.getLogin());
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/search")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+
+                assertThat(jsonResponse.has(AbstractApplication.ParameterKey.USERS)).isTrue();
+
+                JsonNode jsonUsers = jsonResponse.get(AbstractApplication.ParameterKey.USERS);
+                assertThat(jsonUsers.isArray()).isTrue();
+
+                for (int i = 0;i < jsonUsers.size();i++) {
+                    JsonNode jsonUser = jsonUsers.get(i);
+                    assertThat(jsonUser).isNotNull();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.LOGIN)).isTrue();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.MAIL)).isTrue();
+                }
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulNameUserSearchTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+                Token token = user.getToken();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.QUERY, user.getName());
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/search")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+
+                assertThat(jsonResponse.has(AbstractApplication.ParameterKey.USERS)).isTrue();
+
+                JsonNode jsonUsers = jsonResponse.get(AbstractApplication.ParameterKey.USERS);
+                assertThat(jsonUsers.isArray()).isTrue();
+
+                for (int i = 0;i < jsonUsers.size();i++) {
+                    JsonNode jsonUser = jsonUsers.get(i);
+                    assertThat(jsonUser).isNotNull();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.LOGIN)).isTrue();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.MAIL)).isTrue();
+                }
+            }
+
+        });
+    }
+
     private void assertAuthenticationHeader(Result result) {
         String authenticationToken = header(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, result);
         assertThat(authenticationToken).isNotNull().isNotEmpty();
