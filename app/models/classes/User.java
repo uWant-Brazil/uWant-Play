@@ -5,6 +5,7 @@ import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by Cleibson Gomes on 21/05/14.
@@ -50,6 +51,9 @@ public class User extends Model implements IMobileUser {
 
     @Version
     private Calendar modifiedAt;
+
+    @OneToMany(mappedBy="user")
+    public List<Wishlist> wishlist;
 
     public User() {
         // Do nothing...
@@ -161,5 +165,9 @@ public class User extends Model implements IMobileUser {
     @Override
     public String getName() {
         return this.name;
+    }
+
+    public List<Wishlist> getWishlist() {
+        return wishlist;
     }
 }

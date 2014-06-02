@@ -35,6 +35,10 @@ public class AbstractApplication extends Controller {
         public static final String START_INDEX = "startIndex";
         public static final String END_INDEX = "endIndex";
         public static final String USERS = "users";
+        public static final String TITLE = "title";
+        public static final String DESCRIPTION = "description";
+        public static final String ID = "id";
+        public static final String WISHLIST = "wishlist";
     }
 
     public static class FinderKey {
