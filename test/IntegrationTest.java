@@ -125,7 +125,7 @@ public class IntegrationTest {
                 body.put(AbstractApplication.ParameterKey.LOGIN, login);
                 body.put(AbstractApplication.ParameterKey.PASSWORD, password);
 
-                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/register").withJsonBody(body);
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/authorize").withJsonBody(body);
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
