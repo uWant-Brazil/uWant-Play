@@ -2,6 +2,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
 import models.classes.SocialProfile;
+import models.classes.Token;
 import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
@@ -134,6 +135,35 @@ public class IntegrationTest {
                 assertThat(status).isTrue();
 
                 assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulLogoffTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+                Token token = user.getToken();
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/logoff")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
 
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
