@@ -52,7 +52,7 @@ public class User extends Model implements IMobileUser {
     @Version
     private Calendar modifiedAt;
 
-    @OneToMany(mappedBy="user")
+    @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     public List<Wishlist> wishlist;
 
     public User() {
@@ -167,6 +167,7 @@ public class User extends Model implements IMobileUser {
         return this.name;
     }
 
+    @JsonIgnore
     public List<Wishlist> getWishlist() {
         return wishlist;
     }
