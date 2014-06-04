@@ -24,8 +24,11 @@ public class Wishlist extends Model{
     private String description;
 
     @ManyToOne
-    @JoinColumn(name="user")
+    @JoinColumn(name="user_id")
     public User user;
+
+    @ManyToMany(mappedBy = "wishlist", fetch = FetchType.LAZY)
+    private List<WishlistProduct> wishlists;
 
     public String getTitle() {
         return title;
@@ -57,5 +60,13 @@ public class Wishlist extends Model{
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<WishlistProduct> getWishlists() {
+        return wishlists;
+    }
+
+    public void setWishlists(List<WishlistProduct> wishlists) {
+        this.wishlists = wishlists;
     }
 }

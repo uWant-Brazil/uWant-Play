@@ -5,6 +5,7 @@ import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by Cleibson Gomes on 21/05/14.
@@ -22,5 +23,8 @@ public class Manufacturer extends Model{
     private long id;
 
     private String name;
+
+    @OneToMany(mappedBy="manufacturer", fetch = FetchType.LAZY)
+    public List<Product> products;
 
 }

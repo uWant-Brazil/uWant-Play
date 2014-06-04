@@ -3,6 +3,7 @@ package models.classes;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * Created by Cleibson Gomes on 21/05/14.
@@ -21,4 +22,43 @@ public class Product extends Model{
 
     private String name;
     private String nickName;
+
+    @OneToOne
+    @JoinColumn(name="id")
+    private Manufacturer manufacturer;
+
+    @OneToMany(mappedBy="product", fetch = FetchType.LAZY)
+    private List<WishlistProduct> wishlistProducts;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getNickName() {
+        return nickName;
+    }
+
+    public void setNickName(String nickName) {
+        this.nickName = nickName;
+    }
+
+    public List<WishlistProduct> getWishlistProducts() {
+        return wishlistProducts;
+    }
+
+    public void setWishlistProducts(List<WishlistProduct> wishlistProducts) {
+        this.wishlistProducts = wishlistProducts;
+    }
+
+    public Manufacturer getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(Manufacturer manufacturer) {
+        this.manufacturer = manufacturer;
+    }
 }

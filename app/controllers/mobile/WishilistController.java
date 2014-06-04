@@ -3,15 +3,16 @@ package controllers.mobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
-import models.classes.User;
-import models.classes.Wishlist;
+import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
 import play.libs.Json;
 import play.mvc.Result;
+import scala.util.parsing.json.JSONArray;
 import utils.UserUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,6 +40,45 @@ public class WishilistController extends AbstractApplication {
                                 wishlist.setDescription(description);
                                 wishlist.setUser(user);
                                 wishlist.save();
+                                wishlist.refresh();
+
+                                if (body.hasNonNull(ParameterKey.PRODUCTS)) {
+                                    JsonNode products = Json.parse(body.get(ParameterKey.PRODUCTS).asText());
+                                  FinderFactory factory = FinderFactory.getInstance();
+                                  IFinder<Manufacturer> finder = factory.get(Manufacturer.class);
+                                    if (products.isArray()) {
+                                      for(int i = 0; i < products.size(); i++) {
+
+                                          JsonNode product = products.get(i);
+
+                                          if (product.hasNonNull(ParameterKey.NAME) && product.hasNonNull(ParameterKey.NICK_NAME) && product.hasNonNull(ParameterKey.MANUFACTURER)) {
+
+                                              // Buscando Fabricante do produto
+                                              Long idManufacturer = product.get(ParameterKey.MANUFACTURER).asLong();
+                                              Manufacturer manufacturer = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { idManufacturer });
+
+                                              if (manufacturer != null) {
+                                                  String name = product.get(ParameterKey.NAME).asText();
+                                                  String nickName = product.get(ParameterKey.NICK_NAME).asText();
+
+                                                  Product newProduct = new Product();
+                                                  newProduct.setName(name);
+                                                  newProduct.setNickName(nickName);
+                                                  newProduct.setManufacturer(manufacturer);
+                                                  newProduct.save();
+                                                  newProduct.refresh();
+
+                                                  WishlistProduct wishlistProduct = new WishlistProduct();
+                                                  wishlistProduct.setProduct(newProduct);
+                                                  wishlistProduct.setWishlist(wishlist);
+                                                  wishlistProduct.save();
+
+                                              }
+                                          }
+
+                                      }
+                                    }
+                                }
 
                                 jsonResponse.put(ParameterKey.STATUS, true);
                                 jsonResponse.put(ParameterKey.MESSAGE, "Lista de desejo (" + title + ") foi criada com sucesso.");
