@@ -390,6 +390,40 @@ public class IntegrationTest {
         });
     }
 
+    @Test
+    public void successfulExcludeAccountTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+
+                String mail = user.getMail();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.MAIL, mail);
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/exclude").withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
+
     private void assertAuthenticationHeader(Result result) {
         String authenticationToken = header(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, result);
         assertThat(authenticationToken).isNotNull().isNotEmpty();
