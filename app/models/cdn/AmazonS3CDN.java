@@ -9,7 +9,7 @@ import java.io.File;
 /**
  * Created by Cleibson Gomes on 27/05/14.
  */
-public class AmazonS3CDN extends AbstractCDN implements ICDN {
+public class AmazonS3CDN extends AbstractCDN<AWSCredentials> implements ICDN {
 
     private static final String BUCKET = "uwant-cdn";
     private static final String HOST = "http://" + BUCKET + ".s3.amazonaws.com/";
@@ -24,11 +24,13 @@ public class AmazonS3CDN extends AbstractCDN implements ICDN {
      */
     private static final String SECRET = "ryNYZWcKLjeIjH7jch+zBRXE1e+GLYwOyYyO5WgO";
 
-    private AWSCredentials credentials;
-
     public AmazonS3CDN() {
         super(HOST, CDNType.AMAZON_S3);
-        this.credentials = new AWSCredentials() {
+    }
+
+    @Override
+    protected AWSCredentials prepareCredentials() {
+        return new AWSCredentials() {
 
             @Override
             public String getAWSAccessKeyId() {
@@ -44,21 +46,11 @@ public class AmazonS3CDN extends AbstractCDN implements ICDN {
     }
 
     @Override
-    protected String preparePassword() {
-        return null;
-    }
-
-    @Override
-    public String getPassword() {
-        return preparePassword();
-    }
-
-    @Override
     public String asyncPut(File multimediaFile) {
-//        String password = preparePassword();
+        AWSCredentials credentials = prepareCredentials();
 
         String  key = multimediaFile.getName();
-        AmazonS3 s3Client = new AmazonS3Client(this.credentials);
+        AmazonS3 s3Client = new AmazonS3Client(credentials);
         s3Client.putObject(BUCKET, key, multimediaFile);
 
         String url = HOST + key;

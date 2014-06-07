@@ -3,7 +3,7 @@ package models.cdn;
 /**
  * Created by Cleibson Gomes on 27/05/14.
  */
-abstract class AbstractCDN {
+abstract class AbstractCDN<K> {
 
    private String host;
    private CDNType type;
@@ -13,7 +13,7 @@ abstract class AbstractCDN {
         this.type = type;
     }
 
-    protected abstract String preparePassword();
+    protected abstract K prepareCredentials();
 
     public String getHost() {
         return host;

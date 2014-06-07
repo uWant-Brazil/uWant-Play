@@ -7,7 +7,6 @@ import java.io.File;
  */
 public interface ICDN {
 
-    String getPassword();
     String asyncPut(File file);
 
 }
