@@ -34,7 +34,7 @@ public class CDNIntegrationTest {
         for (CDNType type : values) {
             ICDN icdn = factory.get(type);
             assertThat(icdn).isNotNull();
-            icdn.asyncPut(file);
+            icdn.save(file);
         }
     }
 

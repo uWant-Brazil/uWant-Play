@@ -1,5 +1,7 @@
 package models.cdn;
 
+import models.classes.Multimedia;
+
 import java.io.File;
 
 /**
@@ -7,6 +9,6 @@ import java.io.File;
  */
 public interface ICDN {
 
-    String asyncPut(File file);
+    Multimedia save(File file);
 
 }

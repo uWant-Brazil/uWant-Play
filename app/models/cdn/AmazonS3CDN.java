@@ -3,6 +3,7 @@ package models.cdn;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
+import models.classes.Multimedia;
 
 import java.io.File;
 
@@ -46,15 +47,16 @@ public class AmazonS3CDN extends AbstractCDN<AWSCredentials> implements ICDN {
     }
 
     @Override
-    public String asyncPut(File multimediaFile) {
+    public Multimedia save(File file) {
         AWSCredentials credentials = prepareCredentials();
 
-        String  key = multimediaFile.getName();
+        String  fileName = file.getName();
         AmazonS3 s3Client = new AmazonS3Client(credentials);
-        s3Client.putObject(BUCKET, key, multimediaFile);
+        s3Client.putObject(BUCKET, fileName, file);
 
-        String url = HOST + key;
-        return url;
+        String url = HOST + fileName;
+        
+        return super.createMultimedia(fileName, url);
     }
 
 }
