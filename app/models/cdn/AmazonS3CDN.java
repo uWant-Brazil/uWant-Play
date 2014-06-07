@@ -54,7 +54,7 @@ public class AmazonS3CDN extends AbstractCDN implements ICDN {
     }
 
     @Override
-    public String put(File multimediaFile) {
+    public String asyncPut(File multimediaFile) {
 //        String password = preparePassword();
 
         String  key = multimediaFile.getName();

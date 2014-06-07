@@ -8,6 +8,6 @@ import java.io.File;
 public interface ICDN {
 
     String getPassword();
-    String put(File file);
+    String asyncPut(File file);
 
 }
