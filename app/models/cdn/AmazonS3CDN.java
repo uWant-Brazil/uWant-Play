@@ -11,8 +11,8 @@ import java.io.File;
  */
 public class AmazonS3CDN extends AbstractCDN implements ICDN {
 
-    private static final String HOST = "";
     private static final String BUCKET = "uwant-cdn";
+    private static final String HOST = "http://" + BUCKET + ".s3.amazonaws.com/";
 
     /**
      * Chave de acesso à Amazon.
@@ -61,7 +61,7 @@ public class AmazonS3CDN extends AbstractCDN implements ICDN {
         AmazonS3 s3Client = new AmazonS3Client(this.credentials);
         s3Client.putObject(BUCKET, key, multimediaFile);
 
-        String url = "http://" + BUCKET + ".s3.amazonaws.com/" + key;
+        String url = HOST + key;
         return url;
     }
 
