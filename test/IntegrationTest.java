@@ -306,6 +306,88 @@ public class IntegrationTest {
         });
     }
 
+    @Test
+    public void successfulLoginWithSocialTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+
+                String login = user.getLogin();
+                String password = user.getPassword();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.LOGIN, login);
+                body.put(AbstractApplication.ParameterKey.PASSWORD, password);
+
+                long i = System.currentTimeMillis();
+
+                ObjectNode jsonSocial = Json.newObject();
+                jsonSocial.put(AbstractApplication.ParameterKey.SOCIAL_PROVIDER, (i % 2 == 0 ? SocialProfile.Provider.FACEBOOK.ordinal() : (i % 3 == 0 ? SocialProfile.Provider.GOOGLE_PLUS.ordinal() : SocialProfile.Provider.TWITTER.ordinal())));
+                jsonSocial.put(AbstractApplication.ParameterKey.TOKEN, UUID.randomUUID().toString());
+
+                if (i % 2 == 0)
+                    jsonSocial.put(AbstractApplication.ParameterKey.LOGIN, user.getMail());
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/social/signUp").withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+
+                JsonNode nodeMessage = jsonResponse.get(AbstractApplication.ParameterKey.REGISTERED);
+                assertThat(nodeMessage.asBoolean()).isNotNull().isTrue();
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulRecoveryPassword() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+
+                String mail = user.getMail();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.MAIL, mail);
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/exclude").withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
+
     private void assertAuthenticationHeader(Result result) {
         String authenticationToken = header(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, result);
         assertThat(authenticationToken).isNotNull().isNotEmpty();
