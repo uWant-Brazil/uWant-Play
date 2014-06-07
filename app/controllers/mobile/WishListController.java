@@ -20,7 +20,7 @@ import java.util.List;
  *
  * @see 1.0
  */
-public class WishilistController extends AbstractApplication {
+public class WishListController extends AbstractApplication {
 
     public static Result create() {
         ObjectNode jsonResponse = new Json().newObject();
