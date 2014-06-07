@@ -364,12 +364,14 @@ public class IntegrationTest {
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectLast();
 
-                String mail = user.getMail();
+                String login = user.getLogin();
+                String password = user.getPassword();
 
                 ObjectNode body = Json.newObject();
-                body.put(AbstractApplication.ParameterKey.MAIL, mail);
+                body.put(AbstractApplication.ParameterKey.LOGIN, login);
+                body.put(AbstractApplication.ParameterKey.PASSWORD, password);
 
-                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/exclude").withJsonBody(body);
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/recoveryPassword").withJsonBody(body);
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
