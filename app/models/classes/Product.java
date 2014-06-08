@@ -1,5 +1,6 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -29,6 +30,10 @@ public class Product extends Model{
 
     @OneToMany(mappedBy="product", fetch = FetchType.LAZY)
     private List<WishlistProduct> wishlistProducts;
+
+    @OneToOne
+    @JoinColumn(name = "multimedia")
+    private Multimedia multimedia;
 
     public String getName() {
         return name;
@@ -68,5 +73,14 @@ public class Product extends Model{
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @JsonIgnore
+    public Multimedia getMultimedia() {
+        return multimedia;
+    }
+
+    public void setMultimedia(Multimedia multimedia) {
+        this.multimedia = multimedia;
     }
 }

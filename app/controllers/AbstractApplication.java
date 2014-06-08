@@ -14,6 +14,7 @@ public class AbstractApplication extends Controller {
     public static class HeaderKey {
         public static final String HEADER_AUTHENTICATION_TOKEN = "Authentication";
         public static final String CONTENT_TYPE = "Content-Type";
+        public static final String MULTIPART_FORM_DATA = "";
     }
 
     public static class ParameterKey {
@@ -43,6 +44,10 @@ public class AbstractApplication extends Controller {
         public static final String NAME = "name";
         public static final String NICK_NAME = "nickName";
         public static final String MANUFACTURER = "manufacturer";
+        public static final String MULTIMEDIA_PRODUCT = "multimediaProduct";
+        public static final String MULTIMEDIA_USER_PICTURE = "multimediaUserPicture";
+        public static final String MULTIMEDIA = "multimedia";
+        public static final String URL = "url";
     }
     public static class FinderKey {
 
