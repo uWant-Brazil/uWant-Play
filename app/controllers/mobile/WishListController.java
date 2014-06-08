@@ -51,7 +51,7 @@ public class WishListController extends AbstractApplication {
 
                                           if (product.hasNonNull(ParameterKey.NAME) && product.has(ParameterKey.NICK_NAME) && product.hasNonNull(ParameterKey.MANUFACTURER)) {
 
-                                              // criando frabricadte do produto
+                                              // criando frabicante do produto
                                               JsonNode manufacturerJson = product.get(ParameterKey.MANUFACTURER);
                                               Manufacturer manufacturer = null;
 
@@ -76,6 +76,7 @@ public class WishListController extends AbstractApplication {
                                                       WishlistProduct wishlistProduct = new WishlistProduct();
                                                       wishlistProduct.setProduct(newProduct);
                                                       wishlistProduct.setWishlist(wishlist);
+                                                      wishlistProduct.setStatus(WishlistProduct.Status.ACTIVE);
                                                       wishlistProduct.save();
 
                                                   }
@@ -244,11 +245,12 @@ public class WishListController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
-    public static Result addProductWishList() {
+    public static Result addProductsWishList() {
         ObjectNode jsonResponse = Json.newObject();
 
         try {
             JsonNode body = request().body().asJson();
+            int countProductsAdd = 0;
 
             if (body != null) {
                 User user = authenticateToken();
@@ -266,7 +268,7 @@ public class WishListController extends AbstractApplication {
                             if (wishlist != null) {
 
                                 if (wishlistProducts == null) new ArrayList<WishlistProduct>();
-                                JsonNode products = Json.parse(body.get(ParameterKey.PRODUCTS).asText());
+                                JsonNode products = body.get(ParameterKey.PRODUCTS);
 
                                 if (products.isArray()) {
                                     for(int i = 0; i < products.size(); i++) {
@@ -274,33 +276,44 @@ public class WishListController extends AbstractApplication {
                                         JsonNode product = products.get(i);
 
                                         if (product.hasNonNull(ParameterKey.NAME)
-                                                && product.hasNonNull(ParameterKey.NICK_NAME)
+                                                && product.has(ParameterKey.NICK_NAME)
                                                 && product.hasNonNull(ParameterKey.MANUFACTURER)) {
 
-                                            // Buscando Fabricante do produto
-//                                            Long idManufacturer = product.get(ParameterKey.MANUFACTURER).asLong();
-//                                            Manufacturer manufacturer = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { idManufacturer });
-//
-//                                            if (manufacturer != null) {
-//                                                String name = product.get(ParameterKey.NAME).asText();
-//                                                String nickName = product.get(ParameterKey.NICK_NAME).asText();
-//
-//                                                Product newProduct = new Product();
-//                                                newProduct.setName(name);
-//                                                newProduct.setNickName(nickName);
-//                                                newProduct.setManufacturer(manufacturer);
-//                                                newProduct.save();
-//                                                newProduct.refresh();
-//
-//                                                WishlistProduct wishlistProduct = new WishlistProduct();
-//                                                wishlistProduct.setProduct(newProduct);
-//                                                wishlistProduct.setWishlist(wishlist);
-//                                                wishlistProduct.save();
-//
-//                                            }
+                                            JsonNode manufacturerJson = product.get(ParameterKey.MANUFACTURER);
+                                            Manufacturer manufacturer = null;
+
+                                                if (manufacturerJson.hasNonNull(ParameterKey.NAME)) {
+                                                    String nameFacturer = manufacturerJson.get(ParameterKey.NAME).asText();
+                                                    manufacturer = new Manufacturer();
+                                                    manufacturer.setName(nameFacturer);
+                                                    manufacturer.save();
+                                                    manufacturer.refresh();
+
+                                                    if (manufacturer != null) {
+                                                        String name = product.get(ParameterKey.NAME).asText();
+                                                        String nickName = product.get(ParameterKey.NICK_NAME).asText();
+
+                                                        Product newProduct = new Product();
+                                                        newProduct.setName(name);
+                                                        newProduct.setNickName(nickName == null ? "" : nickName);
+                                                        newProduct.setManufacturer(manufacturer);
+                                                        newProduct.save();
+                                                        newProduct.refresh();
+
+                                                        WishlistProduct wishlistProduct = new WishlistProduct();
+                                                        wishlistProduct.setProduct(newProduct);
+                                                        wishlistProduct.setWishlist(wishlist);
+                                                        wishlistProduct.setStatus(WishlistProduct.Status.ACTIVE);
+                                                        wishlistProduct.save();
+                                                        countProductsAdd++;
+                                                }
+                                            }
                                         }
 
                                     }
+
+                                    jsonResponse.put(ParameterKey.STATUS, true);
+                                    jsonResponse.put(ParameterKey.MESSAGE, countProductsAdd + " products added to wish list " + wishlist.getTitle() + ".");
                                 } else {
                                     jsonResponse.put(ParameterKey.STATUS, false);
                                     jsonResponse.put(ParameterKey.MESSAGE, "Produtos não encontrados");

@@ -16,6 +16,18 @@ public class Wishlist extends Model{
 
     public static final String SEQUENCE_NAME = "wishlist_id_seq";
 
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public enum Status {
+        ACTIVE, BLOCKED, REMOVED;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
     private long id;
@@ -29,6 +41,9 @@ public class Wishlist extends Model{
 
     @ManyToMany(mappedBy = "wishlist", fetch = FetchType.LAZY)
     private List<WishlistProduct> wishlists;
+
+    @Enumerated(EnumType.ORDINAL)
+    private Status status;
 
     public String getTitle() {
         return title;
