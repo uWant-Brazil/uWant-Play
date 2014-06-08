@@ -15,7 +15,9 @@ import play.mvc.SimpleResult;
 import play.test.FakeRequest;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.UUID;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -406,6 +408,58 @@ public class IntegrationTest {
                 body.put(AbstractApplication.ParameterKey.MAIL, mail);
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/exclude").withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulWishListCreationTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+                Token token = user.getToken();
+
+                String identifier = UUID.randomUUID().toString();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.TITLE, "title -> " + identifier);
+                body.put(AbstractApplication.ParameterKey.DESCRIPTION, "description -> " + identifier);
+
+                int productsCount = (int) (Math.random() * 101);
+
+                if (productsCount > 0) {
+                    List<ObjectNode> arrayProducts = new ArrayList<ObjectNode>(productsCount + 5);
+                    for (int i = 0;i < arrayProducts.size();i++) {
+                        ObjectNode jsonProduct = Json.newObject();
+                        jsonProduct.put(AbstractApplication.ParameterKey.NAME, "[" + identifier + "] name -> " + i);
+                        jsonProduct.put(AbstractApplication.ParameterKey.NICK_NAME, "[" + identifier + "] nickname -> " + i);
+                        jsonProduct.put(AbstractApplication.ParameterKey.MANUFACTURER, "[" + identifier + "] manufacturer -> " + i);
+                        arrayProducts.add(jsonProduct);
+                    }
+                    body.put(AbstractApplication.ParameterKey.PRODUCTS, Json.toJson(arrayProducts));
+                }
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/create")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
