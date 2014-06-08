@@ -163,7 +163,7 @@ public class WishListController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
-    public static Result reload() {
+    public static Result list() {
         ObjectNode jsonResponse = Json.newObject();
 
         try {
@@ -172,13 +172,15 @@ public class WishListController extends AbstractApplication {
                 User user = authenticateToken();
                 if (user != null) {
                     if (UserUtil.isAvailable(user)) {
-                        List<Wishlist> wishlistList = user.getWishlist();
-                        if (wishlistList != null) {
-                            JsonNode wishlistNode = Json.toJson(wishlistList);
-
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                        List<Wishlist> wishlist = finder.selectAll(
+                                new String[] { "user_id" , FinderKey.STATUS},
+                                new Object[] { user.getId(), Wishlist.Status.ACTIVE.ordinal() });
+                        if (wishlist != null) {
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
-                            jsonResponse.put(ParameterKey.WISHLIST, wishlistNode);
+                            jsonResponse.put(ParameterKey.WISHLIST, Json.toJson(wishlist));
                         } else {
                             throw new WishlistDoesntExistException();
                         }
@@ -198,6 +200,61 @@ public class WishListController extends AbstractApplication {
             jsonResponse.put(ParameterKey.ERROR, e.getCode());
         }
 
+        return ok(jsonResponse);
+    }
+
+    public static Result getProductsByWishList() {
+        ObjectNode jsonResponse = Json.newObject();
+
+        try {
+            JsonNode body = request().body().asJson();
+            if (body != null) {
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+
+                        if (body.hasNonNull(ParameterKey.ID)) {
+                            Long id = body.get(ParameterKey.ID).asLong();
+                            FinderFactory factory = FinderFactory.getInstance();
+                            IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                            Wishlist wishlist = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { id });
+                            if (wishlist != null) {
+                                IFinder<WishlistProduct> wishlistProductIFinder = factory.get(WishlistProduct.class);
+                                List<WishlistProduct> wishlistProducts = wishlistProductIFinder.selectAll(
+                                        new String[] { "wishlist_id" },
+                                        new Object[] { wishlist.getId() }
+                                );
+
+                                if (wishlistProducts != null) {
+                                    jsonResponse.put(ParameterKey.STATUS, true);
+                                    jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
+                                    jsonResponse.put(ParameterKey.WISHLIST, Json.toJson(wishlist));
+                                } else {
+                                    jsonResponse.put(ParameterKey.STATUS, false);
+                                    jsonResponse.put(ParameterKey.MESSAGE, "Não existe produtos vinculados a lista de desejo: " + wishlist.getTitle());
+                                }
+
+                            } else {
+                                throw new WishlistDoesntExistException();
+                            }
+                        } else {
+                            throw new JSONBodyException();
+                        }
+                    } else {
+                        throw new AuthenticationException();
+                    }
+                } else {
+                    throw new TokenException();
+                }
+            } else {
+                throw new JSONBodyException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
         return ok(jsonResponse);
     }
 

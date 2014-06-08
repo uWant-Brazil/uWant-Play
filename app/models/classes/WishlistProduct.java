@@ -1,5 +1,6 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -40,6 +41,7 @@ public class WishlistProduct extends Model {
         return id;
     }
 
+    @JsonIgnore
     public Wishlist getWishlist() {
         return wishlist;
     }

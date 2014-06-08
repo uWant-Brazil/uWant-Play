@@ -44,8 +44,8 @@ public class AbstractApplication extends Controller {
         public static final String NICK_NAME = "nickName";
         public static final String MANUFACTURER = "manufacturer";
     }
-
     public static class FinderKey {
+
         public static final String ID = "_id";
         public static final String TOKEN = "token";
         public static final String CONTENT = "content";
