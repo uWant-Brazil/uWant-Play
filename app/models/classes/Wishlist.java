@@ -16,14 +16,6 @@ public class Wishlist extends Model{
 
     public static final String SEQUENCE_NAME = "wishlist_id_seq";
 
-    public Status getStatus() {
-        return status;
-    }
-
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
     public enum Status {
         ACTIVE, BLOCKED, REMOVED;
     }
@@ -83,5 +75,13 @@ public class Wishlist extends Model{
 
     public void setWishlists(List<WishlistProduct> wishlists) {
         this.wishlists = wishlists;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

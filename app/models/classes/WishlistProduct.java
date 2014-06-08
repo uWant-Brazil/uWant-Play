@@ -36,6 +36,10 @@ public class WishlistProduct extends Model {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
+    public long getId() {
+        return id;
+    }
+
     public Wishlist getWishlist() {
         return wishlist;
     }

@@ -7,6 +7,7 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
+import play.db.ebean.Model;
 import play.libs.Json;
 import play.mvc.Result;
 import scala.util.parsing.json.JSONArray;
@@ -348,7 +349,88 @@ public class WishListController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
-    public static Result removeProductWishList() {
-        return ok();
+    public static Result removeProductsWishList() {
+        ObjectNode jsonResponse = Json.newObject();
+
+        try {
+            JsonNode body = request().body().asJson();
+            int countProductsRemoved = 0;
+
+            if (body != null) {
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+
+                        if (body.hasNonNull(ParameterKey.ID) && body.hasNonNull(ParameterKey.PRODUCTS)) {
+
+                            Long idWishList = body.get(ParameterKey.ID).asLong();
+                            FinderFactory factory = FinderFactory.getInstance();
+                            IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                            Wishlist wishlist = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { idWishList });
+
+                            if (wishlist != null) {
+                                JsonNode products = body.get(ParameterKey.PRODUCTS);
+
+                                if (products.isArray()) {
+                                    IFinder<Product> finderProduct = factory.get(Wishlist.class);
+                                    IFinder<WishlistProduct> finderWishListProduct = factory.get(Wishlist.class);
+                                    for(int i = 0; i < products.size(); i++) {
+
+                                        JsonNode product = products.get(i);
+
+                                        if (product.hasNonNull(ParameterKey.ID)) {
+                                            Long idProduct = product.get(ParameterKey.ID).asLong();
+                                            Product productIndex  = finderProduct.selectUnique(new String[] { FinderKey.ID }, new Object[] { idProduct });
+
+                                            if (productIndex != null && wishlist != null) {
+
+                                                WishlistProduct wishlistProduct = finderWishListProduct.selectUnique(
+                                                        new String[] { "wishlist_id" , "product_id"},
+                                                        new Object[] { wishlist.getId(), productIndex.getId()});
+
+                                                if (wishlistProduct != null) {
+                                                    wishlistProduct.setStatus(WishlistProduct.Status.REMOVED);
+                                                    wishlistProduct.save();
+                                                    countProductsRemoved++;
+                                                }
+
+                                            }
+                                        }
+                                    }
+
+                                    jsonResponse.put(ParameterKey.STATUS, true);
+                                    jsonResponse.put(ParameterKey.MESSAGE, countProductsRemoved + " products removed to wish list " + wishlist.getTitle() + ".");
+                                } else {
+                                    jsonResponse.put(ParameterKey.STATUS, false);
+                                    jsonResponse.put(ParameterKey.MESSAGE, "Produtos não encontrados");
+                                }
+
+                            } else {
+                                jsonResponse.put(ParameterKey.STATUS, false);
+                                jsonResponse.put(ParameterKey.MESSAGE, "Lista de desejo não existe");
+                            }
+
+                        } else {
+                            throw new JSONBodyException();
+                        }
+
+                    } else {
+                        throw new AuthenticationException();
+                    }
+                } else {
+                    throw new TokenException();
+                }
+
+            } else {
+                throw new JSONBodyException();
+            }
+
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+        return ok(jsonResponse);
     }
 }
