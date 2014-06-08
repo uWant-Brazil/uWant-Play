@@ -1,5 +1,7 @@
 package models.cdn;
 
+import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -52,11 +54,16 @@ public class AmazonS3CDN extends AbstractCDN<AWSCredentials> implements ICDN {
 
         String  fileName = file.getName();
         AmazonS3 s3Client = new AmazonS3Client(credentials);
-        s3Client.putObject(BUCKET, fileName, file);
 
-        String url = HOST + fileName;
-        
-        return super.createMultimedia(fileName, url);
+        try {
+            s3Client.putObject(BUCKET, fileName, file);
+
+            String url = HOST + fileName;
+            return super.createMultimedia(fileName, url);
+        } catch (AmazonClientException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
