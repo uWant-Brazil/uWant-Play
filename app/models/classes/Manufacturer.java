@@ -27,4 +27,11 @@ public class Manufacturer extends Model{
     @OneToMany(mappedBy="manufacturer", fetch = FetchType.LAZY)
     public List<Product> products;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }
