@@ -70,11 +70,6 @@ public class Wishlist extends Model{
         this.user = user;
     }
 
-    @JsonIgnore
-    public List<WishlistProduct> getWishlists() {
-        return wishlists;
-    }
-
     public void setWishlists(List<WishlistProduct> wishlists) {
         this.wishlists = wishlists;
     }
