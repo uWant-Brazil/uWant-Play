@@ -134,10 +134,10 @@ public class WishListController extends AbstractApplication {
                                 wishlist.setTitle(title);
                                 wishlist.setDescription(description);
                                 wishlist.setUser(user);
-                                wishlist.save();
+                                wishlist.update();
 
                                 jsonResponse.put(ParameterKey.STATUS, true);
-                                jsonResponse.put(ParameterKey.MESSAGE, "Lista de desejo (" + title + ") foi criada com sucesso.");
+                                jsonResponse.put(ParameterKey.MESSAGE, "A lista de desejos (" + title + ") foi editada com sucesso.");
                             } else {
                                 throw new WishlistDoesntExistException();
                             }
