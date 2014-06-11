@@ -4,6 +4,7 @@ import controllers.AbstractApplication;
 import models.classes.SocialProfile;
 import models.classes.Token;
 import models.classes.User;
+import models.classes.Wishlist;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import org.junit.Test;
@@ -427,7 +428,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void successfulWishListCreationTest() {
+    public void successfulWishListCreationWithProductsTest() {
         running(fakeApplication(), new Runnable() {
 
             @Override
@@ -473,6 +474,203 @@ public class IntegrationTest {
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulWishListCreationWithProductsAndMultimediaTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+                Token token = user.getToken();
+
+                String identifier = UUID.randomUUID().toString();
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.TITLE, "title -> " + identifier);
+                body.put(AbstractApplication.ParameterKey.DESCRIPTION, "description -> " + identifier);
+
+                int productsCount = (int) (Math.random() * 101);
+
+                if (productsCount > 0) {
+                    List<ObjectNode> arrayProducts = new ArrayList<ObjectNode>(productsCount + 5);
+                    for (int i = 0;i < productsCount;i++) {
+                        ObjectNode jsonProduct = Json.newObject();
+                        jsonProduct.put(AbstractApplication.ParameterKey.NAME, "[" + identifier + "] name -> " + i);
+                        jsonProduct.put(AbstractApplication.ParameterKey.NICK_NAME, "[" + identifier + "] nickname -> " + i);
+                        jsonProduct.put(AbstractApplication.ParameterKey.MANUFACTURER, "[" + identifier + "] manufacturer -> " + i);
+                        arrayProducts.add(jsonProduct);
+                    }
+                    body.put(AbstractApplication.ParameterKey.PRODUCTS, Json.toJson(arrayProducts));
+                }
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/create")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+
+                if (productsCount > 0) {
+                    for (int i = 0;i < productsCount && i % 2 == 0;i++) {
+                        FakeRequest fakeRequestMultimedia = new FakeRequest(POST, "")
+                                .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                                .withRawBody();
+
+
+                    }
+                }
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulWishListEditionTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+                Token token = user.getToken();
+
+                String identifier = UUID.randomUUID().toString();
+
+                List<Wishlist> wishlists = user.getWishlist();
+                if (wishlists.isEmpty())
+                    throw new RuntimeException("A lista de desejos do usuário está vazia.");
+
+                int index = (int) (Math.random() * (wishlists.size() - 1));
+                Wishlist wishlist = wishlists.get(index);
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.ID, wishlist.getId());
+                body.put(AbstractApplication.ParameterKey.TITLE, "[" + identifier + "] edited title");
+                body.put(AbstractApplication.ParameterKey.DESCRIPTION, wishlist.getDescription());
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/update")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulWishListRemoveTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+
+                List<Wishlist> wishlists = user.getWishlist();
+                if (wishlists.isEmpty())
+                    throw new RuntimeException("A lista de desejos do usuário está vazia.");
+
+                int index = (int) (Math.random() * (wishlists.size() - 1));
+                Wishlist wishlist = wishlists.get(index);
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.ID, wishlist.getId());
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/delete").withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
+
+    @Test
+    public void successfulWishListTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectLast();
+                Token token = user.getToken();
+
+                ObjectNode body = Json.newObject();
+
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/list")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                assertAuthenticationHeader(result);
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+
+                assertThat(jsonResponse.hasNonNull(AbstractApplication.ParameterKey.WISHLIST)).isTrue();
+
+                JsonNode arrayWishList = jsonResponse.get(AbstractApplication.ParameterKey.WISHLIST);
+                assertThat(arrayWishList).isNotNull();
+                assertThat(arrayWishList.isArray()).isTrue();
+
+                for (int i = 0;i < arrayWishList.size();i++) {
+                    JsonNode jsonWishList = arrayWishList.get(i);
+                    assertThat(jsonWishList).isNotNull();
+                    assertThat(jsonWishList.isArray()).isFalse();
+                    assertThat(jsonWishList.hasNonNull(AbstractApplication.ParameterKey.ID)).isTrue();
+                    assertThat(jsonWishList.hasNonNull(AbstractApplication.ParameterKey.TITLE)).isTrue();
+                    assertThat(jsonWishList.has(AbstractApplication.ParameterKey.DESCRIPTION)).isTrue();
+                }
             }
 
         });
