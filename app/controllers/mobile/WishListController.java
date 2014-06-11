@@ -175,7 +175,7 @@ public class WishListController extends AbstractApplication {
                         FinderFactory factory = FinderFactory.getInstance();
                         IFinder<Wishlist> finder = factory.get(Wishlist.class);
                         List<Wishlist> wishlist = finder.selectAll(
-                                new String[] { "user_id" , FinderKey.STATUS},
+                                new String[] { FinderKey.USER_ID , FinderKey.STATUS},
                                 new Object[] { user.getId(), Wishlist.Status.ACTIVE.ordinal() });
                         if (wishlist != null) {
                             jsonResponse.put(ParameterKey.STATUS, true);

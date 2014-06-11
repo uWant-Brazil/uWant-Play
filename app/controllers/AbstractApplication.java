@@ -60,6 +60,7 @@ public class AbstractApplication extends Controller {
         public static final String SOCIAL_PROVIDER = "socialProvider";
         public static final String STATUS = "status";
         public static final String NAME = "name";
+        public static final String USER_ID = "user_id";
     }
 
     /**
