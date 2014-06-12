@@ -5,7 +5,7 @@ import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.TokenException;
-import play.mvc.*;
+import play.mvc.Controller;
 
 import java.util.UUID;
 
@@ -57,6 +57,7 @@ public class AbstractApplication extends Controller {
         public static final String MULTIMEDIA_USER_PICTURE = "multimediaUserPicture";
         public static final String MULTIMEDIA = "multimedia";
         public static final String URL = "url";
+        public static final String FILENAME = "fileName";
     }
 
     /**
@@ -73,6 +74,8 @@ public class AbstractApplication extends Controller {
         public static final String STATUS = "status";
         public static final String NAME = "name";
         public static final String USER_ID = "user_id";
+        public static final String WISHLIST_ID = "wishlist_id";
+        public static final String PRODUCT_ID = "product_id";
     }
 
     /**

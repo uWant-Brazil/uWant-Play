@@ -1,7 +1,8 @@
 package models.database;
 
 import models.AbstractFactory;
-import models.classes.*;
+import models.classes.Token;
+import models.classes.User;
 
 /**
  * Factory de Finder para banco de dados.

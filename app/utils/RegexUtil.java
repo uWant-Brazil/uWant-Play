@@ -1,7 +1,5 @@
 package utils;
 
-import java.util.regex.Pattern;
-
 /**
  * Classe utilitária para ações relacionadas a utilização de Regex.
  */

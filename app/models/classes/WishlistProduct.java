@@ -41,8 +41,16 @@ public class WishListProduct extends Model {
         this.wishList = wishList;
     }
 
+    public WishList getWishList() {
+        return wishList;
+    }
+
     public void setProduct(Product product) {
         this.product = product;
+    }
+
+    public Product getProduct() {
+        return product;
     }
 
     public Status getStatus() {

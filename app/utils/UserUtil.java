@@ -6,7 +6,6 @@ import models.classes.User;
 import models.classes.UserMailInteraction;
 import models.database.FinderFactory;
 import models.database.IFinder;
-import models.exceptions.AuthenticationException;
 import models.exceptions.InvalidMailException;
 import models.exceptions.UWException;
 import models.exceptions.UserAlreadyExistException;
