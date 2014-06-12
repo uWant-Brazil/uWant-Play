@@ -5,11 +5,11 @@ import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Cleibson Gomes on 21/05/14.
- * @See 1.0
+ * Classe Ebean responsável por guardar informações referentes a fabricantes de produtos.
  */
 @Entity
 @Table(name = "manufacturer")
@@ -27,11 +27,38 @@ public class Manufacturer extends Model{
     @OneToMany(mappedBy="manufacturer", fetch = FetchType.LAZY)
     public List<Product> products;
 
+    @Version
+    private Date modifiedAt;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 }

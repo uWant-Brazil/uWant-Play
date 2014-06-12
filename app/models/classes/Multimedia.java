@@ -4,14 +4,14 @@ import models.cdn.CDNType;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
- * Created by Cleibson Gomes on 27/05/14.
- * @see 1.1
+ * Classe Ebean responsável por guardar informações referentes a arquivos multimídias guardados nas CDN's.
  */
 @Entity
 @Table(name = "multimedia")
-@SequenceGenerator(name = Manufacturer.SEQUENCE_NAME, sequenceName = Manufacturer.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
+@SequenceGenerator(name = Multimedia.SEQUENCE_NAME, sequenceName = Multimedia.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
 public class Multimedia extends Model {
 
     public static final String SEQUENCE_NAME = "multimedia_id_seq";
@@ -25,6 +25,9 @@ public class Multimedia extends Model {
 
     @Enumerated(EnumType.ORDINAL)
     private CDNType cdn;
+
+    @Version
+    private Date modifiedAt;
 
     public long getId() {
         return id;
@@ -56,5 +59,13 @@ public class Multimedia extends Model {
 
     public void setCdn(CDNType cdn) {
         this.cdn = cdn;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 }

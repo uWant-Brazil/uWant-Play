@@ -5,7 +5,7 @@ import controllers.AbstractApplication;
 import play.db.ebean.Model;
 
 /**
- * Created by felipebonezi on 21/05/14.
+ * Classe abstrata utilizada para herança por todos os Finder's do sistema.
  */
 abstract class AbstractFinder<K> {
 

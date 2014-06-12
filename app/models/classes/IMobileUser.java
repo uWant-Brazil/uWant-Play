@@ -1,12 +1,26 @@
 package models.classes;
 
 /**
- * Created by felipebonezi on 21/05/14.
+ * Interface responsável por mapear usuários para dispositivos móveis.
  */
 public interface IMobileUser {
 
+    /**
+     * Método responsável por retornar o login do usuário.
+     * @return
+     */
     String getLogin();
+
+    /**
+     * Método responsável por retornar o nome do usuário.
+     * @return
+     */
     String getName();
+
+    /**
+     * Método responsável por retornar o token do usuário.
+     * @return
+     */
     Token getToken();
 
 }

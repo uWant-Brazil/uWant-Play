@@ -7,7 +7,7 @@ import models.classes.User;
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade User.class
+ * Entidade para acesso ao Finder da entidade Token.class
  */
 public class TokenFinder extends AbstractFinder<Token> implements IFinder<Token> {
 
@@ -43,8 +43,7 @@ public class TokenFinder extends AbstractFinder<Token> implements IFinder<Token>
 
     @Override
     public Token selectLast() {
-        // TODO ...
-        return null;
+        return getFinder().where().setMaxRows(1).setFirstRow(getFinder().findRowCount()).findUnique();
     }
 
 }

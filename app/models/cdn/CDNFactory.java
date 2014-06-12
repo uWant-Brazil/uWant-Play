@@ -3,7 +3,7 @@ package models.cdn;
 import models.AbstractFactory;
 
 /**
- * Created by Cleibson Gomes on 27/05/14.
+ * Factory responsável por disponibilizar todos as CDN's baseado no tipo informado.
  */
 public class CDNFactory extends AbstractFactory<CDNType, ICDN>{
 

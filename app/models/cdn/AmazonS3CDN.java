@@ -10,7 +10,7 @@ import models.classes.Multimedia;
 import java.io.File;
 
 /**
- * Created by Cleibson Gomes on 27/05/14.
+ * Classe responsável pela configuração da CDN da Amazon S3.
  */
 public class AmazonS3CDN extends AbstractCDN<AWSCredentials> implements ICDN {
 

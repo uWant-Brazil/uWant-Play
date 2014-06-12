@@ -27,6 +27,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
 
         if (id == User.class) {
             finder = new UserFinder();
+        } else if (id == Token.class) {
+            finder = new TokenFinder();
         }
 
         return finder;

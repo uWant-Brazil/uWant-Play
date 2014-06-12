@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Calendar;
 
 /**
- * Hibernate Bean Model responsável por persistir informações da confirmação do e-mail de um novo usuário no sistema.
+ * Classe Ebean responsável por persistir informações da confirmação do e-mail de um novo usuário no sistema.
  */
 @Entity
 @Table(name = "user_mail_interaction")

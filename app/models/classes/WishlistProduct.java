@@ -1,20 +1,16 @@
 package models.classes;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
- * Created by Cleibson Gomes on 03/06/14.
- *
- * @see 1.0
+ * Classe Ebean responsável por guardar a relacionamento entre uma WishList.class e Product.class
  */
 @Entity
 @Table(name = "wishlist_product")
-@SequenceGenerator(name = Wishlist.SEQUENCE_NAME, sequenceName = Wishlist.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
-public class WishlistProduct extends Model {
+@SequenceGenerator(name = WishList.SEQUENCE_NAME, sequenceName = WishList.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
+public class WishListProduct extends Model {
 
     public static final String SEQUENCE_NAME = "wishlist_product_id_seq";
 
@@ -28,7 +24,7 @@ public class WishlistProduct extends Model {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wishlist_id")
-    private Wishlist wishlist;
+    private WishList wishList;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -41,8 +37,8 @@ public class WishlistProduct extends Model {
         return id;
     }
 
-    public void setWishlist(Wishlist wishlist) {
-        this.wishlist = wishlist;
+    public void setWishList(WishList wishList) {
+        this.wishList = wishList;
     }
 
     public void setProduct(Product product) {

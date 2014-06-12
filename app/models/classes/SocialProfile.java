@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Hibernate Bean Model responsável por persistir informações de autenticação do perfil na rede social do usuário.
+ * Classe Ebean responsável por persistir informações de autenticação do perfil na rede social do usuário.
  */
 @Entity
 @Table(name = "social_profile")
@@ -56,7 +56,7 @@ public class SocialProfile extends Model {
     private List<Login> logins;
 
     @Version
-    private Date lastUpdate;
+    private Date modifiedAt;
 
     public SocialProfile() {
         // Do nothing...
@@ -110,12 +110,12 @@ public class SocialProfile extends Model {
         this.status = status;
     }
 
-    public Date getLastUpdate() {
-        return lastUpdate;
+    public Date getModifiedAt() {
+        return modifiedAt;
     }
 
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 
     @Entity

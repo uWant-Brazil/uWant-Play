@@ -1,10 +1,8 @@
 package models.cdn;
 
 /**
- * Created by Cleibson Gomes on 28/05/14.
- *
- * @see 1.0
+ * Enum responsável por identificar o tipo da CDN.
  */
 public enum CDNType {
-    AMAZON_S3
+    AMAZON_S3;
 }

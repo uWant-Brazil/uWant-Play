@@ -1,7 +1,7 @@
 package models;
 
 /**
- * Created by felipebonezi on 21/05/14.
+ * Classe abstrata para herança em todos os factory's utilizados no projeto.
  */
 public abstract class AbstractFactory<K, T> {
 

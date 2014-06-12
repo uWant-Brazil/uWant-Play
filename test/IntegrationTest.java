@@ -4,7 +4,7 @@ import controllers.AbstractApplication;
 import models.classes.SocialProfile;
 import models.classes.Token;
 import models.classes.User;
-import models.classes.Wishlist;
+import models.classes.WishList;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import org.junit.Test;
@@ -554,17 +554,17 @@ public class IntegrationTest {
 
                 String identifier = UUID.randomUUID().toString();
 
-                List<Wishlist> wishlists = user.getWishlist();
-                if (wishlists.isEmpty())
+                List<WishList> wishLists = user.getWishList();
+                if (wishLists.isEmpty())
                     throw new RuntimeException("A lista de desejos do usuário está vazia.");
 
-                int index = (int) (Math.random() * (wishlists.size() - 1));
-                Wishlist wishlist = wishlists.get(index);
+                int index = (int) (Math.random() * (wishLists.size() - 1));
+                WishList wishList = wishLists.get(index);
 
                 ObjectNode body = Json.newObject();
-                body.put(AbstractApplication.ParameterKey.ID, wishlist.getId());
+                body.put(AbstractApplication.ParameterKey.ID, wishList.getId());
                 body.put(AbstractApplication.ParameterKey.TITLE, "[" + identifier + "] edited title");
-                body.put(AbstractApplication.ParameterKey.DESCRIPTION, wishlist.getDescription());
+                body.put(AbstractApplication.ParameterKey.DESCRIPTION, wishList.getDescription());
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/update")
                         .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
@@ -597,15 +597,15 @@ public class IntegrationTest {
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectLast();
 
-                List<Wishlist> wishlists = user.getWishlist();
-                if (wishlists.isEmpty())
+                List<WishList> wishLists = user.getWishList();
+                if (wishLists.isEmpty())
                     throw new RuntimeException("A lista de desejos do usuário está vazia.");
 
-                int index = (int) (Math.random() * (wishlists.size() - 1));
-                Wishlist wishlist = wishlists.get(index);
+                int index = (int) (Math.random() * (wishLists.size() - 1));
+                WishList wishList = wishLists.get(index);
 
                 ObjectNode body = Json.newObject();
-                body.put(AbstractApplication.ParameterKey.ID, wishlist.getId());
+                body.put(AbstractApplication.ParameterKey.ID, wishList.getId());
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/delete").withJsonBody(body);
                 Result result = route(fakeRequest);

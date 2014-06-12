@@ -1,7 +1,7 @@
 package models.exceptions;
 
 /**
- * Exception - Problemas no JSON durante o envio da requisição para o sistema.
+ * Exception - Problemas no form para content-type multipart-data.
  */
 public class MultipartBodyException extends UWException {
 

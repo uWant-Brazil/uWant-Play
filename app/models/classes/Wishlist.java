@@ -4,16 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import javax.validation.Constraint;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Cleibson Gomes on 21/05/14.
- * @See 1.0
+ * Classe Ebean responsável por guardar informações da lista de desejos.
  */
 @Entity
 @Table(name = "wishlist")
-@SequenceGenerator(name = Wishlist.SEQUENCE_NAME, sequenceName = Wishlist.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
-public class Wishlist extends Model{
+@SequenceGenerator(name = WishList.SEQUENCE_NAME, sequenceName = WishList.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
+public class WishList extends Model{
 
     public static final String SEQUENCE_NAME = "wishlist_id_seq";
 
@@ -33,10 +34,13 @@ public class Wishlist extends Model{
     public User user;
 
     @ManyToMany(mappedBy = "wishlist", fetch = FetchType.LAZY)
-    private List<WishlistProduct> wishlists;
+    private List<WishListProduct> wishlists;
 
     @Enumerated(EnumType.ORDINAL)
     private Status status;
+
+    @Version
+    private Date modifiedAt;
 
     public String getTitle() {
         return title;
@@ -72,11 +76,11 @@ public class Wishlist extends Model{
     }
 
     @JsonIgnore
-    public List<WishlistProduct> getWishlists() {
+    public List<WishListProduct> getWishLists() {
         return wishlists;
     }
 
-    public void setWishlists(List<WishlistProduct> wishlists) {
+    public void setWishLists(List<WishListProduct> wishlists) {
         this.wishlists = wishlists;
     }
 
@@ -87,5 +91,13 @@ public class Wishlist extends Model{
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 }

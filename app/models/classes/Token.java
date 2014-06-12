@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Calendar;
 
 /**
- * Created by felipebonezi on 21/05/14.
+ * Classe Ebean responsável por guardar informações dos tokens de acesso ao sistema.
  */
 @Entity
 @Table(name = "tokens")

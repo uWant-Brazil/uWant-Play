@@ -8,8 +8,7 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Created by Cleibson Gomes on 21/05/14.
- * @see 1.0
+ * Classe Ebean responsável por guardar informações referentes ao usuário do sistema.
  */
 @Entity
 @Table(name = "user")
@@ -53,7 +52,7 @@ public class User extends Model implements IMobileUser {
     private Calendar modifiedAt;
 
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
-    public List<Wishlist> wishlist;
+    public List<WishList> wishList;
 
     public User() {
         // Do nothing...
@@ -168,7 +167,7 @@ public class User extends Model implements IMobileUser {
     }
 
     @JsonIgnore
-    public List<Wishlist> getWishlist() {
-        return wishlist;
+    public List<WishList> getWishList() {
+        return wishList;
     }
 }

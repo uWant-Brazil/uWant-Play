@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
- * Created by Cleibson Gomes on 21/05/14.
- * @See 1.0
+ * Classe Ebean responsável por guardar informações referente ao produto que poderão ser adicionados a lista de desejos.
  */
 @Entity
 @Table(name = "product")
@@ -29,11 +29,14 @@ public class Product extends Model{
     private Manufacturer manufacturer;
 
     @OneToMany(mappedBy="product", fetch = FetchType.LAZY)
-    private List<WishlistProduct> wishlistProducts;
+    private List<WishListProduct> wishListProducts;
 
     @OneToOne
     @JoinColumn(name = "multimedia")
     private Multimedia multimedia;
+
+    @Version
+    private Date modifiedAt;
 
     public String getName() {
         return name;
@@ -51,12 +54,12 @@ public class Product extends Model{
         this.nickName = nickName;
     }
 
-    public List<WishlistProduct> getWishlistProducts() {
-        return wishlistProducts;
+    public List<WishListProduct> getWishListProducts() {
+        return wishListProducts;
     }
 
-    public void setWishlistProducts(List<WishlistProduct> wishlistProducts) {
-        this.wishlistProducts = wishlistProducts;
+    public void setWishListProducts(List<WishListProduct> wishListProducts) {
+        this.wishListProducts = wishListProducts;
     }
 
     public Manufacturer getManufacturer() {
@@ -82,5 +85,13 @@ public class Product extends Model{
 
     public void setMultimedia(Multimedia multimedia) {
         this.multimedia = multimedia;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
     }
 }
