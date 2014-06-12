@@ -18,7 +18,6 @@ import utils.DateUtil;
 import utils.RegexUtil;
 import utils.UserUtil;
 
-import java.beans.Expression;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -45,7 +44,7 @@ public class UserController extends AbstractApplication {
                     if (!RegexUtil.isValidMail(mail))
                         throw new InvalidMailException();
 
-                    if (UserUtil.check(login, mail)) {
+                    if (UserUtil.alreadyExists(login, mail)) {
                         String password = body.get(ParameterKey.PASSWORD).asText();
                         String fullName = body.get(ParameterKey.FULL_NAME).asText();
                         String birthdayStr = body.get(ParameterKey.BIRTHDAY).asText();

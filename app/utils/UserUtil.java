@@ -25,6 +25,11 @@ public abstract  class UserUtil {
     private static final String CONFIRM_MAIL_SUBJECT = "uWant @ Confirmação de email";
 
     /**
+     * Assunto do e-mail para confirmação do e-mail.
+     */
+    private static final String RECOVERY_PASSWORD_MAIL_SUBJECT = "uWant @ Recuperação de senha";
+
+    /**
      * Efetua a separação do nome completo em um array com três posições - Primeiro nome, nome do meio e último nome.
      * @param fullName
      * @return String[]
@@ -107,7 +112,14 @@ public abstract  class UserUtil {
         }
     }
 
-    public static boolean check(String login, String email) throws UserAlreadyExistException {
+    /**
+     * Método responsável por verificar se já existe algum usuário com o login ou e-mail informado.
+     * @param login - Login do usuário
+     * @param email - E-mail do usuário
+     * @return true or false
+     * @throws UserAlreadyExistException
+     */
+    public static boolean alreadyExists(String login, String email) throws UserAlreadyExistException {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<User> finder = factory.get(User.class);
 
@@ -131,6 +143,10 @@ public abstract  class UserUtil {
         return true;
     }
 
+    /**
+     * Método responsável por disparar o e-mail para efetuar a recuperação da senha do usuário.
+     * @param user - Entidade do usuário
+     */
     public static void recoveryPassword(User user) {
         String hash = null;
         final String mail = user.getMail();
@@ -141,6 +157,9 @@ public abstract  class UserUtil {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
+            user.setToken(null);
+            user.update();
+
             UserMailInteraction userMailInteraction = new UserMailInteraction();
             userMailInteraction.setStatus(UserMailInteraction.Status.WAITING);
             userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
@@ -152,7 +171,7 @@ public abstract  class UserUtil {
             final String content = "Recupere sua senha:<br /><br /> http://homologacao.uwant.com.br/user/recoveryPassword?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
 
             try {
-                MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
+                MailUtil.send(mail, RECOVERY_PASSWORD_MAIL_SUBJECT, content);
             } catch (InvalidMailException e) {
                 e.printStackTrace();
             }
