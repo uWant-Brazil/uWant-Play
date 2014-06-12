@@ -529,9 +529,9 @@ public class IntegrationTest {
 
                 if (productsCount > 0) {
                     for (int i = 0;i < productsCount && i % 2 == 0;i++) {
-                        FakeRequest fakeRequestMultimedia = new FakeRequest(POST, "")
-                                .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
-                                .withRawBody();
+//                        FakeRequest fakeRequestMultimedia = new FakeRequest(POST, "")
+//                                .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+//                                .withRawBody();
 
 
                     }
