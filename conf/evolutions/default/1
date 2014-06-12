@@ -1,0 +1,210 @@
+﻿# --- !Ups
+
+-- Table: multimedia
+
+-- DROP TABLE multimedia;
+
+CREATE TABLE multimedia
+(
+  id serial NOT NULL,
+  filename character varying(50) NOT NULL,
+  cdn bigint NOT NULL,
+  url character varying(500) NOT NULL,
+  CONSTRAINT multimedia_pkey PRIMARY KEY (id),
+  CONSTRAINT multimedia_unique UNIQUE (url)
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+-- Table: manufacturer
+
+-- DROP TABLE manufacturer;
+
+CREATE TABLE manufacturer
+(
+  id serial NOT NULL,
+  name character varying(50) NOT NULL,
+  multimedia_id bigint NOT NULL,
+  CONSTRAINT pk_manufacturer PRIMARY KEY (id),
+  CONSTRAINT fk_multimedia FOREIGN KEY (multimedia_id)
+      REFERENCES multimedia (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: product
+
+-- DROP TABLE product;
+
+CREATE TABLE product
+(
+  id serial NOT NULL,
+  name character varying(200) NOT NULL,
+  nickname character varying(50) NOT NULL,
+  manufacturer_id bigint NOT NULL,
+  multimedia_id bigint NOT NULL,
+  CONSTRAINT pk_product PRIMARY KEY (id),
+  CONSTRAINT fk_manufacturer FOREIGN KEY (manufacturer_id)
+      REFERENCES manufacturer (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_multimedia FOREIGN KEY (multimedia_id)
+      REFERENCES multimedia (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: "user"
+
+-- DROP TABLE "user";
+
+CREATE TABLE "user"
+(
+  id serial NOT NULL,
+  status bigint NOT NULL,
+  login character varying(50) NOT NULL,
+  password character varying(200) NOT NULL,
+  email character varying(100) NOT NULL,
+  gender bigint NOT NULL,
+  name character varying(200) NOT NULL,
+  birthday date NOT NULL,
+  since timestamp without time zone NOT NULL DEFAULT now(),
+  multimedia_id bigint NOT NULL,
+  CONSTRAINT user_pkey PRIMARY KEY (id),
+  CONSTRAINT fk_multimedia FOREIGN KEY (multimedia_id)
+      REFERENCES multimedia (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT email_unique UNIQUE (email),
+  CONSTRAINT login_unique UNIQUE (login)
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: user_mail_interaction
+
+-- DROP TABLE user_mail_interaction;
+
+CREATE TABLE user_mail_interaction
+(
+  id bigint NOT NULL,
+  status integer NOT NULL,
+  hash character varying(100) NOT NULL,
+  mail character varying(100) NOT NULL,
+  "modifiedAt" timestamp without time zone NOT NULL DEFAULT now(),
+  user_id bigint NOT NULL,
+  CONSTRAINT pk_user_mail_interaction PRIMARY KEY (id),
+  CONSTRAINT fk_user FOREIGN KEY (id)
+      REFERENCES "user" (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: token
+
+-- DROP TABLE token;
+
+CREATE TABLE token
+(
+  content character varying(30) NOT NULL,
+  since timestamp without time zone NOT NULL DEFAULT now(),
+  user_id bigint NOT NULL,
+  CONSTRAINT pk_token PRIMARY KEY (content),
+  CONSTRAINT fk_user FOREIGN KEY (user_id)
+      REFERENCES "user" (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: social_profile
+
+-- DROP TABLE social_profile;
+
+CREATE TABLE social_profile
+(
+  id serial NOT NULL,
+  provider integer NOT NULL,
+  token character varying(100) NOT NULL,
+  status integer NOT NULL,
+  "lastUpdate" timestamp without time zone NOT NULL DEFAULT now(),
+  user_id bigint NOT NULL,
+  CONSTRAINT pk_social_profile PRIMARY KEY (id),
+  CONSTRAINT fk_user_id FOREIGN KEY (user_id)
+      REFERENCES "user" (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: social_profile_login
+
+-- DROP TABLE social_profile_login;
+
+CREATE TABLE social_profile_login
+(
+  id serial NOT NULL,
+  login character varying(100) NOT NULL,
+  social_profile_id bigint NOT NULL,
+  CONSTRAINT pk_social_profile_login PRIMARY KEY (id),
+  CONSTRAINT fk_social_profile FOREIGN KEY (social_profile_id)
+      REFERENCES social_profile (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+-- Table: wishlist
+
+-- DROP TABLE wishlist;
+
+CREATE TABLE wishlist
+(
+  id serial NOT NULL,
+  title character varying(50) NOT NULL,
+  description character varying(100),
+  status integer NOT NULL,
+  user_id bigint NOT NULL,
+  CONSTRAINT pk_wishlist PRIMARY KEY (id),
+  CONSTRAINT fk_user FOREIGN KEY (user_id)
+      REFERENCES "user" (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+-- Table: product_has_wishlist
+
+-- DROP TABLE product_has_wishlist;
+
+CREATE TABLE product_has_wishlist
+(
+  id serial NOT NULL,
+  status integer NOT NULL,
+  product_id bigint NOT NULL,
+  wishlist_id bigint NOT NULL,
+  CONSTRAINT pk_product_has_wishlist PRIMARY KEY (id),
+  CONSTRAINT fk_product FOREIGN KEY (product_id)
+      REFERENCES product (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT fk_wishlist FOREIGN KEY (wishlist_id)
+      REFERENCES wishlist (id) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+# --- !Downs
