@@ -19,10 +19,16 @@ import java.io.File;
 import java.util.Map;
 
 /**
- * Created by felipebenezi on 08/06/14.
+ * Controlador responsável pelo tratamento de requisições mobile para CDN.
  */
 public class CDNController extends AbstractApplication {
 
+    /**
+     * Método responsável por realizar o tratamento do arquivo para envio a CDN.
+     * Após o envio do arquivo, o sistema irá registrar uma entidade Multimedia para
+     * consultas futuras pelos usuários.
+     * @return JSON
+     */
     public static F.Promise<Result> retrieve() {
         final ObjectNode jsonResponse = Json.newObject();
         try {
