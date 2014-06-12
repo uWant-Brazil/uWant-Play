@@ -19,7 +19,17 @@ public class UnconfirmedMailException extends UWException {
 
     public UnconfirmedMailException(User user) {
         super(CODE, MESSAGE2);
-        UserUtil.confirmEmail(user);
+
+        Thread asynchronous = new Thread() {
+
+            @Override
+            public void run() {
+                super.run();
+                UserUtil.confirmEmail(user);
+            }
+
+        };
+        asynchronous.start();
     }
 
 }

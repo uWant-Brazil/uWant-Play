@@ -14,14 +14,19 @@ import utils.RegexUtil;
 import utils.UserUtil;
 
 /**
- * Created by felipebonezi on 21/05/14.
+ * Controlador responsável pelas requisições mobile relacionadas a autenticação no sistema.
  */
 public class AuthenticationController extends AbstractApplication {
 
+    /**
+     * Método responsável por realizar a autenticação do usuário no sistema.
+     * Caso seja autenticado, um token único será gerado e deverá ser utilizado em
+     * requisições seguintes a fim de validar sua sessão.
+     * @return JSON
+     */
     public static Result authorize() {
-        JsonNode body = request().body().asJson();
-
         ObjectNode jsonResponse = Json.newObject();
+        JsonNode body = request().body().asJson();
         try {
             if (body != null) {
                 if (body.hasNonNull(ParameterKey.LOGIN) && body.hasNonNull(ParameterKey.PASSWORD)) {
@@ -48,7 +53,7 @@ public class AuthenticationController extends AbstractApplication {
                         throw new AuthenticationException();
                     }
                 } else {
-                    throw new AuthenticationException();
+                    throw new JSONBodyException();
                 }
             } else {
                 throw new JSONBodyException();
@@ -63,19 +68,23 @@ public class AuthenticationController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por finalizar a sessão do usuário no sistema.
+     * Após esse ato, nenhuma outra requisição que necessite do token de autenticação
+     * deverá funcionar corretamente.
+     * @return JSON
+     */
     public static Result logoff() {
         ObjectNode jsonResponse = Json.newObject();
         try {
-            User user;
-            if ((user = authenticateToken()) != null) {
-                if (UserUtil.isAvailable(user)) {
-                    removeToken(user);
+            User user = authenticateToken();
+            if (user != null && UserUtil.isAvailable(user)) {
+                removeToken(user);
 
-                    jsonResponse.put(ParameterKey.STATUS, true);
-                    jsonResponse.put(ParameterKey.MESSAGE, "O usuário saiu do sistema com sucesso.");
-                } else {
-                    throw new AuthenticationException();
-                }
+                jsonResponse.put(ParameterKey.STATUS, true);
+                jsonResponse.put(ParameterKey.MESSAGE, "O usuário saiu do sistema com sucesso.");
+            } else {
+                throw new AuthenticationException();
             }
         } catch (UWException e) {
             e.printStackTrace();
@@ -87,6 +96,12 @@ public class AuthenticationController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por iniciar o processo de recuperação da senha do usuário.
+     * Note que não será redefinida a senha imediatamente, o usuário deverá receber um
+     * link contendo o endereço para redefinição da senha através da web.
+     * @return JSON
+     */
     public static Result recoveryPassword() {
         ObjectNode jsonResponse = Json.newObject();
         try {
@@ -98,7 +113,10 @@ public class AuthenticationController extends AbstractApplication {
                     if (!mail.isEmpty() && RegexUtil.isValidMail(mail)) {
                         FinderFactory factory = FinderFactory.getInstance();
                         IFinder<User> finderUser = factory.get(User.class);
-                        User user = finderUser.selectUnique(new String[] { FinderKey.MAIL }, new Object[] { mail });
+                        final User user = finderUser.selectUnique(
+                                new String[] { FinderKey.MAIL },
+                                new Object[] { mail });
+
                         if (user == null) {
                             throw new UserDoesntExistException();
                         }
@@ -107,9 +125,19 @@ public class AuthenticationController extends AbstractApplication {
                             UserMailInteraction confirmation = user.getConfirmation();
                             UserMailInteraction.Status confirmationStatus = confirmation.getStatus();
                             if (confirmationStatus == UserMailInteraction.Status.DONE) {
-                                UserUtil.recoveryPassword(user);
+                                Thread asynchronous = new Thread() {
+
+                                    @Override
+                                    public void run() {
+                                        super.run();
+                                        UserUtil.recoveryPassword(user);
+                                    }
+
+                                };
+                                asynchronous.start();
                             } else {
-                                throw new UnconfirmedMailException();
+                                // Uma nova confirmação será enviada...
+                                throw new UnconfirmedMailException(user);
                             }
                         } else {
                             throw new AuthenticationException();
