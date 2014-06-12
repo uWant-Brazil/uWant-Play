@@ -37,11 +37,11 @@ public class WishListController extends AbstractApplication {
                             String title = body.get(ParameterKey.TITLE).asText();
                             String description = body.get(ParameterKey.DESCRIPTION).asText();
 
-                            WishList wishList = new WishList();
+                            Wishlist wishList = new Wishlist();
                             wishList.setTitle(title);
                             wishList.setDescription(description);
                             wishList.setUser(user);
-                            wishList.setStatus(WishList.Status.ACTIVE);
+                            wishList.setStatus(Wishlist.Status.ACTIVE);
                             wishList.save();
                             wishList.refresh();
 
@@ -73,10 +73,10 @@ public class WishListController extends AbstractApplication {
                                             product.save();
                                             product.refresh();
 
-                                            WishListProduct wishListProduct = new WishListProduct();
+                                            WishlistProduct wishListProduct = new WishlistProduct();
                                             wishListProduct.setProduct(product);
                                             wishListProduct.setWishList(wishList);
-                                            wishListProduct.setStatus(WishListProduct.Status.ACTIVE);
+                                            wishListProduct.setStatus(WishlistProduct.Status.ACTIVE);
                                             wishListProduct.save();
                                         }
                                     }
@@ -126,8 +126,8 @@ public class WishListController extends AbstractApplication {
                             String description = body.get(ParameterKey.DESCRIPTION).asText();
 
                             FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<WishList> finder = factory.get(WishList.class);
-                            WishList wishList = finder.selectUnique(
+                            IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                            Wishlist wishList = finder.selectUnique(
                                     new String[] { FinderKey.ID },
                                     new Object[] { id });
 
@@ -176,10 +176,10 @@ public class WishListController extends AbstractApplication {
             if (user != null) {
                 if (UserUtil.isAvailable(user)) {
                     FinderFactory factory = FinderFactory.getInstance();
-                    IFinder<WishList> finder = factory.get(WishList.class);
-                    List<WishList> wishLists = finder.selectAll(
+                    IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                    List<Wishlist> wishLists = finder.selectAll(
                             new String[] { FinderKey.USER_ID , FinderKey.STATUS },
-                            new Object[] { user.getId(), WishList.Status.ACTIVE.ordinal() });
+                            new Object[] { user.getId(), Wishlist.Status.ACTIVE.ordinal() });
 
                     if (wishLists != null) {
                         jsonResponse.put(ParameterKey.STATUS, true);
@@ -221,14 +221,14 @@ public class WishListController extends AbstractApplication {
                             Long id = body.get(ParameterKey.ID).asLong();
 
                             FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<WishList> finder = factory.get(WishList.class);
-                            WishList wishList = finder.selectUnique(
+                            IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                            Wishlist wishList = finder.selectUnique(
                                     new String[] { FinderKey.ID },
                                     new Object[] { id });
 
                             if (wishList != null) {
-                                IFinder<WishListProduct> wishlistProductIFinder = factory.get(WishListProduct.class);
-                                List<WishListProduct> products = wishlistProductIFinder.selectAll(
+                                IFinder<WishlistProduct> wishlistProductIFinder = factory.get(WishlistProduct.class);
+                                List<WishlistProduct> products = wishlistProductIFinder.selectAll(
                                         new String[] { FinderKey.WISHLIST_ID },
                                         new Object[] { wishList.getId() });
 
@@ -236,7 +236,7 @@ public class WishListController extends AbstractApplication {
                                 if (products != null) {
                                     arrayProducts = new ArrayList<ObjectNode>(products.size() + 5);
 
-                                    for (WishListProduct wProduct : products) {
+                                    for (WishlistProduct wProduct : products) {
                                         Product product = wProduct.getProduct();
 
                                         long pId = product.getId();
@@ -318,12 +318,12 @@ public class WishListController extends AbstractApplication {
                             Long id = body.get(ParameterKey.ID).asLong();
 
                             FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<WishList> finder = factory.get(WishList.class);
-                            WishList wishList = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { id });
+                            IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                            Wishlist wishList = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { id });
 
                             if (wishList != null && WishListUtil.isOwner(wishList, user)) {
                                 String title = wishList.getTitle();
-                                wishList.setStatus(WishList.Status.REMOVED);
+                                wishList.setStatus(Wishlist.Status.REMOVED);
                                 wishList.update();
 
                                 jsonResponse.put(ParameterKey.STATUS, true);
@@ -369,8 +369,8 @@ public class WishListController extends AbstractApplication {
                             Long idWishList = body.get(ParameterKey.ID).asLong();
 
                             FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<WishList> finder = factory.get(WishList.class);
-                            WishList wishList = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { idWishList });
+                            IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                            Wishlist wishList = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { idWishList });
 
                             if (wishList != null && WishListUtil.isOwner(wishList, user)) {
                                 JsonNode products = body.get(ParameterKey.PRODUCTS);
@@ -404,10 +404,10 @@ public class WishListController extends AbstractApplication {
                                             product.save();
                                             product.refresh();
 
-                                            WishListProduct wishListProduct = new WishListProduct();
+                                            WishlistProduct wishListProduct = new WishlistProduct();
                                             wishListProduct.setProduct(product);
                                             wishListProduct.setWishList(wishList);
-                                            wishListProduct.setStatus(WishListProduct.Status.ACTIVE);
+                                            wishListProduct.setStatus(WishlistProduct.Status.ACTIVE);
                                             wishListProduct.save();
                                         }
                                     }
@@ -458,8 +458,8 @@ public class WishListController extends AbstractApplication {
                             Long idWishList = body.get(ParameterKey.ID).asLong();
 
                             FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<WishList> finder = factory.get(WishList.class);
-                            WishList wishList = finder.selectUnique(
+                            IFinder<Wishlist> finder = factory.get(Wishlist.class);
+                            Wishlist wishList = finder.selectUnique(
                                     new String[] { FinderKey.ID },
                                     new Object[] { idWishList });
 
@@ -467,8 +467,8 @@ public class WishListController extends AbstractApplication {
                                 JsonNode products = body.get(ParameterKey.PRODUCTS);
 
                                 if (products.isArray()) {
-                                    IFinder<Product> finderProduct = factory.get(WishList.class);
-                                    IFinder<WishListProduct> finderWishListProduct = factory.get(WishList.class);
+                                    IFinder<Product> finderProduct = factory.get(Wishlist.class);
+                                    IFinder<WishlistProduct> finderWishListProduct = factory.get(Wishlist.class);
 
                                     int countProductsRemoved = 0;
                                     for (int i = 0; i < products.size(); i++) {
@@ -481,12 +481,12 @@ public class WishListController extends AbstractApplication {
                                                     new Object[] { pId });
 
                                             if (product != null && wishList != null) {
-                                                WishListProduct wProduct = finderWishListProduct.selectUnique(
+                                                WishlistProduct wProduct = finderWishListProduct.selectUnique(
                                                         new String[] { FinderKey.WISHLIST_ID , FinderKey.PRODUCT_ID },
                                                         new Object[] { wishList.getId(), product.getId() });
 
                                                 if (wProduct != null) {
-                                                    wProduct.setStatus(WishListProduct.Status.REMOVED);
+                                                    wProduct.setStatus(WishlistProduct.Status.REMOVED);
                                                     wProduct.update();
                                                     countProductsRemoved++;
                                                 }

@@ -9,8 +9,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "wishlist_product")
-@SequenceGenerator(name = WishList.SEQUENCE_NAME, sequenceName = WishList.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
-public class WishListProduct extends Model {
+@SequenceGenerator(name = Wishlist.SEQUENCE_NAME, sequenceName = Wishlist.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
+public class WishlistProduct extends Model {
 
     public static final String SEQUENCE_NAME = "wishlist_product_id_seq";
 
@@ -24,7 +24,7 @@ public class WishListProduct extends Model {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "wishlist_id")
-    private WishList wishList;
+    private Wishlist wishlist;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
@@ -37,12 +37,12 @@ public class WishListProduct extends Model {
         return id;
     }
 
-    public void setWishList(WishList wishList) {
-        this.wishList = wishList;
+    public void setWishList(Wishlist wishList) {
+        this.wishlist = wishList;
     }
 
-    public WishList getWishList() {
-        return wishList;
+    public Wishlist getWishList() {
+        return wishlist;
     }
 
     public void setProduct(Product product) {

@@ -12,8 +12,8 @@ import java.util.List;
  */
 @Entity
 @Table(name = "wishlist")
-@SequenceGenerator(name = WishList.SEQUENCE_NAME, sequenceName = WishList.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
-public class WishList extends Model{
+@SequenceGenerator(name = Wishlist.SEQUENCE_NAME, sequenceName = Wishlist.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
+public class Wishlist extends Model{
 
     public static final String SEQUENCE_NAME = "wishlist_id_seq";
 
