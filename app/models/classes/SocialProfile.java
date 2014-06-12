@@ -31,7 +31,7 @@ public class SocialProfile extends Model {
     /**
      * Rede social provedor das informações solicitadas.
      */
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Provider provider;
 
     /**
@@ -45,7 +45,7 @@ public class SocialProfile extends Model {
     @ManyToOne
     private User user;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Status status;
 
     /**
