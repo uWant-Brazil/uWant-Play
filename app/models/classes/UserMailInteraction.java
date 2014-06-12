@@ -43,6 +43,7 @@ public class UserMailInteraction extends Model {
     private User user;
 
     @Version
+    @Column(name = "modifiedAt")
     private Calendar modifiedAt;
 
     public UserMailInteraction() {

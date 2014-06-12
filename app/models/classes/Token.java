@@ -9,7 +9,7 @@ import java.util.Calendar;
  * Classe Ebean responsável por guardar informações dos tokens de acesso ao sistema.
  */
 @Entity
-@Table(name = "tokens")
+@Table(name = "token")
 @SequenceGenerator(name = Token.SEQUENCE_NAME, sequenceName = Token.SEQUENCE_NAME, initialValue = 1, allocationSize = 257)
 public class Token extends Model {
 
