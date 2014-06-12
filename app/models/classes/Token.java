@@ -4,6 +4,7 @@ import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Classe Ebean responsável por guardar informações dos tokens de acesso ao sistema.
@@ -23,7 +24,7 @@ public class Token extends Model {
     private User user;
 
     @Version
-    private Calendar since;
+    private Date since;
 
     public Token() {
         // Do nothing...
@@ -45,11 +46,11 @@ public class Token extends Model {
         this.user = user;
     }
 
-    public Calendar getSince() {
+    public Date getSince() {
         return since;
     }
 
-    public void setSince(Calendar since) {
+    public void setSince(Date since) {
         this.since = since;
     }
 }

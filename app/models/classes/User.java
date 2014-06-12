@@ -5,6 +5,7 @@ import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,8 +34,8 @@ public class User extends Model implements IMobileUser {
     private String password;
     private String mail;
     private String name;
-    private Calendar birthday;
-    private Calendar since;
+    private Date birthday;
+    private Date since;
 
     @OneToOne(mappedBy = "user")
     private Token token;
@@ -49,7 +50,7 @@ public class User extends Model implements IMobileUser {
     private Status status;
 
     @Version
-    private Calendar modifiedAt;
+    private Date modifiedAt;
 
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     public List<WishList> wishList;
@@ -94,20 +95,20 @@ public class User extends Model implements IMobileUser {
     }
 
     @JsonIgnore
-    public Calendar getBirthday() {
+    public Date getBirthday() {
         return birthday;
     }
 
-    public void setBirthday(Calendar birthday) {
+    public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
 
     @JsonIgnore
-    public Calendar getSince() {
+    public Date getSince() {
         return since;
     }
 
-    public void setSince(Calendar since) {
+    public void setSince(Date since) {
         this.since = since;
     }
 
@@ -142,11 +143,11 @@ public class User extends Model implements IMobileUser {
         this.status = status;
     }
 
-    public Calendar getModifiedAt() {
+    public Date getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Calendar modifiedAt) {
+    public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 

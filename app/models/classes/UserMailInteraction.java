@@ -4,6 +4,7 @@ import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Classe Ebean responsável por persistir informações da confirmação do e-mail de um novo usuário no sistema.
@@ -44,7 +45,7 @@ public class UserMailInteraction extends Model {
 
     @Version
     @Column(name = "modifiedAt")
-    private Calendar modifiedAt;
+    private Date modifiedAt;
 
     public UserMailInteraction() {
         // Do nothing...
@@ -90,11 +91,11 @@ public class UserMailInteraction extends Model {
         this.hash = hash;
     }
 
-    public Calendar getModifiedAt() {
+    public Date getModifiedAt() {
         return modifiedAt;
     }
 
-    public void setModifiedAt(Calendar modifiedAt) {
+    public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
     }
 }
