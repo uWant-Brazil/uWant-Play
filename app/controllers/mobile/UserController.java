@@ -61,17 +61,11 @@ public class UserController extends AbstractApplication {
 
                         User.Gender gender = User.Gender.values()[genderOrdinal];
 
-                        Date birthdayDate = null;
+                        Date birthday = null;
                         try {
-                            birthdayDate = DateUtil.parse(birthdayStr);
+                            birthday = DateUtil.parse(birthdayStr);
                         } catch (DateParseException e) {
                             e.printStackTrace();
-                        }
-
-                        Calendar birthday = null;
-                        if (birthdayDate != null) {
-                            birthday = Calendar.getInstance();
-                            birthday.setTime(birthdayDate);
                         }
 
                         boolean alreadyExists = UserUtil.alreadyExists(login, mail);
