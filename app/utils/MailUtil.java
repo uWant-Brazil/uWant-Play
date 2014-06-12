@@ -27,10 +27,11 @@ public abstract class MailUtil {
      */
     private static final String CONTENT_TYPE = "text/html";
 
+    // Variáveis responsáveis pela configuração do envio de e-mail.
     private static final String MAIL_SMTP_HOST = "mail.smtp.host";
     private static final String MAIL_USER = "mail.user";
     private static final String MAIL_PASSWORD = "mail.password";
-    private static final String HOST_SMTP = "mail.uwant.com.br";
+    private static final String HOST_SMTP = "smtp.uwant.com.br";
     private static final String MAIL_SMTP_AUTH = "mail.smtp.auth";
     private static final String MAIL_SMTP_PORT = "mail.smtp.port";
     private static final String AUTH_TRUE = "true";
@@ -52,6 +53,7 @@ public abstract class MailUtil {
     private static final Properties PROPERTIES;
 
     static {
+        // Instanciação estática das propriedades do e-mail.
         PROPERTIES = new Properties();
         PROPERTIES.setProperty(MAIL_SMTP_HOST, HOST_SMTP);
         PROPERTIES.setProperty(MAIL_USER, USERNAME);
