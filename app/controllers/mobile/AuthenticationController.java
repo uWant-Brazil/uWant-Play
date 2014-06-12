@@ -125,16 +125,7 @@ public class AuthenticationController extends AbstractApplication {
                             UserMailInteraction confirmation = user.getConfirmation();
                             UserMailInteraction.Status confirmationStatus = confirmation.getStatus();
                             if (confirmationStatus == UserMailInteraction.Status.DONE) {
-                                Thread asynchronous = new Thread() {
-
-                                    @Override
-                                    public void run() {
-                                        super.run();
-                                        UserUtil.recoveryPassword(user);
-                                    }
-
-                                };
-                                asynchronous.start();
+                                UserUtil.recoveryPassword(user);
                             } else {
                                 // Uma nova confirmação será enviada...
                                 throw new UnconfirmedMailException(user);

@@ -23,10 +23,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by felipebonezi on 22/05/14.
+ * Controlador responsável pelo tratamento de requisições mobile referentes a interações com o usuário.
  */
 public class UserController extends AbstractApplication {
 
+    /**
+     * Método responsável por realizar o registro do usuário no sistema.
+     * @return JSON
+     */
     public static Result register() {
         ObjectNode jsonResponse = Json.newObject();
         try {
@@ -70,39 +74,34 @@ public class UserController extends AbstractApplication {
                             birthday.setTime(birthdayDate);
                         }
 
-                        FinderFactory factory = FinderFactory.getInstance();
-                        IFinder<User> finder = factory.get(User.class);
-                        User user = finder.selectUnique(new String[] { FinderKey.LOGIN }, new Object[] { login });
+                        boolean alreadyExists = UserUtil.alreadyExists(login, mail);
+                        if (!alreadyExists) {
+                            User user = new User();
+                            user.setLogin(login);
+                            user.setPassword(password);
+                            user.setName(fullName);
+                            user.setMail(mail);
+                            user.setBirthday(birthday);
+                            user.setGender(gender);
+                            user.setStatus(User.Status.PARTIAL_ACTIVE);
+                            user.save();
 
-                        if (user == null) {
-                            user = finder.selectUnique(new String[] { FinderKey.MAIL }, new Object[] { mail });
-                            if (user == null) {
-                                user = new User();
-                                user.setLogin(login);
-                                user.setPassword(password);
-                                user.setName(fullName);
-                                user.setMail(mail);
-                                user.setBirthday(birthday);
-                                user.setGender(gender);
-                                user.setStatus(User.Status.PARTIAL_ACTIVE);
-                                user.save();
+                            UserUtil.confirmEmail(user);
 
-                                UserUtil.confirmEmail(user);
+                            if (body.hasNonNull(ParameterKey.SOCIAL_PROFILE)) {
+                                JsonNode nodeSocial = body.get(ParameterKey.SOCIAL_PROFILE);
 
-                                if (body.hasNonNull(ParameterKey.SOCIAL_PROFILE)) {
-                                    JsonNode nodeSocial = body.get(ParameterKey.SOCIAL_PROFILE);
+                                if (nodeSocial.hasNonNull(ParameterKey.TOKEN) && nodeSocial.hasNonNull(ParameterKey.SOCIAL_PROVIDER)) {
+                                    String accessToken = nodeSocial.get(ParameterKey.TOKEN).asText();
+                                    int providerOrdinal = nodeSocial.get(ParameterKey.SOCIAL_PROVIDER).asInt();
 
-                                    if (nodeSocial.hasNonNull(ParameterKey.TOKEN) && nodeSocial.hasNonNull(ParameterKey.SOCIAL_PROVIDER)) {
-                                        String accessToken = nodeSocial.get(ParameterKey.TOKEN).asText();
-                                        int providerOrdinal = nodeSocial.get(ParameterKey.SOCIAL_PROVIDER).asInt();
-
-                                        IFinder<SocialProfile> finderProfile = factory.get(SocialProfile.class);
-                                        SocialProfile socialProfile = finderProfile.selectUnique(new String[] { FinderKey.TOKEN, FinderKey.SOCIAL_PROVIDER }, new Object[] { accessToken, providerOrdinal });
-                                        if (socialProfile != null) {
-                                            socialProfile.setStatus(SocialProfile.Status.ACTIVE);
-                                            socialProfile.setUser(user);
-                                            socialProfile.update();
-                                        }
+                                    FinderFactory factory = FinderFactory.getInstance();
+                                    IFinder<SocialProfile> finderProfile = factory.get(SocialProfile.class);
+                                    SocialProfile socialProfile = finderProfile.selectUnique(new String[] { FinderKey.TOKEN, FinderKey.SOCIAL_PROVIDER }, new Object[] { accessToken, providerOrdinal });
+                                    if (socialProfile != null) {
+                                        socialProfile.setStatus(SocialProfile.Status.ACTIVE);
+                                        socialProfile.setUser(user);
+                                        socialProfile.update();
                                     }
                                 }
                             }
