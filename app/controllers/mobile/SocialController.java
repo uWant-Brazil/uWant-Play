@@ -16,10 +16,18 @@ import play.mvc.Result;
 import utils.UserUtil;
 
 /**
- * Created by felipebonezi on 24/05/14.
+ * Controlador responsável pelo tratamento de requisições mobile relacionados a Redes Sociais.
  */
 public class SocialController extends AbstractApplication {
 
+    /**
+     * Método responsável pela análise de registro ou autenticação através da rede social.
+     * Caso o usuário já tenha efetuado o cadastro e vinculado a rede social ao seu usuário
+     * do sistema, o mesmo irá gerar um token de autenticação.
+     * Caso contrário, será aberto uma solicitação de cadastro no sistema antes de efetuar
+     * a autenticação do usuário.
+     * @return JSON
+     */
     public static Result signUp() {
         JsonNode body = request().body().asJson();
         ObjectNode jsonResponse = Json.newObject();
