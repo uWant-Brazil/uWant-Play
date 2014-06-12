@@ -9,14 +9,23 @@ import play.mvc.*;
 
 import java.util.UUID;
 
+/**
+ * Controlador-pai <GOD> de todos os controladores.
+ */
 public class AbstractApplication extends Controller {
 
+    /**
+     * Classe estática responsável por manter todas as chaves de acesso à cabeçalhos HTTP.
+     */
     public static class HeaderKey {
         public static final String HEADER_AUTHENTICATION_TOKEN = "Authentication";
         public static final String CONTENT_TYPE = "Content-Type";
         public static final String MULTIPART_FORM_DATA = "";
     }
 
+    /**
+     * Classe estática responsável por manter todas as chaves de acesso/envio ao body HTTP.
+     */
     public static class ParameterKey {
         public static final String STATUS = "status";
         public static final String MESSAGE = "message";
@@ -49,8 +58,11 @@ public class AbstractApplication extends Controller {
         public static final String MULTIMEDIA = "multimedia";
         public static final String URL = "url";
     }
-    public static class FinderKey {
 
+    /**
+     * Classe estática responsável por manter todas as chaves de acesso as colunas do Finder - BD.
+     */
+    public static class FinderKey {
         public static final String ID = "_id";
         public static final String TOKEN = "token";
         public static final String CONTENT = "content";
