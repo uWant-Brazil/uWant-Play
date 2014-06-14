@@ -3,7 +3,6 @@ package models.classes;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
-import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -14,10 +13,10 @@ import java.util.Date;
 @SequenceGenerator(name = UserMailInteraction.SEQUENCE_NAME, sequenceName = UserMailInteraction.SEQUENCE_NAME, initialValue = 1, allocationSize = 53)
 public class UserMailInteraction extends Model {
 
-    public static final String SEQUENCE_NAME = "user_id_seq";
+    public static final String SEQUENCE_NAME = "user_mail_interaction_id_seq";
 
     public enum Status {
-        DONE, WAITING;
+        DONE, WAITING, CANCELED;
     }
 
     @Id
@@ -35,7 +34,7 @@ public class UserMailInteraction extends Model {
     /**
      * E-mail no qual foi enviado.
      */
-    private String email;
+    private String mail;
 
     /**
      * Usuário que necessita utilizar algum recurso com o e-mail.
@@ -75,12 +74,12 @@ public class UserMailInteraction extends Model {
         this.user = user;
     }
 
-    public String getEmail() {
-        return email;
+    public String getMail() {
+        return mail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setMail(String mail) {
+        this.mail = mail;
     }
 
     public String getHash() {

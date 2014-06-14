@@ -76,7 +76,7 @@ public abstract  class UserUtil {
             UserMailInteraction userMailInteraction = new UserMailInteraction();
             userMailInteraction.setStatus(UserMailInteraction.Status.WAITING);
             userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
-            userMailInteraction.setEmail(mail);
+            userMailInteraction.setMail(mail);
             userMailInteraction.setUser(user);
             userMailInteraction.save();
 
@@ -156,13 +156,10 @@ public abstract  class UserUtil {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         } finally {
-            user.setToken(null);
-            user.update();
-
             UserMailInteraction userMailInteraction = new UserMailInteraction();
             userMailInteraction.setStatus(UserMailInteraction.Status.WAITING);
             userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
-            userMailInteraction.setEmail(mail);
+            userMailInteraction.setMail(mail);
             userMailInteraction.setUser(user);
             userMailInteraction.save();
 

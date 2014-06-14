@@ -2,6 +2,9 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+# Map static resources from the /public folder to the /assets URL path
+GET     /assets/*file                   controllers.Assets.at(path="/public", file)
+
 # Mobile methods
 POST    /v1/mobile/authorize            controllers.mobile.AuthenticationController.authorize()
 POST    /v1/mobile/logoff               controllers.mobile.AuthenticationController.logoff()
@@ -20,6 +23,6 @@ POST    /v1/mobile/wishlist/addProduct      controllers.mobile.WishListControlle
 POST    /v1/mobile/wishlist/removeProduct      controllers.mobile.WishListController.removeProductsWishList()
 POST    /v1/mobile/cdn/retrieve                 controllers.mobile.CDNController.retrieve()
 
-
-# Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file                   controllers.Assets.at(path="/public", file)
+# Web methods
+GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)
+POST    /v1/web/user/recoveryPassword           controllers.web.UserController.recoveryPassword(id:Long ?= 0)

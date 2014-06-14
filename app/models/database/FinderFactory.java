@@ -3,6 +3,7 @@ package models.database;
 import models.AbstractFactory;
 import models.classes.Token;
 import models.classes.User;
+import models.classes.UserMailInteraction;
 
 /**
  * Factory de Finder para banco de dados.
@@ -30,6 +31,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new UserFinder();
         } else if (id == Token.class) {
             finder = new TokenFinder();
+        } else if (id == UserMailInteraction.class) {
+            finder = new UserMailInteractionFinder();
         }
 
         return finder;
