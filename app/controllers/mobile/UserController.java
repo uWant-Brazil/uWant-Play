@@ -48,7 +48,7 @@ public class UserController extends AbstractApplication {
                     if (!RegexUtil.isValidMail(mail))
                         throw new InvalidMailException();
 
-                    if (UserUtil.alreadyExists(login, mail)) {
+                    if (!UserUtil.alreadyExists(login, mail)) {
                         String password = body.get(ParameterKey.PASSWORD).asText();
                         String fullName = body.get(ParameterKey.FULL_NAME).asText();
                         String birthdayStr = body.get(ParameterKey.BIRTHDAY).asText();
