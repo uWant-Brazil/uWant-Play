@@ -122,9 +122,7 @@ public class AuthenticationController extends AbstractApplication {
                         }
 
                         if (UserUtil.isAvailable(user)) {
-                            UserMailInteraction confirmation = user.getConfirmation();
-                            UserMailInteraction.Status confirmationStatus = confirmation.getStatus();
-                            if (confirmationStatus == UserMailInteraction.Status.DONE) {
+                            if (UserUtil.isMailConfirmed(user)) {
                                 UserUtil.recoveryPassword(user);
                             } else {
                                 // Uma nova confirmação será enviada...
@@ -136,7 +134,11 @@ public class AuthenticationController extends AbstractApplication {
 
                         jsonResponse.put(ParameterKey.STATUS, true);
                         jsonResponse.put(ParameterKey.MESSAGE, "Foi enviado um e-mail para voce redefinir a sua nova senha.");
+                    } else {
+                        throw new InvalidMailException();
                     }
+                } else {
+                    throw new JSONBodyException();
                 }
             }
         } catch (UWException e) {

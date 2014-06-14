@@ -19,7 +19,7 @@ public class UnconfirmedMailException extends UWException {
 
     public UnconfirmedMailException(User user) {
         super(CODE, MESSAGE2);
-        UserUtil.confirmEmail(user);
+        UserUtil.confirmEmail(user, true);
     }
 
 }

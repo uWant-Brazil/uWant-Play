@@ -20,12 +20,19 @@ public class UserMailInteraction extends Model {
         DONE, WAITING, CANCELED;
     }
 
+    public enum Type {
+        MAIL_CONFIRMATION, RECOVERY_PASSWORD;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
     private long id;
 
     @Enumerated(EnumType.ORDINAL)
     private Status status;
+
+    @Enumerated(EnumType.ORDINAL)
+    private Type type;
 
     /**
      * O HASH segue as normativas de criptografia - vide MailUtil.class
@@ -97,5 +104,13 @@ public class UserMailInteraction extends Model {
 
     public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 }

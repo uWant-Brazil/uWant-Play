@@ -81,7 +81,7 @@ public class UserController extends AbstractApplication {
                             user.setSince(new Date());
                             user.save();
 
-                            UserUtil.confirmEmail(user);
+                            UserUtil.confirmEmail(user, false);
 
                             if (body.hasNonNull(ParameterKey.SOCIAL_PROFILE)) {
                                 JsonNode nodeSocial = body.get(ParameterKey.SOCIAL_PROFILE);

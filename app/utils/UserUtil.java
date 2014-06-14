@@ -63,31 +63,43 @@ public abstract  class UserUtil {
      * Envia a solicitação de confirmação do e-mail do usuário de forma assíncrona.
      * @param user
      */
-    public static void confirmEmail(User user) {
+    public static void confirmEmail(User user, boolean isRecurrent) {
         String hash = null;
-        final String mail = user.getMail();
-        try {
-            hash = MailUtil.generateHash();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } finally {
-            UserMailInteraction userMailInteraction = new UserMailInteraction();
-            userMailInteraction.setStatus(UserMailInteraction.Status.WAITING);
-            userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
-            userMailInteraction.setMail(mail);
-            userMailInteraction.setUser(user);
-            userMailInteraction.save();
+        String mail = user.getMail();
+        if (isRecurrent) {
+            FinderFactory factory = FinderFactory.getInstance();
+            IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
+            UserMailInteraction confirmation = finder.selectUnique(
+                    new String[] { AbstractApplication.FinderKey.USER_ID, AbstractApplication.FinderKey.TYPE },
+                    new Object[] { user.getId(), UserMailInteraction.Type.MAIL_CONFIRMATION.ordinal() });
 
-            // TODO HTML para confirmação do e-mail do usuário.
-            final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
-
+            hash = confirmation.getHash();
+        } else {
             try {
-                MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
-            } catch (InvalidMailException e) {
+                hash = MailUtil.generateHash();
+            } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } finally {
+                    UserMailInteraction userMailInteraction = new UserMailInteraction();
+                    userMailInteraction.setStatus(UserMailInteraction.Status.WAITING);
+                    userMailInteraction.setType(UserMailInteraction.Type.MAIL_CONFIRMATION);
+                    userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
+                    userMailInteraction.setMail(mail);
+                    userMailInteraction.setUser(user);
+                    userMailInteraction.save();
+
             }
+        }
+
+        // TODO HTML para confirmação do e-mail do usuário.
+        final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
+
+        try {
+            MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
+        } catch (InvalidMailException e) {
+            e.printStackTrace();
         }
     }
 
@@ -158,6 +170,7 @@ public abstract  class UserUtil {
         } finally {
             UserMailInteraction userMailInteraction = new UserMailInteraction();
             userMailInteraction.setStatus(UserMailInteraction.Status.WAITING);
+            userMailInteraction.setType(UserMailInteraction.Type.RECOVERY_PASSWORD);
             userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
             userMailInteraction.setMail(mail);
             userMailInteraction.setUser(user);
@@ -172,5 +185,15 @@ public abstract  class UserUtil {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static boolean isMailConfirmed(User user) {
+        FinderFactory factory = FinderFactory.getInstance();
+        IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
+        UserMailInteraction confirmation = finder.selectUnique(
+                new String[] { AbstractApplication.FinderKey.USER_ID, AbstractApplication.FinderKey.TYPE },
+                new Object[] { user.getId(), UserMailInteraction.Type.MAIL_CONFIRMATION.ordinal() });
+
+        return (confirmation != null && confirmation.getStatus() == UserMailInteraction.Status.DONE);
     }
 }

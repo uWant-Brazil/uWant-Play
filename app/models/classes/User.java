@@ -1,5 +1,6 @@
 package models.classes;
 
+import com.avaje.ebean.annotation.Where;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.data.format.Formats;
 import play.db.ebean.Model;
@@ -40,9 +41,6 @@ public class User extends Model implements IMobileUser {
 
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Token token;
-
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    private UserMailInteraction confirmation;
 
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
@@ -116,15 +114,6 @@ public class User extends Model implements IMobileUser {
 
     public void setToken(Token token) {
         this.token = token;
-    }
-
-    @JsonIgnore
-    public UserMailInteraction getConfirmation() {
-        return confirmation;
-    }
-
-    public void setConfirmation(UserMailInteraction confirmation) {
-        this.confirmation = confirmation;
     }
 
     @JsonIgnore
