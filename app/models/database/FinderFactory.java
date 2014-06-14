@@ -35,6 +35,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new SocialProfileLoginsFinder();
         } else if (id == WishList.class) {
             finder = new WishListFinder();
+        } else if (id == SocialProfile.class) {
+            finder = new SocialProfileFinder();
         }
 
         return finder;
