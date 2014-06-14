@@ -42,7 +42,7 @@ public class UserFinder extends AbstractFinder<User> implements IFinder<User> {
 
     @Override
     public User selectLast() {
-        return getFinder().where().setMaxRows(1).setFirstRow(getFinder().findRowCount()).findUnique();
+        return getFinder().where().setMaxRows(1).setFirstRow(getFinder().findRowCount() - 1).findUnique();
     }
 
 }

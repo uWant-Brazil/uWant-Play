@@ -42,7 +42,7 @@ public class TokenFinder extends AbstractFinder<Token> implements IFinder<Token>
 
     @Override
     public Token selectLast() {
-        return getFinder().where().setMaxRows(1).setFirstRow(getFinder().findRowCount()).findUnique();
+        return getFinder().where().setMaxRows(1).setFirstRow(getFinder().findRowCount() - 1).findUnique();
     }
 
 }

@@ -43,7 +43,7 @@ public class UserMailInteractionFinder extends AbstractFinder<UserMailInteractio
 
     @Override
     public UserMailInteraction selectLast() {
-        return getFinder().where().setMaxRows(1).setFirstRow(getFinder().findRowCount()).findUnique();
+        return getFinder().where().setMaxRows(1).setFirstRow(getFinder().findRowCount() - 1).findUnique();
     }
 
 }
