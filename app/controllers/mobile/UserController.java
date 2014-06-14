@@ -127,26 +127,20 @@ public class UserController extends AbstractApplication {
     public static Result exclude() {
         ObjectNode jsonResponse = Json.newObject();
         try {
-            JsonNode body = request().body().asJson();
+            User user = authenticateToken();
+            if (user != null) {
+                if (UserUtil.isAvailable(user)) {
+                    user.setStatus(User.Status.REMOVED);
+                    user.update();
 
-            if (body != null) {
-                User user = authenticateToken();
-                if (user != null) {
-                    if (UserUtil.isAvailable(user)) {
-                        user.setStatus(User.Status.REMOVED);
-                        user.update();
-
-                        jsonResponse.put(ParameterKey.STATUS, true);
-                        jsonResponse.put(ParameterKey.MESSAGE, "Usuário excluido com sucesso.");
-                        jsonResponse.put(ParameterKey.EXCLUDE, true);
-                    } else {
-                        throw new AuthenticationException();
-                    }
+                    jsonResponse.put(ParameterKey.STATUS, true);
+                    jsonResponse.put(ParameterKey.MESSAGE, "O usuário foi excluido com sucesso.");
+                    jsonResponse.put(ParameterKey.EXCLUDE, true);
                 } else {
-                    throw new TokenException();
+                    throw new AuthenticationException();
                 }
             } else {
-                throw new JSONBodyException();
+                throw new TokenException();
             }
         } catch (UWException e) {
             e.printStackTrace();
