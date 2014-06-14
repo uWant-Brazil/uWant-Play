@@ -14,6 +14,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.SimpleResult;
 import play.test.FakeRequest;
+import utils.DateUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ public class IntegrationTest {
             public void run() {
                 Calendar now = Calendar.getInstance();
                 now.set(Calendar.YEAR, (1930 + (int)(Math.random() * (now.get(Calendar.YEAR) - 1930) + 1)));
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_PATTERN);
                 String birthday = formatter.format(now.getTime());
 
                 int gender = (now.getTimeInMillis() % 8 < 5 ? User.Gender.MALE.ordinal() : User.Gender.FEMALE.ordinal());
@@ -74,7 +75,7 @@ public class IntegrationTest {
             public void run() {
                 Calendar now = Calendar.getInstance();
                 now.set(Calendar.YEAR, (1930 + (int)(Math.random() * (now.get(Calendar.YEAR) - 1930) + 1)));
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                SimpleDateFormat formatter = new SimpleDateFormat(DateUtil.DATE_PATTERN);
                 String birthday = formatter.format(now.getTime());
 
                 int gender = (now.getTimeInMillis() % 8 < 5 ? User.Gender.MALE.ordinal() : User.Gender.FEMALE.ordinal());
