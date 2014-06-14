@@ -38,7 +38,7 @@ public class AbstractApplication extends Controller {
         public static final String BIRTHDAY = "birthday";
         public static final String SOCIAL_PROFILE = "socialProfile";
         public static final String SOCIAL_PROVIDER = "socialProvider";
-        public static final String TOKEN = "token";
+        public static final String TOKEN = "access_token";
         public static final String REGISTERED = "registered";
         public static final String EXCLUDE = "exclude";
         public static final String QUERY = "query";
@@ -65,12 +65,12 @@ public class AbstractApplication extends Controller {
      */
     public static class FinderKey {
         public static final String ID = "id";
-        public static final String TOKEN = "token";
+        public static final String TOKEN = "access_token";
         public static final String CONTENT = "content";
         public static final String LOGIN = "login";
         public static final String PASSWORD = "password";
         public static final String MAIL = "mail";
-        public static final String SOCIAL_PROVIDER = "socialProvider";
+        public static final String SOCIAL_PROVIDER = "provider";
         public static final String STATUS = "status";
         public static final String NAME = "name";
         public static final String USER_ID = "user_id";
