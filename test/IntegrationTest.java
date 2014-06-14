@@ -121,7 +121,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
 
                 String login = user.getLogin();
                 String password = user.getPassword();
@@ -157,7 +157,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/logoff")
@@ -186,7 +186,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
 
                 ObjectNode body = Json.newObject();
@@ -230,7 +230,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
 
                 ObjectNode body = Json.newObject();
@@ -274,7 +274,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
 
                 ObjectNode body = Json.newObject();
@@ -318,7 +318,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
 
                 String login = user.getLogin();
                 String password = user.getPassword();
@@ -366,7 +366,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
 
                 String login = user.getLogin();
                 String password = user.getPassword();
@@ -382,8 +382,6 @@ public class IntegrationTest {
 
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
-
-                assertAuthenticationHeader(result);
 
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
@@ -402,7 +400,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
 
                 String mail = user.getMail();
 
@@ -416,8 +414,6 @@ public class IntegrationTest {
 
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
-
-                assertAuthenticationHeader(result);
 
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
@@ -436,7 +432,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
 
                 String identifier = UUID.randomUUID().toString();
@@ -469,8 +465,6 @@ public class IntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                assertAuthenticationHeader(result);
-
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
@@ -488,7 +482,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
 
                 String identifier = UUID.randomUUID().toString();
@@ -521,8 +515,6 @@ public class IntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                assertAuthenticationHeader(result);
-
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
@@ -550,7 +542,7 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
 
                 String identifier = UUID.randomUUID().toString();
@@ -577,8 +569,6 @@ public class IntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                assertAuthenticationHeader(result);
-
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
@@ -596,7 +586,8 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
+                Token token = user.getToken();
 
                 List<WishList> wishLists = user.getWishList();
                 if (wishLists.isEmpty())
@@ -608,15 +599,15 @@ public class IntegrationTest {
                 ObjectNode body = Json.newObject();
                 body.put(AbstractApplication.ParameterKey.ID, wishList.getId());
 
-                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/delete").withJsonBody(body);
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/delete")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
 
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
-
-                assertAuthenticationHeader(result);
 
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
@@ -635,23 +626,17 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectLast();
+                User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
 
-                ObjectNode body = Json.newObject();
-
-
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/list")
-                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
-                        .withJsonBody(body);
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
 
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
-
-                assertAuthenticationHeader(result);
 
                 String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
                 JsonNode jsonResponse = Json.parse(responseBody);
