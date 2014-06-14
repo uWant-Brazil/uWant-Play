@@ -12,7 +12,7 @@ import java.util.List;
  * Classe Ebean responsável por guardar informações referentes ao usuário do sistema.
  */
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @SequenceGenerator(name = User.SEQUENCE_NAME, sequenceName = User.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
 public class User extends Model implements IMobileUser {
 

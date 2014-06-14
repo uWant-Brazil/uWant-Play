@@ -123,7 +123,7 @@ public class SocialProfile extends Model {
     @SequenceGenerator(name = SocialProfile.Login.SEQUENCE_NAME, sequenceName = SocialProfile.Login.SEQUENCE_NAME, initialValue = 1, allocationSize = 53)
     public static class Login extends Model {
 
-        public static final String SEQUENCE_NAME = "social_profile_id_seq";
+        public static final String SEQUENCE_NAME = "social_profile_logins_id_seq";
 
         @Id
         @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
