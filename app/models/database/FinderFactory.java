@@ -1,6 +1,7 @@
 package models.database;
 
 import models.AbstractFactory;
+import models.classes.SocialProfile;
 import models.classes.Token;
 import models.classes.User;
 import models.classes.UserMailInteraction;
@@ -33,6 +34,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new TokenFinder();
         } else if (id == UserMailInteraction.class) {
             finder = new UserMailInteractionFinder();
+        } else if (id == SocialProfile.Login.class) {
+            finder = new SocialProfileLoginsFinder();
         }
 
         return finder;

@@ -139,7 +139,7 @@ public abstract  class UserUtil {
             throw new UserAlreadyExistException();
         }
 
-        return true;
+        return false;
     }
 
     /**
