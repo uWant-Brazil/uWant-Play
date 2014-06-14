@@ -33,12 +33,18 @@ public class SocialController extends AbstractApplication {
         ObjectNode jsonResponse = Json.newObject();
         try {
             if (body != null) {
-                if (body.hasNonNull(ParameterKey.TOKEN) && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER) && body.has(ParameterKey.LOGIN)) {
+                if (body.hasNonNull(ParameterKey.TOKEN) && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER)) {
                     String accessToken = body.get(ParameterKey.TOKEN).asText();
-                    String providerStr = body.get(ParameterKey.SOCIAL_PROVIDER).asText();
-                    String email = body.get(ParameterKey.LOGIN).asText();
-                    if (!accessToken.isEmpty() && !providerStr.isEmpty()) {
-                        SocialProfile.Provider provider = SocialProfile.Provider.valueOf(providerStr);
+                    int providerOrdinal = body.get(ParameterKey.SOCIAL_PROVIDER).asInt();
+
+                    SocialProfile.Provider[] providers = SocialProfile.Provider.values();
+                    if (!accessToken.isEmpty() && providerOrdinal >= 0 && providerOrdinal < providers.length) {
+                        String email = null;
+                        if (body.has(ParameterKey.LOGIN)) {
+                            email = body.get(ParameterKey.LOGIN).asText();
+                        }
+
+                        SocialProfile.Provider provider = providers[providerOrdinal];
 
                         FinderFactory factory = FinderFactory.getInstance();
                         IFinder<SocialProfile> finder = factory.get(SocialProfile.class);
