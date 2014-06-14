@@ -1,10 +1,7 @@
 package models.database;
 
 import models.AbstractFactory;
-import models.classes.SocialProfile;
-import models.classes.Token;
-import models.classes.User;
-import models.classes.UserMailInteraction;
+import models.classes.*;
 
 /**
  * Factory de Finder para banco de dados.
@@ -36,6 +33,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new UserMailInteractionFinder();
         } else if (id == SocialProfile.Login.class) {
             finder = new SocialProfileLoginsFinder();
+        } else if (id == WishList.class) {
+            finder = new WishListFinder();
         }
 
         return finder;
