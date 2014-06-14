@@ -31,6 +31,7 @@ create table product (
   id                        bigint not null,
   name                      varchar(255),
   nick_name                 varchar(255),
+  manufacturer_id           bigint,
   multimedia                bigint,
   modified_at               timestamp not null,
   constraint pk_product primary key (id))
@@ -77,7 +78,7 @@ create table user_mail_interaction (
   hash                      varchar(255),
   mail                      varchar(255),
   user_id                   bigint,
-  modifiedAt                timestamp not null,
+  modified_at               timestamp not null,
   constraint ck_user_mail_interaction_status check (status in (0,1,2)),
   constraint pk_user_mail_interaction primary key (id))
 ;
@@ -124,8 +125,8 @@ create sequence wishlist_product_id_seq;
 
 alter table social_profile_logins add constraint fk_social_profile_logins_profi_1 foreign key (profile_id) references social_profile (id);
 create index ix_social_profile_logins_profi_1 on social_profile_logins (profile_id);
-alter table product add constraint fk_product_manufacturer_2 foreign key (id) references manufacturer (id);
-create index ix_product_manufacturer_2 on product (id);
+alter table product add constraint fk_product_manufacturer_2 foreign key (manufacturer_id) references manufacturer (id);
+create index ix_product_manufacturer_2 on product (manufacturer_id);
 alter table product add constraint fk_product_multimedia_3 foreign key (multimedia) references multimedia (id);
 create index ix_product_multimedia_3 on product (multimedia);
 alter table social_profile add constraint fk_social_profile_user_4 foreign key (user_id) references users (id);

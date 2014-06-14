@@ -64,7 +64,7 @@ public class AbstractApplication extends Controller {
      * Classe estática responsável por manter todas as chaves de acesso as colunas do Finder - BD.
      */
     public static class FinderKey {
-        public static final String ID = "_id";
+        public static final String ID = "id";
         public static final String TOKEN = "token";
         public static final String CONTENT = "content";
         public static final String LOGIN = "login";

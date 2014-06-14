@@ -1,6 +1,7 @@
 package models.classes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import play.data.format.Formats;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -25,7 +26,7 @@ public class Product extends Model{
     private String nickName;
 
     @OneToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="manufacturer_id")
     private Manufacturer manufacturer;
 
     @OneToMany(mappedBy="product", fetch = FetchType.LAZY)
@@ -36,6 +37,7 @@ public class Product extends Model{
     private Multimedia multimedia;
 
     @Version
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     public String getName() {

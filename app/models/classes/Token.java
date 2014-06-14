@@ -1,5 +1,6 @@
 package models.classes;
 
+import play.data.format.Formats;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -24,6 +25,7 @@ public class Token extends Model {
     private User user;
 
     @Version
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date since;
 
     public Token() {

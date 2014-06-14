@@ -1,5 +1,6 @@
 package models.classes;
 
+import play.data.format.Formats;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -56,6 +57,7 @@ public class SocialProfile extends Model {
     private List<Login> logins;
 
     @Version
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     public SocialProfile() {

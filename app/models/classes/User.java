@@ -1,6 +1,7 @@
 package models.classes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import play.data.format.Formats;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
@@ -50,6 +51,7 @@ public class User extends Model implements IMobileUser {
     private Status status;
 
     @Version
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
