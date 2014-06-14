@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
 import models.classes.SocialProfile;
@@ -188,12 +189,20 @@ public class IntegrationTest {
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
                 Token token = user.getToken();
+                if (token == null) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                }
 
                 ObjectNode body = Json.newObject();
                 body.put(AbstractApplication.ParameterKey.QUERY, user.getMail());
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/search")
-                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
@@ -215,7 +224,7 @@ public class IntegrationTest {
                     JsonNode jsonUser = jsonUsers.get(i);
                     assertThat(jsonUser).isNotNull();
                     assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.LOGIN)).isTrue();
-                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.MAIL)).isTrue();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.NAME)).isTrue();
                 }
             }
 
@@ -237,7 +246,8 @@ public class IntegrationTest {
                 body.put(AbstractApplication.ParameterKey.QUERY, user.getLogin());
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/search")
-                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
@@ -259,7 +269,7 @@ public class IntegrationTest {
                     JsonNode jsonUser = jsonUsers.get(i);
                     assertThat(jsonUser).isNotNull();
                     assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.LOGIN)).isTrue();
-                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.MAIL)).isTrue();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.NAME)).isTrue();
                 }
             }
 
@@ -281,7 +291,8 @@ public class IntegrationTest {
                 body.put(AbstractApplication.ParameterKey.QUERY, user.getName());
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/search")
-                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
@@ -303,7 +314,7 @@ public class IntegrationTest {
                     JsonNode jsonUser = jsonUsers.get(i);
                     assertThat(jsonUser).isNotNull();
                     assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.LOGIN)).isTrue();
-                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.MAIL)).isTrue();
+                    assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.NAME)).isTrue();
                 }
             }
 
@@ -320,21 +331,20 @@ public class IntegrationTest {
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
 
-                String login = user.getLogin();
-                String password = user.getPassword();
+                IFinder<SocialProfile> socialFinder = factory.get(SocialProfile.class);
+                List<SocialProfile> socialProfiles = socialFinder.selectAll(
+                        new String[] { AbstractApplication.FinderKey.USER_ID, AbstractApplication.FinderKey.STATUS },
+                        new Object[] { user.getId(), SocialProfile.Status.ACTIVE.ordinal() });
+
+                if (socialProfiles == null || socialProfiles.size() == 0)
+                    throw new RuntimeException("A lista de social profiles está vazia...");
+
+                SocialProfile profile = socialProfiles.get(0);
 
                 ObjectNode body = Json.newObject();
-                body.put(AbstractApplication.ParameterKey.LOGIN, login);
-                body.put(AbstractApplication.ParameterKey.PASSWORD, password);
-
-                long i = System.currentTimeMillis();
-
-                ObjectNode jsonSocial = Json.newObject();
-                jsonSocial.put(AbstractApplication.ParameterKey.SOCIAL_PROVIDER, (i % 2 == 0 ? SocialProfile.Provider.FACEBOOK.ordinal() : (i % 3 == 0 ? SocialProfile.Provider.GOOGLE_PLUS.ordinal() : SocialProfile.Provider.TWITTER.ordinal())));
-                jsonSocial.put(AbstractApplication.ParameterKey.TOKEN, UUID.randomUUID().toString());
-
-                if (i % 2 == 0)
-                    jsonSocial.put(AbstractApplication.ParameterKey.LOGIN, user.getMail());
+                body.put(AbstractApplication.ParameterKey.SOCIAL_PROVIDER, profile.getProvider().ordinal());
+                body.put(AbstractApplication.ParameterKey.TOKEN, profile.getAccessToken());
+                body.put(AbstractApplication.ParameterKey.LOGIN, NullNode.getInstance());
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/social/signUp").withJsonBody(body);
                 Result result = route(fakeRequest);
@@ -368,14 +378,13 @@ public class IntegrationTest {
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
 
-                String login = user.getLogin();
-                String password = user.getPassword();
+                String mail = user.getMail();
 
                 ObjectNode body = Json.newObject();
-                body.put(AbstractApplication.ParameterKey.LOGIN, login);
-                body.put(AbstractApplication.ParameterKey.PASSWORD, password);
+                body.put(AbstractApplication.ParameterKey.MAIL, mail);
 
-                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/recoveryPassword").withJsonBody(body);
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/recoveryPassword")
+                        .withJsonBody(body);
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
@@ -400,14 +409,23 @@ public class IntegrationTest {
             public void run() {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
-                User user = finder.selectUnique(Long.valueOf(1));
+                User user = finder.selectLast();
+                Token token = user.getToken();
+                if (token == null) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                }
 
                 String mail = user.getMail();
 
                 ObjectNode body = Json.newObject();
                 body.put(AbstractApplication.ParameterKey.MAIL, mail);
 
-                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/exclude").withJsonBody(body);
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/exclude")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
                 Result result = route(fakeRequest);
 
                 boolean status = (status(result) == Http.Status.OK);
