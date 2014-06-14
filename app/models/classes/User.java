@@ -38,10 +38,10 @@ public class User extends Model implements IMobileUser {
     private Date birthday;
     private Date since;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private Token token;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private UserMailInteraction confirmation;
 
     @Enumerated(EnumType.ORDINAL)

@@ -78,6 +78,7 @@ public class UserController extends AbstractApplication {
                             user.setBirthday(birthday);
                             user.setGender(gender);
                             user.setStatus(User.Status.PARTIAL_ACTIVE);
+                            user.setSince(new Date());
                             user.save();
 
                             UserUtil.confirmEmail(user);
