@@ -25,4 +25,4 @@ POST    /v1/mobile/cdn/retrieve                 controllers.mobile.CDNController
 
 # Web methods
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)
-POST    /v1/web/user/recoveryPassword           controllers.web.UserController.recoveryPassword(id:Long ?= 0)
+POST    /v1/web/user/recoveryPassword           controllers.web.UserController.recoveryPassword(id:Long ?= 0, mailId:Long ?= 0)

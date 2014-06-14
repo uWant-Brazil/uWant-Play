@@ -43,7 +43,7 @@ public class UserMailInteraction extends Model {
     @OneToOne
     private User user;
 
-    @Version
+//    @Version
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 

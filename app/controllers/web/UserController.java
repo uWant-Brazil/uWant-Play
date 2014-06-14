@@ -22,8 +22,10 @@ public class UserController extends AbstractApplication {
         UserMailInteraction umi = finder.selectUnique(
                 new String[] { FinderKey.HASH, FinderKey.MAIL },
                 new Object[] { h, m });
-        umi.setStatus(UserMailInteraction.Status.DONE);
-        umi.update();
+
+        UserMailInteraction userMailInteraction = new UserMailInteraction();
+        userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
+        userMailInteraction.update(umi.getId());
 
         return ok("E-mail confirmado com sucesso!");
     }
@@ -38,37 +40,51 @@ public class UserController extends AbstractApplication {
         Date now = new Date();
         long currentTimeInMilis = now.getTime();
         if (umi != null) {
-            if (umi.getStatus() == UserMailInteraction.Status.WAITING
-                    && (currentTimeInMilis - ts <= MAX_TIME_AVERAGE)) {
-                umi.setStatus(UserMailInteraction.Status.DONE);
-                umi.update();
-
-                User user = umi.getUser();
-                return ok(recoveryPassword.render(DEFAULT_CONFIRM_MAIL_MESSAGE, user.getId()));
-            } else {
-                umi.setStatus(UserMailInteraction.Status.CANCELED);
-                umi.update();
+            if ((currentTimeInMilis - ts > MAX_TIME_AVERAGE) || umi.getStatus() == UserMailInteraction.Status.CANCELED) {
+                if (umi.getStatus() != UserMailInteraction.Status.CANCELED) {
+                    UserMailInteraction userMailInteraction = new UserMailInteraction();
+                    userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
+                    userMailInteraction.update(umi.getId());
+                }
 
                 return unauthorized(unauthorized.render("A sua solicitação de alteração de senha expirou!"));
+            } else {
+                if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
+                    UserMailInteraction userMailInteraction = new UserMailInteraction();
+                    userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
+                    userMailInteraction.update(umi.getId());
+                }
+
+                User user = umi.getUser();
+                return ok(recoveryPassword.render(DEFAULT_CONFIRM_MAIL_MESSAGE, user.getId(), umi.getId()));
             }
         }
+
         return unauthorized(unauthorized.render("Não existe nenhuma solicitação para alteração de senha..."));
     }
 
-    public static Result recoveryPassword(Long id) {
+    public static Result recoveryPassword(Long id, Long mailId) {
         Map<String, String[]> body = request().body().asFormUrlEncoded();
 
         if (body != null && body.containsKey(ParameterKey.PASSWORD)) {
             String password = body.get(ParameterKey.PASSWORD)[0];
 
             FinderFactory factory = FinderFactory.getInstance();
-            IFinder<User> finder = factory.get(User.class);
-            User user = finder.selectUnique(id);
-            user.setToken(null);
-            user.setPassword(password);
-            user.update();
+            IFinder<UserMailInteraction> mailFinder = factory.get(UserMailInteraction.class);
+            UserMailInteraction userMailInteraction = mailFinder.selectUnique(mailId);
+            if (userMailInteraction.getStatus() == UserMailInteraction.Status.DONE) {
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectUnique(id);
 
-            return ok(recoveryPassword.render("A sua senha foi redefinida com sucesso!", (long) -1));
+                User userChanged = new User();
+                userChanged.setToken(null);
+                userChanged.setPassword(password);
+                userChanged.update(user.getId());
+
+                return ok(recoveryPassword.render("A sua senha foi redefinida com sucesso!", (long) -1, (long) -1));
+            } else {
+                return unauthorized(unauthorized.render("Esta sessão para alteração de senha expirou..."));
+            }
         } else {
             return unauthorized(unauthorized.render("Ocorreu um erro inesperado. Entre em contato com o suporte!"));
         }

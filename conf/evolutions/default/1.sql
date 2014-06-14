@@ -78,7 +78,7 @@ create table user_mail_interaction (
   hash                      varchar(255),
   mail                      varchar(255),
   user_id                   bigint,
-  modified_at               timestamp not null,
+  modified_at               timestamp,
   constraint ck_user_mail_interaction_status check (status in (0,1,2)),
   constraint pk_user_mail_interaction primary key (id))
 ;
