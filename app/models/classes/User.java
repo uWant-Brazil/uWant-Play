@@ -1,12 +1,10 @@
 package models.classes;
 
-import com.avaje.ebean.annotation.Where;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.data.format.Formats;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -39,8 +37,8 @@ public class User extends Model implements IMobileUser {
     private Date birthday;
     private Date since;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    private Token token;
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Token> tokens;
 
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
@@ -112,8 +110,8 @@ public class User extends Model implements IMobileUser {
         this.since = since;
     }
 
-    public void setToken(Token token) {
-        this.token = token;
+    public void setTokens(List<Token> tokens) {
+        this.tokens = tokens;
     }
 
     @JsonIgnore
@@ -149,8 +147,8 @@ public class User extends Model implements IMobileUser {
 
     @Override
     @JsonIgnore
-    public Token getToken() {
-        return this.token;
+    public List<Token> getTokens() {
+        return this.tokens;
     }
 
     @Override

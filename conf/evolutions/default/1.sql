@@ -52,7 +52,9 @@ create table social_profile (
 create table token (
   content                   varchar(255) not null,
   user_id                   bigint,
+  target                    integer,
   since                     timestamp not null,
+  constraint ck_token_target check (target in (0,1)),
   constraint pk_token primary key (content))
 ;
 

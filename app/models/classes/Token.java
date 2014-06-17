@@ -17,12 +17,19 @@ public class Token extends Model {
 
     public static final String SEQUENCE_NAME = "token_id_seq";
 
+    public enum Target {
+        MOBILE, WEB;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
     private String content;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @Enumerated(value = EnumType.ORDINAL)
+    private Target target;
 
     @Version
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
@@ -55,4 +62,13 @@ public class Token extends Model {
     public void setSince(Date since) {
         this.since = since;
     }
+
+    public Target getTarget() {
+        return target;
+    }
+
+    public void setTarget(Target target) {
+        this.target = target;
+    }
+
 }

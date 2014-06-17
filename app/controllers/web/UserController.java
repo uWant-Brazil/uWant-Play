@@ -1,6 +1,7 @@
 package controllers.web;
 
 import controllers.AbstractApplication;
+import models.classes.Token;
 import models.classes.User;
 import models.classes.UserMailInteraction;
 import models.database.FinderFactory;
@@ -9,6 +10,7 @@ import play.mvc.Result;
 import views.html.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class UserController extends AbstractApplication {
@@ -76,8 +78,15 @@ public class UserController extends AbstractApplication {
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(id);
 
+                List<Token> tokens = user.getTokens();
+                if (tokens != null) {
+                    for (Token token : tokens) {
+                        token.delete();
+                    }
+                }
+                user.refresh();
+
                 User userChanged = new User();
-                userChanged.setToken(null);
                 userChanged.setPassword(password);
                 userChanged.update(user.getId());
 

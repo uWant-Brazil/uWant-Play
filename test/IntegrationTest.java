@@ -159,7 +159,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/logoff")
                         .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
@@ -188,7 +198,7 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                Token token = user.getTokens().get(0);
                 if (token == null) {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
@@ -240,7 +250,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
 
                 ObjectNode body = Json.newObject();
                 body.put(AbstractApplication.ParameterKey.QUERY, user.getLogin());
@@ -285,7 +305,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
 
                 ObjectNode body = Json.newObject();
                 body.put(AbstractApplication.ParameterKey.QUERY, user.getName());
@@ -410,13 +440,16 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectLast();
-                Token token = user.getToken();
-                if (token == null) {
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
                     token.save();
                     token.refresh();
+                } else {
+                    token = tokens.get(0);
                 }
 
                 String mail = user.getMail();
@@ -451,7 +484,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
 
                 String identifier = UUID.randomUUID().toString();
 
@@ -501,7 +544,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
 
                 String identifier = UUID.randomUUID().toString();
 
@@ -561,7 +614,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
 
                 String identifier = UUID.randomUUID().toString();
 
@@ -605,7 +668,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
 
                 List<WishList> wishLists = user.getWishList();
                 if (wishLists.isEmpty())
@@ -645,7 +718,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getToken();
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
 
                 FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/wishlist/list")
                         .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());

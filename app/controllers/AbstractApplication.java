@@ -134,14 +134,17 @@ public class AbstractApplication extends Controller {
     }
 
     /**
-     * Remoção do token do usuário.
-     * @param user
+     * Remoção do token do usuário referenciado no HTTP Header.
+     * @param user - Usuário logado
      */
     public static void removeToken(User user) {
-        Token token = user.getToken();
-        token.delete();
+        String tokenContent = request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+        Token token = listToken(tokenContent);
 
-        user.refresh();
+        if (token != null) {
+            token.delete();
+            user.refresh();
+        }
     }
 
 }

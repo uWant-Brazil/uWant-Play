@@ -1,5 +1,7 @@
 package models.classes;
 
+import java.util.List;
+
 /**
  * Interface responsável por mapear usuários para dispositivos móveis.
  */
@@ -21,6 +23,6 @@ public interface IMobileUser {
      * Método responsável por retornar o token do usuário.
      * @return
      */
-    Token getToken();
+    List<Token> getTokens();
 
 }
