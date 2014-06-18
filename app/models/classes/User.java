@@ -40,6 +40,9 @@ public class User extends Model implements IMobileUser {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Token> tokens;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Mobile> mobiles;
+
     @Enumerated(EnumType.ORDINAL)
     private Gender gender;
 
@@ -149,6 +152,11 @@ public class User extends Model implements IMobileUser {
     @JsonIgnore
     public List<Token> getTokens() {
         return this.tokens;
+    }
+
+    @Override
+    public List<Mobile> getMobiles() {
+        return this.mobiles;
     }
 
     @Override

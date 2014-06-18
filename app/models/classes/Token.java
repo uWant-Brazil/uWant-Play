@@ -28,6 +28,9 @@ public class Token extends Model {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    @OneToOne(mappedBy = "token")
+    private Mobile mobile;
+
     @Enumerated(value = EnumType.ORDINAL)
     private Target target;
 
@@ -61,6 +64,14 @@ public class Token extends Model {
 
     public void setSince(Date since) {
         this.since = since;
+    }
+
+    public Mobile getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(Mobile mobile) {
+        this.mobile = mobile;
     }
 
     public Target getTarget() {
