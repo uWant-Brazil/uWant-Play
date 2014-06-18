@@ -17,6 +17,16 @@ create table manufacturer (
   constraint pk_manufacturer primary key (id))
 ;
 
+create table user_mobiles (
+  id                        bigint not null,
+  identifier                varchar(255) not null,
+  user_id                   bigint,
+  token_id                  bigint,
+  modified_at               timestamp not null,
+  constraint uq_user_mobiles_identifier unique (identifier),
+  constraint pk_user_mobiles primary key (id))
+;
+
 create table multimedia (
   id                        bigint not null,
   file_name                 varchar(255),
@@ -50,12 +60,14 @@ create table social_profile (
 ;
 
 create table token (
+  id                        bigint not null,
   content                   varchar(255) not null,
   user_id                   bigint,
   target                    integer,
   since                     timestamp not null,
   constraint ck_token_target check (target in (0,1)),
-  constraint pk_token primary key (content))
+  constraint uq_token_content unique (content),
+  constraint pk_token primary key (id))
 ;
 
 create table users (
@@ -111,6 +123,8 @@ create sequence social_profile_logins_id_seq;
 
 create sequence manufacturer_id_seq;
 
+create sequence user_mobiles_id_seq;
+
 create sequence multimedia_id_seq;
 
 create sequence product_id_seq;
@@ -129,22 +143,26 @@ create sequence wishlist_product_id_seq;
 
 alter table social_profile_logins add constraint fk_social_profile_logins_profi_1 foreign key (profile_id) references social_profile (id);
 create index ix_social_profile_logins_profi_1 on social_profile_logins (profile_id);
-alter table product add constraint fk_product_manufacturer_2 foreign key (manufacturer_id) references manufacturer (id);
-create index ix_product_manufacturer_2 on product (manufacturer_id);
-alter table product add constraint fk_product_multimedia_3 foreign key (multimedia) references multimedia (id);
-create index ix_product_multimedia_3 on product (multimedia);
-alter table social_profile add constraint fk_social_profile_user_4 foreign key (user_id) references users (id);
-create index ix_social_profile_user_4 on social_profile (user_id);
-alter table token add constraint fk_token_user_5 foreign key (user_id) references users (id);
-create index ix_token_user_5 on token (user_id);
-alter table user_mail_interaction add constraint fk_user_mail_interaction_user_6 foreign key (user_id) references users (id);
-create index ix_user_mail_interaction_user_6 on user_mail_interaction (user_id);
-alter table wishlist add constraint fk_wishlist_user_7 foreign key (user_id) references users (id);
-create index ix_wishlist_user_7 on wishlist (user_id);
-alter table wishlist_product add constraint fk_wishlist_product_wishList_8 foreign key (wishlist_id) references wishlist (id);
-create index ix_wishlist_product_wishList_8 on wishlist_product (wishlist_id);
-alter table wishlist_product add constraint fk_wishlist_product_product_9 foreign key (product_id) references product (id);
-create index ix_wishlist_product_product_9 on wishlist_product (product_id);
+alter table user_mobiles add constraint fk_user_mobiles_user_2 foreign key (user_id) references users (id);
+create index ix_user_mobiles_user_2 on user_mobiles (user_id);
+alter table user_mobiles add constraint fk_user_mobiles_token_3 foreign key (token_id) references token (id);
+create index ix_user_mobiles_token_3 on user_mobiles (token_id);
+alter table product add constraint fk_product_manufacturer_4 foreign key (manufacturer_id) references manufacturer (id);
+create index ix_product_manufacturer_4 on product (manufacturer_id);
+alter table product add constraint fk_product_multimedia_5 foreign key (multimedia) references multimedia (id);
+create index ix_product_multimedia_5 on product (multimedia);
+alter table social_profile add constraint fk_social_profile_user_6 foreign key (user_id) references users (id);
+create index ix_social_profile_user_6 on social_profile (user_id);
+alter table token add constraint fk_token_user_7 foreign key (user_id) references users (id);
+create index ix_token_user_7 on token (user_id);
+alter table user_mail_interaction add constraint fk_user_mail_interaction_user_8 foreign key (user_id) references users (id);
+create index ix_user_mail_interaction_user_8 on user_mail_interaction (user_id);
+alter table wishlist add constraint fk_wishlist_user_9 foreign key (user_id) references users (id);
+create index ix_wishlist_user_9 on wishlist (user_id);
+alter table wishlist_product add constraint fk_wishlist_product_wishList_10 foreign key (wishlist_id) references wishlist (id);
+create index ix_wishlist_product_wishList_10 on wishlist_product (wishlist_id);
+alter table wishlist_product add constraint fk_wishlist_product_product_11 foreign key (product_id) references product (id);
+create index ix_wishlist_product_product_11 on wishlist_product (product_id);
 
 
 
@@ -153,6 +171,8 @@ create index ix_wishlist_product_product_9 on wishlist_product (product_id);
 drop table if exists social_profile_logins cascade;
 
 drop table if exists manufacturer cascade;
+
+drop table if exists user_mobiles cascade;
 
 drop table if exists multimedia cascade;
 
@@ -173,6 +193,8 @@ drop table if exists wishlist_product cascade;
 drop sequence if exists social_profile_logins_id_seq;
 
 drop sequence if exists manufacturer_id_seq;
+
+drop sequence if exists user_mobiles_id_seq;
 
 drop sequence if exists multimedia_id_seq;
 

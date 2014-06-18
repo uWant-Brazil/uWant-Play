@@ -7,7 +7,9 @@ insert into social_profile (id,provider,access_token,user_id,status,modified_at)
 insert into social_profile_logins (id,login,profile_id) values (nextVal('social_profile_logins_id_seq'),'zeus-apx@facebook.com',1);
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),1,1,'HAHAHA','zeus@olimpo.god.com',1,now());
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),0,0,'HAHAHA','zeus@olimpo.god.com',1,now());
-insert into token (content,user_id,since) values ('UNIQUE_CONTENT_TOKEN',1,now());
+
+insert into token (id,content,user_id,since) values (nextVal('token_id_seq'),'UNIQUE_CONTENT_TOKEN',1,now());
+insert into user_mobiles (id,identifier,user_id,token_id,modified_at) values (nextVal('user_mobiles_id_seq'),'adSKkkanem21j23ldjjdkdas-deviceId',1,1,now());
 
 insert into wishlist (id,title,description,user_id,status,modified_at) values (nextVal('wishlist_id_seq'),'Desejos do Olimpo','O que todo DEUS dejesa!',1,0,now());
 
