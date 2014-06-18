@@ -144,6 +144,7 @@ public class AbstractApplication extends Controller {
         Token token = listToken(tokenContent);
 
         if (token != null) {
+            token.refresh();
             token.delete();
             user.refresh();
         }

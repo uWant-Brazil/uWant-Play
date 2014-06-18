@@ -35,7 +35,7 @@ public class NotificationController extends AbstractApplication {
                     int osId = body.get(ParameterKey.OS).asInt();
 
                     Mobile.OS[] oses = Mobile.OS.values();
-                    if (!identifier.isEmpty() && osId > 0 && osId < oses.length) {
+                    if (!identifier.isEmpty() && osId >= 0 && osId < oses.length) {
                         String tokenContent = request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
                         Token token = listToken(tokenContent);
                         Mobile.OS os = oses[osId];
