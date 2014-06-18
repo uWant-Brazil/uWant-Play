@@ -26,7 +26,7 @@ import java.util.UUID;
 import static org.fest.assertions.Assertions.assertThat;
 import static play.test.Helpers.*;
 
-public class IntegrationTest {
+public class IntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void successfulRegisterTest() {
@@ -597,7 +597,7 @@ public class IntegrationTest {
 //                                .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
 //                                .withRawBody();
 
-
+                        // TODO ...
                     }
                 }
             }
@@ -761,22 +761,6 @@ public class IntegrationTest {
             }
 
         });
-    }
-
-    private void assertAuthenticationHeader(Result result) {
-        String authenticationToken = header(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, result);
-        assertThat(authenticationToken).isNotNull().isNotEmpty();
-    }
-
-    private void assertStatusMessage(JsonNode jsonResponse, boolean status) {
-        assertThat(jsonResponse.hasNonNull(AbstractApplication.ParameterKey.STATUS)).isTrue();
-        assertThat(jsonResponse.hasNonNull(AbstractApplication.ParameterKey.MESSAGE)).isTrue();
-
-        JsonNode nodeStatus = jsonResponse.get(AbstractApplication.ParameterKey.STATUS);
-        assertThat(nodeStatus.asBoolean() == status).isTrue();
-
-        JsonNode nodeMessage = jsonResponse.get(AbstractApplication.ParameterKey.MESSAGE);
-        assertThat(nodeMessage.asText()).isNotNull().isNotEmpty();
     }
 
 }
