@@ -22,6 +22,7 @@ POST    /v1/mobile/wishlist/delete      controllers.mobile.WishListController.de
 POST    /v1/mobile/wishlist/addProduct      controllers.mobile.WishListController.addProductsWishList()
 POST    /v1/mobile/wishlist/removeProduct      controllers.mobile.WishListController.removeProductsWishList()
 POST    /v1/mobile/cdn/retrieve                 controllers.mobile.CDNController.retrieve()
+POST    /v1/mobile/notification/register        controllers.mobile.NotificationController.register()
 
 # Web methods
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)

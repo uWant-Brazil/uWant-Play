@@ -58,6 +58,8 @@ public class AbstractApplication extends Controller {
         public static final String MULTIMEDIA = "multimedia";
         public static final String URL = "url";
         public static final String FILENAME = "fileName";
+        public static final String MOBILE_IDENTIFIER = "mobileIdentifier";
+        public static final String OS = "os";
     }
 
     /**
@@ -127,7 +129,7 @@ public class AbstractApplication extends Controller {
      * @param token
      * @return
      */
-    private static Token listToken(String token) {
+    public static Token listToken(String token) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<Token> finder = factory.get(Token.class);
         return finder.selectUnique(new String[] { FinderKey.CONTENT }, new String[] { token });
