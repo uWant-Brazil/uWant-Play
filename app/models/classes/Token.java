@@ -28,7 +28,7 @@ public class Token extends Model {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToOne(mappedBy = "token")
+    @OneToOne(mappedBy = "token", cascade = CascadeType.REMOVE)
     private Mobile mobile;
 
     @Enumerated(value = EnumType.ORDINAL)
