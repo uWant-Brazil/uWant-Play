@@ -22,7 +22,9 @@ create table user_mobiles (
   identifier                varchar(255) not null,
   user_id                   bigint,
   token_id                  bigint,
+  os                        integer,
   modified_at               timestamp not null,
+  constraint ck_user_mobiles_os check (os in (0,1,2)),
   constraint uq_user_mobiles_identifier unique (identifier),
   constraint pk_user_mobiles primary key (id))
 ;

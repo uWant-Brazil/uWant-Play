@@ -9,7 +9,7 @@ insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at)
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),0,0,'HAHAHA','zeus@olimpo.god.com',1,now());
 
 insert into token (id,content,user_id,since) values (nextVal('token_id_seq'),'UNIQUE_CONTENT_TOKEN',1,now());
-insert into user_mobiles (id,identifier,user_id,token_id,modified_at) values (nextVal('user_mobiles_id_seq'),'adSKkkanem21j23ldjjdkdas-deviceId',1,1,now());
+insert into user_mobiles (id,identifier,user_id,token_id,os,modified_at) values (nextVal('user_mobiles_id_seq'),'adSKkkanem21j23ldjjdkdas-deviceId',1,1,0,now());
 
 insert into wishlist (id,title,description,user_id,status,modified_at) values (nextVal('wishlist_id_seq'),'Desejos do Olimpo','O que todo DEUS dejesa!',1,0,now());
 
@@ -36,5 +36,6 @@ delete from product;
 delete from social_profile_logins;
 delete from social_profile;
 delete from user_mail_interaction;
+delete from user_mobiles;
 delete from token;
 delete from users;

@@ -18,6 +18,10 @@ public class Mobile extends Model {
 
     private static final String SEQUENCE_NAME = "user_mobiles_id_seq";
 
+    public enum OS {
+        ANDROID, IOS, WINDOWS_PHONE;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
     private long id;
@@ -32,6 +36,9 @@ public class Mobile extends Model {
     @OneToOne(fetch = FetchType.LAZY)
     @Column(nullable = false, unique = true)
     private Token token;
+
+    @Enumerated(value = EnumType.ORDINAL)
+    private OS os;
 
     @Version
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
@@ -54,6 +61,7 @@ public class Mobile extends Model {
         this.identifier = identifier;
     }
 
+    @JsonIgnore
     public User getUser() {
         return user;
     }
@@ -69,6 +77,14 @@ public class Mobile extends Model {
 
     public void setToken(Token token) {
         this.token = token;
+    }
+
+    public OS getOS() {
+        return os;
+    }
+
+    public void setOS(OS os) {
+        this.os = os;
     }
 
     @JsonIgnore
