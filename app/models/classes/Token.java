@@ -23,6 +23,9 @@ public class Token extends Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
+    private long id;
+
+    @Column(unique = true, nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,6 +43,14 @@ public class Token extends Model {
 
     public Token() {
         // Do nothing...
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getContent() {
