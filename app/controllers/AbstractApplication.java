@@ -60,6 +60,7 @@ public class AbstractApplication extends Controller {
         public static final String FILENAME = "fileName";
         public static final String MOBILE_IDENTIFIER = "mobileIdentifier";
         public static final String OS = "os";
+        public static final String WHEN = "when";
     }
 
     /**

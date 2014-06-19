@@ -27,3 +27,5 @@ POST    /v1/mobile/notification/register        controllers.mobile.NotificationC
 # Web methods
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)
 POST    /v1/web/user/recoveryPassword           controllers.web.UserController.recoveryPassword(id:Long ?= 0, mailId:Long ?= 0)
+GET     /v1/web/admin/notification/:id          controllers.web.NotificationController.sendView(id:Long)
+POST    /v1/web/admin/notification/:id          controllers.web.NotificationController.send(id:Long)
