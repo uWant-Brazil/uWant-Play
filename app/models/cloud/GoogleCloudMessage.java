@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * Created by felipebenezi on 18/06/14.
  */
-public class GoogleCloudMessage implements INotificationService {
+class GoogleCloudMessage implements INotificationService {
 
     /**
      * Time-to-live durante o envio dos pacotes.
