@@ -10,7 +10,6 @@ import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
-import org.apache.http.impl.cookie.DateParseException;
 import play.db.ebean.Model;
 import play.libs.Json;
 import play.mvc.Result;
@@ -18,7 +17,7 @@ import utils.DateUtil;
 import utils.RegexUtil;
 import utils.UserUtil;
 
-import java.util.Calendar;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -63,8 +62,8 @@ public class UserController extends AbstractApplication {
 
                         Date birthday = null;
                         try {
-                            birthday = DateUtil.parse(birthdayStr);
-                        } catch (DateParseException e) {
+                            birthday = DateUtil.parse(birthdayStr, DateUtil.DATE_PATTERN);
+                        } catch (ParseException e) {
                             e.printStackTrace();
                         }
 
