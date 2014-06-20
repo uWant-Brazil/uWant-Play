@@ -3,6 +3,7 @@ package controllers.mobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
+import models.classes.Token;
 import models.classes.User;
 import models.classes.UserMailInteraction;
 import models.database.FinderFactory;
@@ -42,7 +43,7 @@ public class AuthenticationController extends AbstractApplication {
                         }
 
                         if (user != null && UserUtil.isAvailable(user)) {
-                            generateToken(user);
+                            generateToken(user, Token.Target.MOBILE);
 
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, "Usuário autenticado com sucesso.");

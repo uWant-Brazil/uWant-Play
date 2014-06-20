@@ -102,11 +102,11 @@ public class AbstractApplication extends Controller {
      * Responsável por gerar token para futura autenticação em métodos necessários.
      * @param user
      */
-    public static void generateToken(User user) {
+    public static void generateToken(User user, Token.Target target) {
         UUID uuid = UUID.randomUUID();
         String token = uuid.toString();
 
-        saveToken(token, user);
+        saveToken(token, user, target);
 
         response().setHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN, token);
     }
@@ -115,11 +115,13 @@ public class AbstractApplication extends Controller {
      * Persistência do token gerado pelo sistema.
      * @param tokenContent
      * @param user
+     * @param target
      */
-    private static void saveToken(String tokenContent, User user) {
+    private static void saveToken(String tokenContent, User user, Token.Target target) {
         Token token = new Token();
         token.setContent(tokenContent);
         token.setUser(user);
+        token.setTarget(target);
         token.save();
 
         user.refresh();
