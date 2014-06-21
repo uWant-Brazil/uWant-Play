@@ -26,7 +26,7 @@ import java.util.UUID;
 import static org.fest.assertions.Assertions.assertThat;
 import static play.test.Helpers.*;
 
-public class IntegrationTest {
+public class IntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void successfulRegisterTest() {
@@ -165,6 +165,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -198,13 +199,17 @@ public class IntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getTokens().get(0);
-                if (token == null) {
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
+                } else {
+                    token = tokens.get(0);
                 }
 
                 ObjectNode body = Json.newObject();
@@ -256,6 +261,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -311,6 +317,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -446,6 +453,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -490,6 +498,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -550,6 +559,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -597,7 +607,7 @@ public class IntegrationTest {
 //                                .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
 //                                .withRawBody();
 
-
+                        // TODO ...
                     }
                 }
             }
@@ -620,6 +630,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -674,6 +685,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -724,6 +736,7 @@ public class IntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -761,22 +774,6 @@ public class IntegrationTest {
             }
 
         });
-    }
-
-    private void assertAuthenticationHeader(Result result) {
-        String authenticationToken = header(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, result);
-        assertThat(authenticationToken).isNotNull().isNotEmpty();
-    }
-
-    private void assertStatusMessage(JsonNode jsonResponse, boolean status) {
-        assertThat(jsonResponse.hasNonNull(AbstractApplication.ParameterKey.STATUS)).isTrue();
-        assertThat(jsonResponse.hasNonNull(AbstractApplication.ParameterKey.MESSAGE)).isTrue();
-
-        JsonNode nodeStatus = jsonResponse.get(AbstractApplication.ParameterKey.STATUS);
-        assertThat(nodeStatus.asBoolean() == status).isTrue();
-
-        JsonNode nodeMessage = jsonResponse.get(AbstractApplication.ParameterKey.MESSAGE);
-        assertThat(nodeMessage.asText()).isNotNull().isNotEmpty();
     }
 
 }

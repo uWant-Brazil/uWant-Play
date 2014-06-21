@@ -25,4 +25,11 @@ public interface IMobileUser {
      */
     List<Token> getTokens();
 
+    /**
+     * Método responsável por retornar todos os dispositivos
+     * móveis no qual o usuário está autenticado.
+     * @return
+     */
+    List<Mobile> getMobiles();
+
 }

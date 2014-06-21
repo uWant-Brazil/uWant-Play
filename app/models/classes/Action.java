@@ -1,0 +1,123 @@
+package models.classes;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import play.data.format.Formats;
+import utils.ActionUtil;
+
+import javax.persistence.*;
+import java.util.Date;
+
+/**
+ * Created by felipebenezi on 19/06/14.
+ */
+@Entity
+@Table(name = "actions")
+@SequenceGenerator(name = Action.SEQUENCE_NAME, sequenceName = Action.SEQUENCE_NAME, initialValue = 1, allocationSize = 37)
+public class Action {
+
+    public static final String SEQUENCE_NAME = "actions_id_seq";
+
+    public enum Type {
+        ADD_FRIENDS_CIRCLE,
+        COMMENT,
+        MENTION,
+        SHARE;
+    }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
+    private long id;
+
+    @Enumerated(value = EnumType.ORDINAL)
+    @Column(nullable = false)
+    private Type type;
+
+    @OneToOne
+    @Column(nullable = false)
+    private User from;
+
+    @OneToOne
+    @Column(nullable = false)
+    private User user;
+
+    @Column(nullable = true)
+    private String extra;
+
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
+    @Column(nullable = false)
+    private Date createdAt;
+
+    @Version
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
+    private Date modifiedAt;
+
+    @JsonIgnore
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    @JsonIgnore
+    public User getFrom() {
+        return from;
+    }
+
+    public void setFrom(User from) {
+        this.from = from;
+    }
+
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getExtra() {
+        return extra;
+    }
+
+    public void setExtra(String extra) {
+        this.extra = extra;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    @JsonIgnore
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
+    @Override
+    public String toString() {
+        try {
+            return ActionUtil.generateMessage(this);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+}

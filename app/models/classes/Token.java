@@ -23,10 +23,16 @@ public class Token extends Model {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
+    private long id;
+
+    @Column(unique = true, nullable = false)
     private String content;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
+
+    @OneToOne(mappedBy = "token", cascade = CascadeType.REMOVE)
+    private Mobile mobile;
 
     @Enumerated(value = EnumType.ORDINAL)
     private Target target;
@@ -37,6 +43,14 @@ public class Token extends Model {
 
     public Token() {
         // Do nothing...
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getContent() {
@@ -61,6 +75,14 @@ public class Token extends Model {
 
     public void setSince(Date since) {
         this.since = since;
+    }
+
+    public Mobile getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(Mobile mobile) {
+        this.mobile = mobile;
     }
 
     public Target getTarget() {

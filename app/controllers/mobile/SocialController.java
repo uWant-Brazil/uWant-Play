@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
 import models.classes.SocialProfile;
+import models.classes.Token;
 import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
@@ -59,7 +60,7 @@ public class SocialController extends AbstractApplication {
                             } else if (UserUtil.isAvailable(user)) {
                                 // Este usuario ja esta registrado no sistema.
                                 // Efetuando rotina de autenticacao!
-                                generateToken(user);
+                                generateToken(user, Token.Target.MOBILE);
 
                                 if (profile.getStatus() == SocialProfile.Status.REMOVED) {
                                     profile.setStatus(SocialProfile.Status.ACTIVE);
@@ -91,7 +92,7 @@ public class SocialController extends AbstractApplication {
                                     } else if (UserUtil.isAvailable(user)) {
                                         // Este usuario ja esta registrado no sistema.
                                         // Efetuando rotina de autenticacao!
-                                        generateToken(user);
+                                        generateToken(user, Token.Target.MOBILE);
 
                                         if (profile.getStatus() == SocialProfile.Status.REMOVED) {
                                             profile.setStatus(SocialProfile.Status.ACTIVE);

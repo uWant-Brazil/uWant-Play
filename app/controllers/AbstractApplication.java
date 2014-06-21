@@ -58,6 +58,13 @@ public class AbstractApplication extends Controller {
         public static final String MULTIMEDIA = "multimedia";
         public static final String URL = "url";
         public static final String FILENAME = "fileName";
+        public static final String MOBILE_IDENTIFIER = "mobileIdentifier";
+        public static final String OS = "os";
+        public static final String WHEN = "when";
+        public static final String ACTIONS = "actions";
+        public static final String TYPE = "type";
+        public static final String USER_FROM = "userFrom";
+        public static final String EXTRA = "extra";
     }
 
     /**
@@ -99,11 +106,11 @@ public class AbstractApplication extends Controller {
      * Responsável por gerar token para futura autenticação em métodos necessários.
      * @param user
      */
-    public static void generateToken(User user) {
+    public static void generateToken(User user, Token.Target target) {
         UUID uuid = UUID.randomUUID();
         String token = uuid.toString();
 
-        saveToken(token, user);
+        saveToken(token, user, target);
 
         response().setHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN, token);
     }
@@ -112,11 +119,13 @@ public class AbstractApplication extends Controller {
      * Persistência do token gerado pelo sistema.
      * @param tokenContent
      * @param user
+     * @param target
      */
-    private static void saveToken(String tokenContent, User user) {
+    private static void saveToken(String tokenContent, User user, Token.Target target) {
         Token token = new Token();
         token.setContent(tokenContent);
         token.setUser(user);
+        token.setTarget(target);
         token.save();
 
         user.refresh();
@@ -127,7 +136,7 @@ public class AbstractApplication extends Controller {
      * @param token
      * @return
      */
-    private static Token listToken(String token) {
+    public static Token listToken(String token) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<Token> finder = factory.get(Token.class);
         return finder.selectUnique(new String[] { FinderKey.CONTENT }, new String[] { token });
@@ -142,6 +151,7 @@ public class AbstractApplication extends Controller {
         Token token = listToken(tokenContent);
 
         if (token != null) {
+            token.refresh();
             token.delete();
             user.refresh();
         }
