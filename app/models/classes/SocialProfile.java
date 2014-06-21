@@ -43,7 +43,7 @@ public class SocialProfile extends Model {
     /**
      * Usuário vinculado ao perfil na rede social, caso já tenha sido registrado.
      */
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
     @Enumerated(EnumType.ORDINAL)

@@ -123,6 +123,11 @@ public class UserController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por 'excluir' a conta do usuário.
+     * Na verdade, será adicionado uma flag de REMOVED no User.class
+     * @return JSON
+     */
     public static Result exclude() {
         ObjectNode jsonResponse = Json.newObject();
         try {
@@ -150,6 +155,15 @@ public class UserController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por buscar uma lista de usuários no qual
+     * bate com a Query informada como parâmetro.
+     * A busca ocorre para três campos do usuário que são:
+     * 1. Nome
+     * 2. E-mail
+     * 3. Login
+     * @return JSON
+     */
     public static Result search() {
         ObjectNode jsonResponse = Json.newObject();
         JsonNode body = request().body().asJson();

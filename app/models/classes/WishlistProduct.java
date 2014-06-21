@@ -9,7 +9,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "wishlist_product")
-@SequenceGenerator(name = WishList.SEQUENCE_NAME, sequenceName = WishList.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
+@SequenceGenerator(name = WishListProduct.SEQUENCE_NAME, sequenceName = WishListProduct.SEQUENCE_NAME, initialValue = 1, allocationSize = 63)
 public class WishListProduct extends Model {
 
     public static final String SEQUENCE_NAME = "wishlist_product_id_seq";

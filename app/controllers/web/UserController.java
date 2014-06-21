@@ -13,11 +13,31 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador responsável pelo tratamento de requisições web referentes a interações com o usuário.
+ */
 public class UserController extends AbstractApplication {
 
+    /**
+     * Mensagem default para aviso na alteração da senha.
+     */
     private static final String DEFAULT_CONFIRM_MAIL_MESSAGE = "Não se esqueça da sua senha!";
+
+    /**
+     * Tempo máximo para resposta de uma interação com o e-mail do usuário.
+     * Caso o tempo seja excedido, o sistema deverá enviar uma nova interação
+     * para o e-mail do usuário.
+     */
     private static final long MAX_TIME_AVERAGE = 604800000;
 
+    /**
+     * Método responsável por exibir a View que irá informar se
+     * o e-mail do usuário foi confirmado com sucesso.
+     * @param ts - Milisegundos
+     * @param h - Hash
+     * @param m - Email
+     * @return View
+     */
     public static Result confirmMail(Long ts, String h, String m) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
@@ -29,9 +49,20 @@ public class UserController extends AbstractApplication {
         userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
         userMailInteraction.update(umi.getId());
 
+        // TODO Está faltando criar o route responsável por este método.
+        // TODO Está faltando criar a View da confirmação do e-mail.
+
         return ok("E-mail confirmado com sucesso!");
     }
 
+    /**
+     * Método responsável por exibir a View que irá ser responsável por
+     * capturar os dados para realizar a recuperação da senha do usuário.
+     * @param ts - Milisegundos
+     * @param h - Hash
+     * @param m - Email
+     * @return View
+     */
     public static Result showRecoveryPassword(Long ts, String h, String m) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
@@ -65,6 +96,14 @@ public class UserController extends AbstractApplication {
         return unauthorized(unauthorized.render("Não existe nenhuma solicitação para alteração de senha..."));
     }
 
+    /**
+     * Método responsável por realizar o processo de recuperação da senha
+     * do usuário baseado na nova senha informada através do formulário web.
+     * Caso seja realizada ou não, o método irá retornar uma View.
+     * @param id - Id do Usuário
+     * @param mailId - Id da Interação por Email
+     * @return View
+     */
     public static Result recoveryPassword(Long id, Long mailId) {
         Map<String, String[]> body = request().body().asFormUrlEncoded();
 

@@ -47,7 +47,7 @@ public class UserMailInteraction extends Model {
     /**
      * Usuário que necessita utilizar algum recurso com o e-mail.
      */
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
 //    @Version

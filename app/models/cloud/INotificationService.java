@@ -5,10 +5,15 @@ import models.classes.Mobile;
 import java.util.List;
 
 /**
- * Created by felipebenezi on 18/06/14.
+ * Interface utilizada para realizar ações nos serviços de
+ * integração para envio de mensagens através da nuvem.
  */
 public interface INotificationService {
 
+    /**
+     * Método responsável por inicializar o processo de envio.
+     * @param mobiles
+     */
     void push(List<Mobile> mobiles);
 
 }

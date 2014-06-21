@@ -4,7 +4,7 @@ import models.AbstractFactory;
 import models.classes.Mobile;
 
 /**
- * Created by felipebenezi on 18/06/14.
+ * Factory de Finder para serviços de notificações.
  */
 public class NotificationServiceFactory extends AbstractFactory<Mobile.OS, INotificationService> {
 

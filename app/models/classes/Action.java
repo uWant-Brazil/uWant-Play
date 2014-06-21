@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 /**
- * Created by felipebenezi on 19/06/14.
+ * Classe Ebean responsável por guardar informações referentes as ações tomadas por usuários.
  */
 @Entity
 @Table(name = "actions")
@@ -32,11 +32,11 @@ public class Action {
     @Column(nullable = false)
     private Type type;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @Column(nullable = false)
     private User from;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @Column(nullable = false)
     private User user;
 

@@ -29,7 +29,7 @@ public class WishList extends Model{
     private String title;
     private String description;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="user_id")
     public User user;
 

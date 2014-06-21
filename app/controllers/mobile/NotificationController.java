@@ -77,6 +77,12 @@ public class NotificationController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por listar todas as ações relacionadas ao usuário.
+     * Estas informações poderão ser utilizadas como log de notificações para
+     * que o usuário possa tomar suas devidas medidas.
+     * @return JSON
+     */
     public static Result listActions() {
         ObjectNode jsonResponse = Json.newObject();
         try {

@@ -9,10 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by felipebenezi on 18/06/14.
+ * Classe utilitária para ações relacionadas a notificações do sistema.
  */
 public abstract class NotificationUtil {
 
+    /**
+     * Método responsável por enviar uma notificação para uma lista de usuários.
+     * @param mobiles - Dispositivos Móveis
+     */
     public static void send(List<Mobile> mobiles) {
         if (mobiles == null || mobiles.size() == 0)
             return;
@@ -32,6 +36,12 @@ public abstract class NotificationUtil {
         }
     }
 
+    /**
+     * Método responsável por enviar uma notificação para uma lista de usuários
+     * de forma assíncrona para um determinado sistema operacional.
+     * @param os - Sistema Operacional
+     * @param mobiles - Dispositivos Móveis
+     */
     private static void pushAsync(final Mobile.OS os, final List<Mobile> mobiles) {
         Thread thread = new Thread() {
 

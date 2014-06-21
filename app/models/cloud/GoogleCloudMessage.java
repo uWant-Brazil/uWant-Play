@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by felipebenezi on 18/06/14.
+ * Classe responsável por efetuar as chamadas ao Google Cloud Message.
+ * Esta integração deve ser feita de modo assíncrono, evitando que a pool de processos
+ * seja ocupada com um processamento longo e duradouro.
  */
 class GoogleCloudMessage implements INotificationService {
 

@@ -13,10 +13,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "user_mobiles")
-@SequenceGenerator(name = Manufacturer.SEQUENCE_NAME, sequenceName = Manufacturer.SEQUENCE_NAME, initialValue = 1, allocationSize = 33)
+@SequenceGenerator(name = Mobile.SEQUENCE_NAME, sequenceName = Mobile.SEQUENCE_NAME, initialValue = 1, allocationSize = 33)
 public class Mobile extends Model {
 
-    private static final String SEQUENCE_NAME = "user_mobiles_id_seq";
+    public static final String SEQUENCE_NAME = "user_mobiles_id_seq";
 
     public enum OS {
         ANDROID, IOS, WINDOWS_PHONE;

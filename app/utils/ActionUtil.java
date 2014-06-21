@@ -4,7 +4,7 @@ import models.classes.Action;
 import models.classes.User;
 
 /**
- * Created by felipebenezi on 20/06/14.
+ * Classe utilitária para ações relacionadas a ações tomadas pelos usuários.
  */
 public abstract class ActionUtil {
 
