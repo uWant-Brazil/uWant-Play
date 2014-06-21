@@ -1,6 +1,7 @@
 package models.cloud;
 
 import models.classes.Mobile;
+import models.classes.Notification;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 class ApplePushNotification implements INotificationService {
 
     @Override
-    public void push(List<Mobile> mobiles) {
+    public void push(String title, String message, List<Mobile> mobiles) {
         // TODO Implementar...
     }
 

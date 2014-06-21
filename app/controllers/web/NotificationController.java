@@ -61,8 +61,8 @@ public class NotificationController extends AbstractApplication {
 
             if (body != null && body.containsKey(ParameterKey.TITLE)
                     && body.containsKey(ParameterKey.MESSAGE) && body.containsKey(ParameterKey.WHEN)) {
-                String title = body.get(ParameterKey.TITLE)[0];
-                String message = body.get(ParameterKey.MESSAGE)[0];
+                final String title = body.get(ParameterKey.TITLE)[0];
+                final String message = body.get(ParameterKey.MESSAGE)[0];
 
                 if (!title.isEmpty() && !message.isEmpty()) {
                     String whenStr = body.get(ParameterKey.WHEN)[0];
@@ -88,13 +88,13 @@ public class NotificationController extends AbstractApplication {
 
                                         @Override
                                         public void run() {
-                                            NotificationUtil.send(mobiles);
+                                            NotificationUtil.send(title, message, mobiles);
                                         }
 
                                     }, Akka.system().dispatcher()
                             );
                         } else {
-                            NotificationUtil.send(mobiles);
+                            NotificationUtil.send(title, message, mobiles);
                         }
 
                         return ok(notification.render("A notificação foi enviada com sucesso!", user));

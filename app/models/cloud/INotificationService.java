@@ -1,6 +1,7 @@
 package models.cloud;
 
 import models.classes.Mobile;
+import models.classes.Notification;
 
 import java.util.List;
 
@@ -14,6 +15,6 @@ public interface INotificationService {
      * Método responsável por inicializar o processo de envio.
      * @param mobiles
      */
-    void push(List<Mobile> mobiles);
+    void push(String title, String message, List<Mobile> mobiles);
 
 }
