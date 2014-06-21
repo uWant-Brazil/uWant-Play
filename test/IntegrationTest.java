@@ -165,6 +165,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -198,13 +199,17 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(Long.valueOf(1));
-                Token token = user.getTokens().get(0);
-                if (token == null) {
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
+                } else {
+                    token = tokens.get(0);
                 }
 
                 ObjectNode body = Json.newObject();
@@ -256,6 +261,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -311,6 +317,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -446,6 +453,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -490,6 +498,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -550,6 +559,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -620,6 +630,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -674,6 +685,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {
@@ -724,6 +736,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                     token = new Token();
                     token.setContent(UUID.randomUUID().toString());
                     token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
                     token.save();
                     token.refresh();
                 } else {

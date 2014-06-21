@@ -39,4 +39,13 @@ public abstract class DateUtil {
         return new SimpleDateFormat(pattern).parse(dateHour);
     }
 
+    /**
+     * Método responsável por ler uma classe Date e transforma-la em String no formato passado.
+     * @param dateHour
+     * @param pattern
+     * @return formattedDate
+     */
+    public static String format(Date dateHour, String pattern) {
+        return new SimpleDateFormat(pattern).format(dateHour);
+    }
 }

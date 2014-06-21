@@ -135,6 +135,7 @@ public class User extends Model implements IMobileUser {
         this.status = status;
     }
 
+    @JsonIgnore
     public Date getModifiedAt() {
         return modifiedAt;
     }
@@ -155,6 +156,7 @@ public class User extends Model implements IMobileUser {
     }
 
     @Override
+    @JsonIgnore
     public List<Mobile> getMobiles() {
         return this.mobiles;
     }

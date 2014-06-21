@@ -61,6 +61,10 @@ public class AbstractApplication extends Controller {
         public static final String MOBILE_IDENTIFIER = "mobileIdentifier";
         public static final String OS = "os";
         public static final String WHEN = "when";
+        public static final String ACTIONS = "actions";
+        public static final String TYPE = "type";
+        public static final String USER_FROM = "userFrom";
+        public static final String EXTRA = "extra";
     }
 
     /**
