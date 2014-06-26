@@ -68,6 +68,8 @@ public class AbstractApplication extends Controller {
         public static final String IDENTIFIER = "identifier";
         public static final String USER = "user";
         public static final String FRIENDS = "friends";
+        public static final String FRIENDSHIP_LEVEL = "friendshipLevel";
+        public static final String PERFIL = "perfil";
     }
 
     /**

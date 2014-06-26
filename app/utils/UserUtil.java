@@ -1,6 +1,7 @@
 package utils;
 
 import controllers.AbstractApplication;
+import models.classes.FriendsCircle;
 import models.classes.SocialProfile;
 import models.classes.User;
 import models.classes.UserMailInteraction;
@@ -187,6 +188,11 @@ public abstract  class UserUtil {
         }
     }
 
+    /**
+     * Método responsável por verificar se o e-mail do usuário foi confirmado.
+     * @param user - Usuário
+     * @return true ou false
+     */
     public static boolean isMailConfirmed(User user) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
@@ -196,4 +202,41 @@ public abstract  class UserUtil {
 
         return (confirmation != null && confirmation.getStatus() == UserMailInteraction.Status.DONE);
     }
+
+    /**
+     * Método responsável por informar se dois usuários são amigos.
+     * Ou seja, se ambos estão em seu círculo de amigos.
+     * @param me - Usuário
+     * @param you - Usuário
+     * @return level - FriendCircle.Level
+     */
+    public static FriendsCircle.FriendshipLevel getFriendshipLevel(User me, User you) {
+        FinderFactory factory = FinderFactory.getInstance();
+        IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
+        FriendsCircle friendsCircleMe = finderCircle.selectUnique(
+                new String[] { AbstractApplication.FinderKey.REQUESTER_ID, AbstractApplication.FinderKey.TARGET_ID},
+                new Object[] { me.getId(), you.getId() });
+
+        FriendsCircle friendsCircleYou = finderCircle.selectUnique(
+                new String[] { AbstractApplication.FinderKey.REQUESTER_ID, AbstractApplication.FinderKey.TARGET_ID},
+                new Object[] { you.getId(), me.getId() });
+
+        FriendsCircle.FriendshipLevel friendshipLevel;
+        if (friendsCircleMe != null && friendsCircleYou != null) {
+            // Ambos estão em seus respectivos círculo de amigos.
+            friendshipLevel = FriendsCircle.FriendshipLevel.MUTUAL;
+        } else if (friendsCircleMe != null) {
+            // O usuário está aguardando que o outro aceite.
+            friendshipLevel = FriendsCircle.FriendshipLevel.WAITING_YOU;
+        } else if (friendsCircleYou != null) {
+            // O outro usuário está aguardando que você aceite.
+            friendshipLevel = FriendsCircle.FriendshipLevel.WAITING_ME;
+        } else {
+            // Nenhum dos dois são amigos.
+            friendshipLevel = FriendsCircle.FriendshipLevel.NONE;
+        }
+
+        return friendshipLevel;
+    }
+
 }

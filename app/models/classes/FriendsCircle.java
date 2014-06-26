@@ -17,6 +17,10 @@ import java.io.Serializable;
 @Table(name = "friends_circle")
 public class FriendsCircle extends Model {
 
+    public enum FriendshipLevel {
+        MUTUAL, WAITING_ME, WAITING_YOU, NONE;
+    }
+
     @EmbeddedId
     private Relation relation;
 

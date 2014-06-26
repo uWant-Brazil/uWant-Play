@@ -5,10 +5,7 @@ import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
-import models.classes.Action;
-import models.classes.FriendsCircle;
-import models.classes.SocialProfile;
-import models.classes.User;
+import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
@@ -240,10 +237,26 @@ public class UserController extends AbstractApplication {
 
                     if (userFounded != null && UserUtil.isAvailable(userFounded)) {
                         JsonNode usersNode = Json.toJson(userFounded);
+                        ObjectNode perfilNode = Json.newObject();
+                        perfilNode.put(ParameterKey.USER, usersNode);
+
+                        if (user.getId() != userFounded.getId()) {
+                            FriendsCircle.FriendshipLevel friendshipLevel = UserUtil.getFriendshipLevel(user, userFounded);
+
+                            IFinder<WishList> wFinder = factory.get(WishList.class);
+                            List<WishList> wishLists = wFinder.selectAll(
+                                    new String[]{ FinderKey.USER_ID, FinderKey.STATUS },
+                                    new Object[]{ userFounded.getId(), WishList.Status.ACTIVE.ordinal() });
+
+                            JsonNode wishListsNode = Json.toJson(wishLists);
+
+                            perfilNode.put(ParameterKey.FRIENDSHIP_LEVEL, friendshipLevel.ordinal());
+                            perfilNode.put(ParameterKey.WISHLIST, wishListsNode);
+                        }
 
                         jsonResponse.put(ParameterKey.STATUS, true);
-                        jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
-                        jsonResponse.put(ParameterKey.USER, usersNode);
+                        jsonResponse.put(ParameterKey.MESSAGE, "A consulta do perfil foi realizada com sucesso.");
+                        jsonResponse.put(ParameterKey.PERFIL, perfilNode);
                     } else {
                         throw new UserDoesntExistException();
                     }
