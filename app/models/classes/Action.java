@@ -19,9 +19,12 @@ public class Action {
 
     public enum Type {
         ADD_FRIENDS_CIRCLE,
+        ACCEPT_FRIENDS_CIRCLE,
         COMMENT,
         MENTION,
-        SHARE;
+        SHARE,
+        WANT,
+        REPORT;
     }
 
     @Id

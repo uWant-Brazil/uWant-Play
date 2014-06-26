@@ -13,6 +13,9 @@ public abstract class ActionUtil {
             case ADD_FRIENDS_CIRCLE:
                 return addFriendsCircleMessage(action);
 
+            case ACCEPT_FRIENDS_CIRCLE:
+                return acceptedFriendsCircleMessage(action);
+
             case COMMENT:
                 return commentMessage(action);
 
@@ -21,6 +24,12 @@ public abstract class ActionUtil {
 
             case SHARE:
                 return shareMessage(action);
+
+            case REPORT:
+                return reportActionMessage(action);
+
+            case WANT:
+                return wantActionMessage(action);
 
             default:
                 throw new IllegalAccessException("A ação não possui nenhum tipo definido.");
@@ -71,6 +80,47 @@ public abstract class ActionUtil {
         builder.append(from.getName());
         builder.append(" ");
         builder.append("deseja adicionar você a seu círculo de amigos.");
+
+        return builder.toString();
+    }
+
+    private static String acceptedFriendsCircleMessage(Action action) {
+        StringBuilder builder = new StringBuilder();
+
+        User from = action.getFrom();
+        builder.append(from.getName());
+        builder.append(" ");
+        builder.append("acaba de aceitar que você participe do seu círculo de amigos.");
+
+        return builder.toString();
+    }
+
+    private static String reportActionMessage(Action action) {
+        StringBuilder builder = new StringBuilder();
+
+        User user = action.getUser();
+        User from = action.getFrom();
+        builder.append(from.getName());
+        builder.append(" ");
+        builder.append("acaba de reportar a ação");
+        builder.append(" ");
+        builder.append("(");
+        builder.append(action.getId());
+        builder.append(")");
+        builder.append(" realizada pelo usuário ");
+        builder.append(user.getName());
+        builder.append(".");
+
+        return builder.toString();
+    }
+
+    private static String wantActionMessage(Action action) {
+        StringBuilder builder = new StringBuilder();
+
+        User from = action.getFrom();
+        builder.append(from.getName());
+        builder.append(" ");
+        builder.append("acaba de 'wantar' sua ação!");
 
         return builder.toString();
     }
