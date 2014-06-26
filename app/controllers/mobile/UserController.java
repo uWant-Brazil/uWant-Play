@@ -12,6 +12,8 @@ import models.exceptions.*;
 import play.db.ebean.Model;
 import play.libs.Json;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.MobileAuthenticator;
 import utils.DateUtil;
 import utils.RegexUtil;
 import utils.UserUtil;
@@ -23,6 +25,7 @@ import java.util.List;
 /**
  * Controlador responsável pelo tratamento de requisições mobile referentes a interações com o usuário.
  */
+@Security.Authenticated(MobileAuthenticator.class)
 public class UserController extends AbstractApplication {
 
     /**

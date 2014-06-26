@@ -15,6 +15,8 @@ import models.exceptions.JSONBodyException;
 import models.exceptions.UWException;
 import play.libs.Json;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.MobileAuthenticator;
 import utils.DateUtil;
 import utils.UserUtil;
 
@@ -26,6 +28,7 @@ import java.util.List;
  * Controlador responsável pelo tratamento de requisições relacionadas a notificações do sistema
  * enviadas para os dispositivos móveis vinculados a usuários.
  */
+@Security.Authenticated(MobileAuthenticator.class)
 public class NotificationController extends AbstractApplication {
 
     /**

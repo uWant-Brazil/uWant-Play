@@ -1,11 +1,15 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.classes.Token;
 import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.TokenException;
+import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
+import play.mvc.Result;
 
 import java.util.UUID;
 
@@ -162,6 +166,17 @@ public class AbstractApplication extends Controller {
             token.delete();
             user.refresh();
         }
+    }
+
+    public static String getToken(Http.Request request) {
+        return request.getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+    }
+
+    public static Result invalidMobileSession() {
+        ObjectNode jsonResponse = Json.newObject();
+        jsonResponse.put(ParameterKey.ERROR, -999);
+        jsonResponse.put(ParameterKey.MESSAGE, "Você não está autorizado a realizar este tipo de ação.");
+        return ok(jsonResponse);
     }
 
 }

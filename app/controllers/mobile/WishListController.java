@@ -9,6 +9,8 @@ import models.database.IFinder;
 import models.exceptions.*;
 import play.libs.Json;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.MobileAuthenticator;
 import utils.UserUtil;
 import utils.WishListUtil;
 
@@ -18,6 +20,7 @@ import java.util.List;
 /**
  * Controlador responsável pelo tratamento em requisições mobile relacionados a lista de desejos.
  */
+@Security.Authenticated(MobileAuthenticator.class)
 public class WishListController extends AbstractApplication {
 
     /**

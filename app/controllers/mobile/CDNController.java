@@ -13,6 +13,8 @@ import play.libs.F;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.MobileAuthenticator;
 import utils.CDNUtil;
 
 import java.io.File;
@@ -21,6 +23,7 @@ import java.util.Map;
 /**
  * Controlador responsável pelo tratamento de requisições mobile para CDN.
  */
+@Security.Authenticated(MobileAuthenticator.class)
 public class CDNController extends AbstractApplication {
 
     /**

@@ -10,7 +10,10 @@ import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
 import play.libs.Json;
+import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.MobileAuthenticator;
 import utils.RegexUtil;
 import utils.UserUtil;
 
@@ -75,6 +78,7 @@ public class AuthenticationController extends AbstractApplication {
      * deverá funcionar corretamente.
      * @return JSON
      */
+    @Security.Authenticated(MobileAuthenticator.class)
     public static Result logoff() {
         ObjectNode jsonResponse = Json.newObject();
         try {
