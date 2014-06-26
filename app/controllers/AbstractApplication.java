@@ -67,6 +67,7 @@ public class AbstractApplication extends Controller {
         public static final String EXTRA = "extra";
         public static final String IDENTIFIER = "identifier";
         public static final String USER = "user";
+        public static final String FRIENDS = "friends";
     }
 
     /**
@@ -87,6 +88,8 @@ public class AbstractApplication extends Controller {
         public static final String PRODUCT_ID = "product_id";
         public static final String HASH = "hash";
         public static final String TYPE = "type";
+        public static final String REQUESTER_ID = "requester_id";
+        public static final String TARGET_ID = "target_id";
     }
 
     /**

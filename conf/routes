@@ -15,7 +15,6 @@ POST    /v1/mobile/user/search          controllers.mobile.UserController.search
 POST    /v1/mobile/social/signUp        controllers.mobile.SocialController.signUp()
 POST    /v1/mobile/wishlist/create      controllers.mobile.WishListController.create()
 POST    /v1/mobile/wishlist/update      controllers.mobile.WishListController.update()
-#POST    /v1/mobile/wishlist/reload      controllers.mobile.WishListController.reload()
 POST    /v1/mobile/wishlist/list      controllers.mobile.WishListController.list()
 POST    /v1/mobile/wishlist/listProducts      controllers.mobile.WishListController.getProductsByWishList()
 POST    /v1/mobile/wishlist/delete      controllers.mobile.WishListController.delete()
@@ -25,6 +24,7 @@ POST    /v1/mobile/cdn/retrieve                 controllers.mobile.CDNController
 POST    /v1/mobile/notification/register        controllers.mobile.NotificationController.register()
 POST    /v1/mobile/notification/list            controllers.mobile.NotificationController.listActions()
 POST    /v1/mobile/user/list                    controllers.mobile.UserController.list()
+POST    /v1/mobile/user/circle/join             controllers.mobile.UserController.joinCircle()
 
 # Web methods
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)

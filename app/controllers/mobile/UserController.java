@@ -5,6 +5,7 @@ import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
+import models.classes.FriendsCircle;
 import models.classes.SocialProfile;
 import models.classes.User;
 import models.database.FinderFactory;
@@ -242,6 +243,69 @@ public class UserController extends AbstractApplication {
                         jsonResponse.put(ParameterKey.STATUS, true);
                         jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
                         jsonResponse.put(ParameterKey.USER, usersNode);
+                    } else {
+                        throw new UserDoesntExistException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+        return ok(jsonResponse);
+    }
+
+    /**
+     * Método responsável por adicionar ou aceitar o usuário
+     * em seu círculo de amigos.
+     * @return JSON
+     */
+    public static Result joinCircle() {
+        ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (user != null && UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.hasNonNull(ParameterKey.LOGIN)) {
+                    String login = body.get(ParameterKey.LOGIN).asText();
+
+                    FinderFactory factory = FinderFactory.getInstance();
+                    IFinder<User> finder = factory.get(User.class);
+                    User userTarget = finder.selectUnique(
+                            new String[] { FinderKey.LOGIN },
+                            new Object[] { login });
+
+                    if (userTarget != null && UserUtil.isAvailable(userTarget)) {
+                        IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
+                        FriendsCircle friendsCircle = finderCircle.selectUnique(
+                                new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID},
+                                new Object[] { user.getId(), userTarget.getId() });
+
+                        boolean isFriends = false;
+                        if (friendsCircle == null) {
+                            FriendsCircle.Relation relation = new FriendsCircle.Relation();
+                            relation.setRequesterId(user.getId());
+                            relation.setTargetId(userTarget.getId());
+
+                            friendsCircle = new FriendsCircle();
+                            friendsCircle.setRelation(relation);
+                            friendsCircle.save();
+
+                            FriendsCircle inverseFriendsCircle = finderCircle.selectUnique(
+                                    new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID},
+                                    new Object[] { userTarget.getId(), user.getId() });
+                            isFriends = (inverseFriendsCircle != null);
+                        }
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, "O usuário " + userTarget.getLogin() + " foi solicitado como amigo.");
+                        jsonResponse.put(ParameterKey.FRIENDS, isFriends);
                     } else {
                         throw new UserDoesntExistException();
                     }
