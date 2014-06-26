@@ -2,6 +2,7 @@ package models.classes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.data.format.Formats;
+import play.db.ebean.Model;
 import utils.ActionUtil;
 
 import javax.persistence.*;
@@ -13,7 +14,7 @@ import java.util.Date;
 @Entity
 @Table(name = "actions")
 @SequenceGenerator(name = Action.SEQUENCE_NAME, sequenceName = Action.SEQUENCE_NAME, initialValue = 1, allocationSize = 37)
-public class Action {
+public class Action extends Model {
 
     public static final String SEQUENCE_NAME = "actions_id_seq";
 

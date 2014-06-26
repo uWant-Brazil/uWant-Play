@@ -5,6 +5,7 @@ import com.avaje.ebean.ExpressionList;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
+import models.classes.Action;
 import models.classes.FriendsCircle;
 import models.classes.SocialProfile;
 import models.classes.User;
@@ -302,6 +303,19 @@ public class UserController extends AbstractApplication {
                                     new Object[] { userTarget.getId(), user.getId() });
                             isFriends = (inverseFriendsCircle != null);
                         }
+
+                        Action action = new Action();
+                        action.setCreatedAt(new Date());
+                        if (isFriends) {
+                            action.setType(Action.Type.ACCEPT_FRIENDS_CIRCLE);
+                            action.setFrom(user);
+                            action.setUser(userTarget);
+                        } else {
+                            action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
+                            action.setFrom(userTarget);
+                            action.setUser(user);
+                        }
+                        action.save();
 
                         jsonResponse.put(ParameterKey.STATUS, true);
                         jsonResponse.put(ParameterKey.MESSAGE, "O usuário " + userTarget.getLogin() + " foi solicitado como amigo.");
