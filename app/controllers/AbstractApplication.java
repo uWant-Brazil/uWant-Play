@@ -66,6 +66,7 @@ public class AbstractApplication extends Controller {
         public static final String USER_FROM = "userFrom";
         public static final String EXTRA = "extra";
         public static final String IDENTIFIER = "identifier";
+        public static final String USER = "user";
     }
 
     /**

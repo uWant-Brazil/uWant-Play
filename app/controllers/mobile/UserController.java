@@ -216,4 +216,48 @@ public class UserController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por listar um usuário específico
+     * baseado no parâmetro de LOGIN enviado na requisição.
+     * @return JSON
+     */
+    public static Result list() {
+        ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (user != null && UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.hasNonNull(ParameterKey.LOGIN)) {
+                    String login = body.get(ParameterKey.LOGIN).asText();
+
+                    FinderFactory factory = FinderFactory.getInstance();
+                    IFinder<User> finder = factory.get(User.class);
+                    User userFounded = finder.selectUnique(
+                            new String[] { FinderKey.LOGIN },
+                            new Object[] { login });
+
+                    if (userFounded != null && UserUtil.isAvailable(userFounded)) {
+                        JsonNode usersNode = Json.toJson(userFounded);
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
+                        jsonResponse.put(ParameterKey.USER, usersNode);
+                    } else {
+                        throw new UserDoesntExistException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+        return ok(jsonResponse);
+    }
+
 }

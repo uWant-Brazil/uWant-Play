@@ -776,4 +776,59 @@ public class IntegrationTest extends AbstractIntegrationTest {
         });
     }
 
+    @Test
+    public void successfulUserListTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectUnique(Long.valueOf(1));
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.LOGIN, user.getLogin());
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/list")
+                        .withJsonBody(body)
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent());
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == Http.Status.OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+
+                assertThat(jsonResponse.hasNonNull(AbstractApplication.ParameterKey.USER)).isTrue();
+
+                JsonNode jsonUser = jsonResponse.get(AbstractApplication.ParameterKey.USER);
+                assertThat(jsonUser).isNotNull();
+                assertThat(jsonUser.isObject()).isTrue();
+
+                assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.LOGIN)).isTrue();
+                assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.BIRTHDAY)).isTrue();
+                assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.NAME)).isTrue();
+                assertThat(jsonUser.hasNonNull(AbstractApplication.ParameterKey.GENDER)).isTrue();
+            }
+
+        });
+    }
+
 }

@@ -34,7 +34,11 @@ public class User extends Model implements IMobileUser {
     private String password;
     private String mail;
     private String name;
+
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date birthday;
+
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date since;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
@@ -95,7 +99,6 @@ public class User extends Model implements IMobileUser {
         this.name = name;
     }
 
-    @JsonIgnore
     public Date getBirthday() {
         return birthday;
     }
@@ -117,7 +120,6 @@ public class User extends Model implements IMobileUser {
         this.tokens = tokens;
     }
 
-    @JsonIgnore
     public Gender getGender() {
         return gender;
     }
@@ -169,5 +171,13 @@ public class User extends Model implements IMobileUser {
     @JsonIgnore
     public List<WishList> getWishList() {
         return wishList;
+    }
+
+    public void setMobiles(List<Mobile> mobiles) {
+        this.mobiles = mobiles;
+    }
+
+    public void setWishList(List<WishList> wishList) {
+        this.wishList = wishList;
     }
 }
