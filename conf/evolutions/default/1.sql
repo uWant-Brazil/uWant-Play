@@ -11,7 +11,7 @@ create table actions (
   extra                     varchar(255),
   created_at                timestamp not null,
   modified_at               timestamp not null,
-  constraint ck_actions_type check (type in (0,1,2,3)),
+  constraint ck_actions_type check (type in (0,1,2,3,4,5,6)),
   constraint pk_actions primary key (id))
 ;
 
