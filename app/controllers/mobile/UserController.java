@@ -324,4 +324,68 @@ public class UserController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por remover o usuário do seu
+     * círculo de amigos. Além disso, também é capaz de desfazer
+     * a solicitação de amizade que ainda não foi aceita pelo usuário.
+     *
+     * OBS: Uma vez desfeita a solicitação, o usuário que está com a
+     * notificação de amizade não poderá mais aceita-la. Por isso, não
+     * é interessante disponibilizar este recurso enquanto não vinculamos
+     * uma ação de adição ao círculo de amigos.
+     * @return JSON
+     */
+    public static Result leaveCircle() {
+        ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (user != null && UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.hasNonNull(ParameterKey.LOGIN)) {
+                    String login = body.get(ParameterKey.LOGIN).asText();
+
+                    FinderFactory factory = FinderFactory.getInstance();
+                    IFinder<User> finder = factory.get(User.class);
+                    User userTarget = finder.selectUnique(
+                            new String[] { FinderKey.LOGIN },
+                            new Object[] { login });
+
+                    if (userTarget != null && UserUtil.isAvailable(userTarget)) {
+                        IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
+                        FriendsCircle friendsCircle = finderCircle.selectUnique(
+                                new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID},
+                                new Object[] { user.getId(), userTarget.getId() });
+
+                        if (friendsCircle != null) {
+                            friendsCircle.delete();
+                        }
+
+                        friendsCircle = finderCircle.selectUnique(
+                                new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID},
+                                new Object[] { userTarget.getId(), user.getId() });
+
+                        if (friendsCircle != null) {
+                            friendsCircle.delete();
+                        }
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, "O usuário " + userTarget.getLogin() + " foi removido como amigo.");
+                    } else {
+                        throw new UserDoesntExistException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+        return ok(jsonResponse);
+    }
+
 }

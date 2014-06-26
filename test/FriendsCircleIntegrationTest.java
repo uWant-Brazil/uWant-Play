@@ -106,4 +106,50 @@ public class FriendsCircleIntegrationTest extends AbstractIntegrationTest {
 
         });
     }
+
+    @Test
+    public void leaveCircleTest() {
+        running(fakeApplication(), new Runnable() {
+
+            @Override
+            public void run() {
+                FinderFactory factory = FinderFactory.getInstance();
+                IFinder<User> finder = factory.get(User.class);
+                User user = finder.selectUnique(Long.valueOf(1));
+                List<Token> tokens = user.getTokens();
+                Token token;
+                if (tokens == null || tokens.size() == 0) {
+                    token = new Token();
+                    token.setContent(UUID.randomUUID().toString());
+                    token.setUser(user);
+                    token.setTarget(Token.Target.MOBILE);
+                    token.save();
+                    token.refresh();
+                } else {
+                    token = tokens.get(0);
+                }
+
+                User userTarget = finder.selectUnique(Long.valueOf(2));
+
+                ObjectNode body = Json.newObject();
+                body.put(AbstractApplication.ParameterKey.LOGIN, userTarget.getLogin());
+
+                FakeRequest fakeRequest = new FakeRequest(POST, "/v1/mobile/user/circle/leave")
+                        .withHeader(AbstractApplication.HeaderKey.HEADER_AUTHENTICATION_TOKEN, token.getContent())
+                        .withJsonBody(body);
+                Result result = route(fakeRequest);
+
+                boolean status = (status(result) == OK);
+
+                assertThat(result).isNotNull();
+                assertThat(status).isTrue();
+
+                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                JsonNode jsonResponse = Json.parse(responseBody);
+
+                assertStatusMessage(jsonResponse, status);
+            }
+
+        });
+    }
 }
