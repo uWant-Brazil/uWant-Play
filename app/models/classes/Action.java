@@ -7,6 +7,7 @@ import utils.ActionUtil;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Classe Ebean responsável por guardar informações referentes as ações tomadas por usuários.
@@ -48,12 +49,15 @@ public class Action extends Model {
     private String extra;
 
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private Date createdAt;
 
     @Version
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
+
+    @OneToMany(mappedBy = "action", fetch = FetchType.LAZY)
+    private List<Comment> comments;
 
     @JsonIgnore
     public long getId() {
@@ -113,6 +117,14 @@ public class Action extends Model {
 
     public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
     }
 
     @Override
