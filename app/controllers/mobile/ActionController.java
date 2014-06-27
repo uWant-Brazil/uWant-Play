@@ -3,10 +3,7 @@ package controllers.mobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
-import models.classes.Action;
-import models.classes.Comment;
-import models.classes.IMobileUser;
-import models.classes.User;
+import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.AuthenticationException;
@@ -62,6 +59,62 @@ public class ActionController extends AbstractApplication {
                         actionComment.setFrom(user);
                         actionComment.setUser(userAction);
                         actionComment.setType(Action.Type.COMMENT);
+                        actionComment.save();
+
+                        IMobileUser mobileUser = userAction;
+                        NotificationUtil.send(actionComment, mobileUser);
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, "O comentário foi adicionado com sucesso.");
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+        }
+
+        return ok(jsonResponse);
+    }
+
+    /**
+     * Método responsável por 'wantar' uma ação compartilhada/criada por um usuário.
+     * @return
+     */
+    public static Result want() {
+        ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.has(ParameterKey.ACTION_ID)) {
+                    long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
+
+                    if (actionId > 0) {
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<Action> finder = factory.get(Action.class);
+
+                        Action action = finder.selectUnique(actionId);
+                        User userAction = action.getUser();
+
+                        Want want = new Want();
+                        want.setUser(user);
+                        want.setAction(action);
+                        want.save();
+
+                        Action actionComment = new Action();
+                        actionComment.setCreatedAt(new Date());
+                        actionComment.setFrom(user);
+                        actionComment.setUser(userAction);
+                        actionComment.setType(Action.Type.WANT);
                         actionComment.save();
 
                         IMobileUser mobileUser = userAction;
