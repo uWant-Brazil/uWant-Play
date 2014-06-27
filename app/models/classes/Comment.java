@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
+import java.util.Date;
 
 /**
  * Classe Ebean responsável por guardar informações referentes aos comentários realizados por
@@ -30,6 +31,9 @@ public class Comment extends Model {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @Column(nullable = false, updatable = false)
     private User user;
+
+    @Column(nullable = false, updatable = false)
+    private Date since;
 
     @JsonIgnore
     public long getId() {
@@ -64,5 +68,13 @@ public class Comment extends Model {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Date getSince() {
+        return since;
+    }
+
+    public void setSince(Date since) {
+        this.since = since;
     }
 }

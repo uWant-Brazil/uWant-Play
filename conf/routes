@@ -26,6 +26,7 @@ POST    /v1/mobile/notification/list            controllers.mobile.NotificationC
 POST    /v1/mobile/user/list                    controllers.mobile.UserController.list()
 POST    /v1/mobile/user/circle/join             controllers.mobile.UserController.joinCircle()
 POST    /v1/mobile/user/circle/leave            controllers.mobile.UserController.leaveCircle()
+POST    /v1/mobile/action/comment               controllers.mobile.ActionController.comment()
 
 # Web methods
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)

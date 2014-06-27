@@ -74,6 +74,8 @@ public class AbstractApplication extends Controller {
         public static final String FRIENDS = "friends";
         public static final String FRIENDSHIP_LEVEL = "friendshipLevel";
         public static final String PERFIL = "perfil";
+        public static final String ACTION_ID = "actionId";
+        public static final String COMMENT = "comment";
     }
 
     /**
