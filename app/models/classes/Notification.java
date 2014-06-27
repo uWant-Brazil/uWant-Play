@@ -14,7 +14,7 @@ import java.util.Date;
 @SequenceGenerator(name = Notification.SEQUENCE_NAME, sequenceName = Notification.SEQUENCE_NAME, initialValue = 1, allocationSize = 13)
 public class Notification extends Model {
 
-    public static final String SEQUENCE_NAME = "notifications_id_seq";
+    public static final String SEQUENCE_NAME = "user_notifications_id_seq";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
@@ -22,20 +22,20 @@ public class Notification extends Model {
 
     private boolean delivered;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private String message;
 
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private String uniqueIdentifier;
 
     private String serviceIdentifier;
     private String extra;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @Column(nullable = false)
+    @Column(nullable = false, updatable = false)
     private User user;
 
     @Version

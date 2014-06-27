@@ -58,7 +58,7 @@ public class User extends Model implements IMobileUser {
     private Date modifiedAt;
 
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
-    public List<WishList> wishList;
+    private List<WishList> wishList;
 
     public User() {
         // Do nothing...
