@@ -1,5 +1,6 @@
 package utils;
 
+import models.classes.IMobileUser;
 import models.classes.Mobile;
 import models.cloud.INotificationService;
 import models.cloud.NotificationServiceFactory;
@@ -14,7 +15,44 @@ import java.util.List;
 public abstract class NotificationUtil {
 
     /**
-     * Método responsável por enviar uma notificação para uma lista de usuários.
+     * Título padrão para envio de notificações.
+     */
+    private static final String DEFAULT_TITLE = "uWant";
+
+    /**
+     * Método responsável por enviar uma notificação para um usuário a partir
+     * dos dispositivos registrados para o mesmo. Além disso, utiliza um
+     * título padrão para envio da notificação - "uWant".
+     * @param message
+     * @param mobileUser - Usuário
+     */
+    public static void send(String message, IMobileUser mobileUser) {
+        send(message, mobileUser.getMobiles());
+    }
+
+    /**
+     * Método responsável por enviar uma notificação para um usuário a partir
+     * dos dispositivos registrados para o mesmo.
+     * @param title
+     * @param message
+     * @param mobileUser - Usuário
+     */
+    public static void send(String title, String message, IMobileUser mobileUser) {
+        send(title, message, mobileUser.getMobiles());
+    }
+
+    /**
+     * Método responsável por enviar uma notificação para uma lista de dispositivos móveis.
+     * Além disso, utiliza um título padrão nas mensagem - "uWant".
+     * @param message
+     * @param mobiles - Dispositivos Móveis
+     */
+    public static void send(String message, List<Mobile> mobiles) {
+        send(DEFAULT_TITLE, message, mobiles);
+    }
+
+    /**
+     * Método responsável por enviar uma notificação para uma lista de dispositivos móveis.
      * @param title
      * @param message
      * @param mobiles - Dispositivos Móveis
@@ -39,7 +77,7 @@ public abstract class NotificationUtil {
     }
 
     /**
-     * Método responsável por enviar uma notificação para uma lista de usuários
+     * Método responsável por enviar uma notificação para uma lista de dispositivos móveis
      * de forma assíncrona para um determinado sistema operacional.
      * @param title
      * @param message

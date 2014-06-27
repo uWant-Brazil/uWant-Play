@@ -15,6 +15,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
 import utils.DateUtil;
+import utils.NotificationUtil;
 import utils.RegexUtil;
 import utils.UserUtil;
 
@@ -320,18 +321,26 @@ public class UserController extends AbstractApplication {
                             isFriends = (inverseFriendsCircle != null);
                         }
 
+                        IMobileUser mobileUser;
                         Action action = new Action();
                         action.setCreatedAt(new Date());
                         if (isFriends) {
                             action.setType(Action.Type.ACCEPT_FRIENDS_CIRCLE);
                             action.setFrom(user);
                             action.setUser(userTarget);
+
+                            mobileUser = userTarget;
                         } else {
                             action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
                             action.setFrom(userTarget);
                             action.setUser(user);
+
+                            mobileUser = user;
                         }
                         action.save();
+
+                        String message = action.toString();
+                        NotificationUtil.send(message, mobileUser);
 
                         jsonResponse.put(ParameterKey.STATUS, true);
                         jsonResponse.put(ParameterKey.MESSAGE, "O usuário " + userTarget.getLogin() + " foi solicitado como amigo.");
