@@ -1,6 +1,7 @@
 package models.cloud;
 
 import controllers.AbstractApplication;
+import models.classes.Action;
 import models.classes.Mobile;
 import models.classes.Notification;
 import models.classes.User;
@@ -43,7 +44,8 @@ class GoogleCloudMessage implements INotificationService {
     private static final String DEFAULT_COLLAPSE_KEY = "default_notification";
 
     @Override
-    public void push(String title, String message, List<Mobile> mobiles) {
+    public void push(String title, Action action, List<Mobile> mobiles) {
+        String message = action.toString();
         String uniqueIdentifier = UUID.randomUUID().toString();
 
         Message cloudMessage = new Message.Builder()
@@ -57,7 +59,7 @@ class GoogleCloudMessage implements INotificationService {
 
         Sender sender = new Sender(API_KEY);
         try {
-            pushExecute(title, message, mobiles, uniqueIdentifier, cloudMessage, sender);
+            pushExecute(title, message, action, mobiles, uniqueIdentifier, cloudMessage, sender);
         } catch (IOException e) {
             e.printStackTrace();
             // TODO Tratamento do erro...
@@ -70,13 +72,14 @@ class GoogleCloudMessage implements INotificationService {
      * do dispositivo móvel junto ao Google Inc.
      * @param title
      * @param message
+     * @param action
      * @param mobiles
      * @param uniqueIdentifier
      * @param cloudMessage
      * @param sender
      * @throws IOException
      */
-    private void pushExecute(String title, String message, List<Mobile> mobiles, String uniqueIdentifier, Message cloudMessage, Sender sender) throws IOException {
+    private void pushExecute(String title, String message, Action action, List<Mobile> mobiles, String uniqueIdentifier, Message cloudMessage, Sender sender) throws IOException {
         List<String> identifiers = new ArrayList<String>(mobiles.size());
         for (Mobile mobile : mobiles) {
             String identifier = mobile.getIdentifier();
@@ -95,13 +98,14 @@ class GoogleCloudMessage implements INotificationService {
                 User user = mobile.getUser();
 
                 Notification notification = new Notification();
-                notification.setDelivered(false);
+                notification.setDelivered(false); // TODO Route para saber que recebeu!
                 notification.setTitle(title);
                 notification.setMessage(message);
                 notification.setUser(user);
                 notification.setUniqueIdentifier(uniqueIdentifier);
                 notification.setServiceIdentifier(result.getMessageId());
                 notification.setExtra("MessageId=" + result.getMessageId() + ";");
+                notification.setAction(action);
                 notification.save();
             } else if (result.getErrorCodeName() != null) {
                 // Error...
@@ -122,7 +126,7 @@ class GoogleCloudMessage implements INotificationService {
         }
 
         if (retryMobiles != null) {
-            pushExecute(title, message, retryMobiles, uniqueIdentifier, cloudMessage, sender);
+            pushExecute(title, message, action, retryMobiles, uniqueIdentifier, cloudMessage, sender);
         }
     }
 

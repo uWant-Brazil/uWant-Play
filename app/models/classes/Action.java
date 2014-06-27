@@ -26,7 +26,8 @@ public class Action extends Model {
         MENTION,
         SHARE,
         WANT,
-        REPORT;
+        REPORT,
+        MESSAGE;
     }
 
     @Id

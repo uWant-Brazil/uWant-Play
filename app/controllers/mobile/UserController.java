@@ -339,8 +339,7 @@ public class UserController extends AbstractApplication {
                         }
                         action.save();
 
-                        String message = action.toString();
-                        NotificationUtil.send(message, mobileUser);
+                        NotificationUtil.send(action, mobileUser);
 
                         jsonResponse.put(ParameterKey.STATUS, true);
                         jsonResponse.put(ParameterKey.MESSAGE, "O usuário " + userTarget.getLogin() + " foi solicitado como amigo.");

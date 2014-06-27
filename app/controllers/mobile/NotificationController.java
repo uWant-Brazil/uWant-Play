@@ -3,10 +3,7 @@ package controllers.mobile;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
-import models.classes.Action;
-import models.classes.Mobile;
-import models.classes.Token;
-import models.classes.User;
+import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.AuthenticationException;
@@ -99,17 +96,18 @@ public class NotificationController extends AbstractApplication {
 
                     if (startIndex < endIndex) {
                         FinderFactory factory = FinderFactory.getInstance();
-                        IFinder<Action> finder = factory.get(Action.class);
+                        IFinder<Notification> finder = factory.get(Notification.class);
 
-                        List<Action> actions = finder.getFinder()
+                        List<Notification> notifications = finder.getFinder()
                                 .where()
                                 .eq(FinderKey.USER_ID, user.getId())
                                 .setFirstRow(startIndex)
                                 .setMaxRows(endIndex - startIndex)
                                 .findList();
 
-                        List<ObjectNode> arrayActions = new ArrayList<ObjectNode>(actions.size() + 5);
-                        for (Action action : actions) {
+                        List<ObjectNode> arrayActions = new ArrayList<ObjectNode>(notifications.size() + 5);
+                        for (Notification notification : notifications) {
+                            Action action = notification.getAction();
                             String message = action.toString();
                             if (message != null) {
                                 int typeOrdinal = action.getType().ordinal();

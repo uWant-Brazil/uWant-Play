@@ -1,6 +1,7 @@
 package controllers.web;
 
 import controllers.AbstractApplication;
+import models.classes.Action;
 import models.classes.Mobile;
 import models.classes.User;
 import models.database.FinderFactory;
@@ -68,6 +69,13 @@ public class NotificationController extends AbstractApplication {
                     String whenStr = body.get(ParameterKey.WHEN)[0];
 
                     final List<Mobile> mobiles = user.getMobiles();
+                    final Action action = new Action();
+                    action.setType(Action.Type.MESSAGE);
+                    action.setCreatedAt(new Date());
+                    action.setUser(user);
+                    action.setFrom(finder.selectUnique(Long.valueOf(1)));
+                    action.setExtra("Mensagem enviada por ZEUS!");
+                    action.save();
 
                     try {
                         if (mobiles == null || mobiles.size() == 0)
@@ -88,13 +96,13 @@ public class NotificationController extends AbstractApplication {
 
                                         @Override
                                         public void run() {
-                                            NotificationUtil.send(title, message, mobiles);
+                                            NotificationUtil.send(title, action, mobiles);
                                         }
 
                                     }, Akka.system().dispatcher()
                             );
                         } else {
-                            NotificationUtil.send(title, message, mobiles);
+                            NotificationUtil.send(title, action, mobiles);
                         }
 
                         return ok(notification.render("A notificação foi enviada com sucesso!", user));

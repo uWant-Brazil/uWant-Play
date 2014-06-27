@@ -34,12 +34,16 @@ public class Notification extends Model {
     private String serviceIdentifier;
     private String extra;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @Column(nullable = false, updatable = false)
     private User user;
 
     @Version
     private Date modifiedAt;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @Column(nullable = false, updatable = false)
+    private Action action;
 
     @JsonIgnore
     public long getId() {
@@ -122,4 +126,11 @@ public class Notification extends Model {
         this.modifiedAt = modifiedAt;
     }
 
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
 }

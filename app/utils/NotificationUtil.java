@@ -1,5 +1,6 @@
 package utils;
 
+import models.classes.Action;
 import models.classes.IMobileUser;
 import models.classes.Mobile;
 import models.cloud.INotificationService;
@@ -23,41 +24,41 @@ public abstract class NotificationUtil {
      * Método responsável por enviar uma notificação para um usuário a partir
      * dos dispositivos registrados para o mesmo. Além disso, utiliza um
      * título padrão para envio da notificação - "uWant".
-     * @param message
+     * @param action
      * @param mobileUser - Usuário
      */
-    public static void send(String message, IMobileUser mobileUser) {
-        send(message, mobileUser.getMobiles());
+    public static void send(Action action, IMobileUser mobileUser) {
+        send(action, mobileUser.getMobiles());
     }
 
     /**
      * Método responsável por enviar uma notificação para um usuário a partir
      * dos dispositivos registrados para o mesmo.
      * @param title
-     * @param message
+     * @param action
      * @param mobileUser - Usuário
      */
-    public static void send(String title, String message, IMobileUser mobileUser) {
-        send(title, message, mobileUser.getMobiles());
+    public static void send(String title, Action action, IMobileUser mobileUser) {
+        send(title, action, mobileUser.getMobiles());
     }
 
     /**
      * Método responsável por enviar uma notificação para uma lista de dispositivos móveis.
      * Além disso, utiliza um título padrão nas mensagem - "uWant".
-     * @param message
+     * @param action
      * @param mobiles - Dispositivos Móveis
      */
-    public static void send(String message, List<Mobile> mobiles) {
-        send(DEFAULT_TITLE, message, mobiles);
+    public static void send(Action action, List<Mobile> mobiles) {
+        send(DEFAULT_TITLE, action, mobiles);
     }
 
     /**
      * Método responsável por enviar uma notificação para uma lista de dispositivos móveis.
      * @param title
-     * @param message
+     * @param action
      * @param mobiles - Dispositivos Móveis
      */
-    public static void send(String title, String message, List<Mobile> mobiles) {
+    public static void send(String title, Action action, List<Mobile> mobiles) {
         if (mobiles == null || mobiles.size() == 0)
             return;
 
@@ -71,7 +72,7 @@ public abstract class NotificationUtil {
             }
 
             if (notificationMobiles.size() > 0) {
-                pushAsync(title, message, os, mobiles);
+                pushAsync(title, action, os, mobiles);
             }
         }
     }
@@ -80,11 +81,11 @@ public abstract class NotificationUtil {
      * Método responsável por enviar uma notificação para uma lista de dispositivos móveis
      * de forma assíncrona para um determinado sistema operacional.
      * @param title
-     * @param message
+     * @param action
      * @param os - Sistema Operacional
      * @param mobiles - Dispositivos Móveis
      */
-    private static void pushAsync(String title, String message, final Mobile.OS os, final List<Mobile> mobiles) {
+    private static void pushAsync(String title, Action action, final Mobile.OS os, final List<Mobile> mobiles) {
         Thread thread = new Thread() {
 
             @Override
@@ -92,7 +93,7 @@ public abstract class NotificationUtil {
                 super.run();
                 NotificationServiceFactory factory = NotificationServiceFactory.getInstance();
                 INotificationService service = factory.get(os);
-                service.push(title, message, mobiles);
+                service.push(title, action, mobiles);
             }
 
         };
