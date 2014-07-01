@@ -98,6 +98,7 @@ public class AbstractApplication extends Controller {
         public static final String TYPE = "type";
         public static final String REQUESTER_ID = "requester_id";
         public static final String TARGET_ID = "target_id";
+        public static final String ACTION_ID = "action_id";
     }
 
     /**

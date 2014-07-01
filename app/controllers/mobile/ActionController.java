@@ -16,7 +16,9 @@ import security.MobileAuthenticator;
 import utils.NotificationUtil;
 import utils.UserUtil;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Controlador responsável pelas requisições mobile relacionadas a ações realizadas por usuários no sistema.
@@ -87,7 +89,7 @@ public class ActionController extends AbstractApplication {
 
     /**
      * Método responsável por 'wantar' uma ação compartilhada/criada por um usuário.
-     * @return
+     * @return JSON
      */
     public static Result want() {
         ObjectNode jsonResponse = Json.newObject();
@@ -122,6 +124,69 @@ public class ActionController extends AbstractApplication {
 
                         jsonResponse.put(ParameterKey.STATUS, true);
                         jsonResponse.put(ParameterKey.MESSAGE, "O comentário foi adicionado com sucesso.");
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+        }
+
+        return ok(jsonResponse);
+    }
+
+    /**
+     * Método responsável por 'reportar' uma ação compartilhada/criada por um usuário.
+     * @return JSON
+     */
+    public static Result report() {
+        ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.hasNonNull(ParameterKey.ACTION_ID)) {
+                    long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
+
+                    if (actionId > 0) {
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<Action> finder = factory.get(Action.class);
+                        IFinder<ActionReport> finderReport = factory.get(ActionReport.class);
+
+                        Action action = finder.selectUnique(actionId);
+                        ActionReport actionReport = finderReport.selectUnique(
+                                new String[] { FinderKey.ACTION_ID },
+                                new Object[] { actionId });
+
+                        List<User> users;
+                        if (actionReport != null) {
+                            users = actionReport.getUsers();
+                            users.add(user);
+
+                            ActionReport report = new ActionReport();
+                            report.setUsers(users);
+                            report.update(actionId);
+                        } else {
+                            users = new ArrayList<User>(5);
+                            users.add(user);
+
+                            actionReport = new ActionReport();
+                            actionReport.setAction(action);
+                            actionReport.setUsers(users);
+                            actionReport.setSince(new Date());
+                            actionReport.save();
+                        }
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, "A denúncia foi registrada com sucesso.");
                     } else {
                         throw new JSONBodyException();
                     }
