@@ -816,9 +816,14 @@ public class IntegrationTest extends AbstractIntegrationTest {
 
                 assertStatusMessage(jsonResponse, status);
 
-                assertThat(jsonResponse.hasNonNull(AbstractApplication.ParameterKey.USER)).isTrue();
+                assertThat(jsonResponse.hasNonNull(AbstractApplication.ParameterKey.PERFIL)).isTrue();
 
-                JsonNode jsonUser = jsonResponse.get(AbstractApplication.ParameterKey.USER);
+                JsonNode jsonPerfil = jsonResponse.get(AbstractApplication.ParameterKey.PERFIL);
+                assertThat(jsonPerfil).isNotNull();
+                assertThat(jsonPerfil.isObject()).isTrue();
+                assertThat(jsonPerfil.hasNonNull(AbstractApplication.ParameterKey.USER)).isTrue();
+
+                JsonNode jsonUser = jsonPerfil.get(AbstractApplication.ParameterKey.USER);
                 assertThat(jsonUser).isNotNull();
                 assertThat(jsonUser.isObject()).isTrue();
 

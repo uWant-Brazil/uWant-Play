@@ -43,6 +43,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new FriendsCircleFinder();
         } else if (id == ActionReport.class) {
             finder = new ActionReportFinder();
+        } else if (id == Notification.class) {
+            finder = new NotificationFinder();
         }
 
         return finder;

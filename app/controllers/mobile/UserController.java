@@ -137,8 +137,9 @@ public class UserController extends AbstractApplication {
             User user = authenticateToken();
             if (user != null) {
                 if (UserUtil.isAvailable(user)) {
-                    user.setStatus(User.Status.REMOVED);
-                    user.update();
+                    User userChanged = new User();
+                    userChanged.setStatus(User.Status.REMOVED);
+                    userChanged.update(user.getId());
 
                     jsonResponse.put(ParameterKey.STATUS, true);
                     jsonResponse.put(ParameterKey.MESSAGE, "O usuário foi excluido com sucesso.");
