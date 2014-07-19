@@ -26,7 +26,6 @@ import java.util.List;
 /**
  * Controlador responsável pelo tratamento de requisições mobile referentes a interações com o usuário.
  */
-@Security.Authenticated(MobileAuthenticator.class)
 public class UserController extends AbstractApplication {
 
     /**
@@ -131,6 +130,7 @@ public class UserController extends AbstractApplication {
      * Na verdade, será adicionado uma flag de REMOVED no User.class
      * @return JSON
      */
+    @Security.Authenticated(MobileAuthenticator.class)
     public static Result exclude() {
         ObjectNode jsonResponse = Json.newObject();
         try {
@@ -168,6 +168,7 @@ public class UserController extends AbstractApplication {
      * 3. Login
      * @return JSON
      */
+    @Security.Authenticated(MobileAuthenticator.class)
     public static Result search() {
         ObjectNode jsonResponse = Json.newObject();
         JsonNode body = request().body().asJson();
@@ -225,6 +226,7 @@ public class UserController extends AbstractApplication {
      * baseado no parâmetro de LOGIN enviado na requisição.
      * @return JSON
      */
+    @Security.Authenticated(MobileAuthenticator.class)
     public static Result list() {
         ObjectNode jsonResponse = Json.newObject();
         try {
@@ -285,6 +287,7 @@ public class UserController extends AbstractApplication {
      * em seu círculo de amigos.
      * @return JSON
      */
+    @Security.Authenticated(MobileAuthenticator.class)
     public static Result joinCircle() {
         ObjectNode jsonResponse = Json.newObject();
         try {
@@ -374,6 +377,7 @@ public class UserController extends AbstractApplication {
      * uma ação de adição ao círculo de amigos.
      * @return JSON
      */
+    @Security.Authenticated(MobileAuthenticator.class)
     public static Result leaveCircle() {
         ObjectNode jsonResponse = Json.newObject();
         try {
