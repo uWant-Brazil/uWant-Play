@@ -12,6 +12,7 @@ POST    /v1/mobile/recoveryPassword     controllers.mobile.AuthenticationControl
 POST    /v1/mobile/user/register        controllers.mobile.UserController.register()
 POST    /v1/mobile/user/exclude         controllers.mobile.UserController.exclude()
 POST    /v1/mobile/user/search          controllers.mobile.UserController.search()
+POST    /v1/mobile/user/contacts        controllers.mobile.UserController.analyzeContacts()
 POST    /v1/mobile/social/signUp        controllers.mobile.SocialController.signUp()
 POST    /v1/mobile/wishlist/create      controllers.mobile.WishListController.create()
 POST    /v1/mobile/wishlist/update      controllers.mobile.WishListController.update()

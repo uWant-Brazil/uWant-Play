@@ -10,6 +10,7 @@ import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
 import play.db.ebean.Model;
+import play.libs.F;
 import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -304,46 +305,7 @@ public class UserController extends AbstractApplication {
                             new Object[] { login });
 
                     if (userTarget != null && UserUtil.isAvailable(userTarget)) {
-                        IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
-                        FriendsCircle friendsCircle = finderCircle.selectUnique(
-                                new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID},
-                                new Object[] { user.getId(), userTarget.getId() });
-
-                        boolean isFriends = false;
-                        if (friendsCircle == null) {
-                            FriendsCircle.Relation relation = new FriendsCircle.Relation();
-                            relation.setRequesterId(user.getId());
-                            relation.setTargetId(userTarget.getId());
-
-                            friendsCircle = new FriendsCircle();
-                            friendsCircle.setRelation(relation);
-                            friendsCircle.save();
-
-                            FriendsCircle inverseFriendsCircle = finderCircle.selectUnique(
-                                    new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID},
-                                    new Object[] { userTarget.getId(), user.getId() });
-                            isFriends = (inverseFriendsCircle != null);
-                        }
-
-                        IMobileUser mobileUser;
-                        Action action = new Action();
-                        action.setCreatedAt(new Date());
-                        if (isFriends) {
-                            action.setType(Action.Type.ACCEPT_FRIENDS_CIRCLE);
-                            action.setFrom(user);
-                            action.setUser(userTarget);
-
-                            mobileUser = userTarget;
-                        } else {
-                            action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
-                            action.setFrom(userTarget);
-                            action.setUser(user);
-
-                            mobileUser = user;
-                        }
-                        action.save();
-
-                        NotificationUtil.send(action, mobileUser);
+                        boolean isFriends = joinCircle(user, factory, userTarget);
 
                         jsonResponse.put(ParameterKey.STATUS, true);
                         jsonResponse.put(ParameterKey.MESSAGE, "O usuário " + userTarget.getLogin() + " foi solicitado como amigo.");
@@ -364,6 +326,50 @@ public class UserController extends AbstractApplication {
             jsonResponse.put(ParameterKey.ERROR, e.getCode());
         }
         return ok(jsonResponse);
+    }
+
+    private static boolean joinCircle(User user, FinderFactory factory, User userTarget) {
+        IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
+        FriendsCircle friendsCircle = finderCircle.selectUnique(
+                new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID},
+                new Object[] { user.getId(), userTarget.getId() });
+
+        boolean isFriends = false;
+        if (friendsCircle == null) {
+            FriendsCircle.Relation relation = new FriendsCircle.Relation();
+            relation.setRequesterId(user.getId());
+            relation.setTargetId(userTarget.getId());
+
+            friendsCircle = new FriendsCircle();
+            friendsCircle.setRelation(relation);
+            friendsCircle.save();
+
+            FriendsCircle inverseFriendsCircle = finderCircle.selectUnique(
+                    new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID},
+                    new Object[] { userTarget.getId(), user.getId() });
+            isFriends = (inverseFriendsCircle != null);
+        }
+
+        IMobileUser mobileUser;
+        Action action = new Action();
+        action.setCreatedAt(new Date());
+        if (isFriends) {
+            action.setType(Action.Type.ACCEPT_FRIENDS_CIRCLE);
+            action.setFrom(user);
+            action.setUser(userTarget);
+
+            mobileUser = userTarget;
+        } else {
+            action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
+            action.setFrom(userTarget);
+            action.setUser(user);
+
+            mobileUser = user;
+        }
+        action.save();
+
+        NotificationUtil.send(action, mobileUser);
+        return isFriends;
     }
 
     /**
@@ -429,6 +435,76 @@ public class UserController extends AbstractApplication {
             jsonResponse.put(ParameterKey.ERROR, e.getCode());
         }
         return ok(jsonResponse);
+    }
+
+    @Security.Authenticated(MobileAuthenticator.class)
+    public static F.Promise<Result> analyzeContacts() {
+        final ObjectNode jsonResponse = Json.newObject();
+        try {
+            final User user = authenticateToken();
+            if (user != null && UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.hasNonNull(ParameterKey.CONTACTS)) {
+                    final JsonNode jsonContacts = body.get(ParameterKey.CONTACTS);
+                    if (jsonContacts.isArray()) {
+                        F.Promise promise = F.Promise.promise(new F.Function0<F.Tuple<Integer, Integer>>() {
+
+                            @Override
+                            public F.Tuple<Integer, Integer> apply() throws Throwable {
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<User> finder = factory.get(User.class);
+
+                                int toCircle = 0, toInvite = 0;
+                                for (int i = 0;i < jsonContacts.size();i++) {
+                                    JsonNode jsonContact = jsonContacts.get(i);
+                                    String email = jsonContact.asText();
+                                    User userTarget = finder.selectUnique(new String[] { FinderKey.MAIL }, new Object[] { email });
+                                    if (userTarget == null) {
+                                        toInvite++;
+                                        // TODO Convite através de envio de e-mail..
+                                    } else {
+                                        toCircle++;
+                                        joinCircle(user, factory, userTarget);
+                                    }
+                                }
+                                return new F.Tuple<Integer, Integer>(toCircle, toInvite);
+                            }
+
+                        });
+
+                        return promise.map(new F.Function<F.Tuple<Integer, Integer>, Result>() {
+
+                            @Override
+                            public Result apply(F.Tuple<Integer, Integer> tuple) throws Throwable {
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, "Foram adicionados " + tuple._1 + " pessoas e convidados a utilizar " + tuple._2 + " pessoas.");
+                                return ok(jsonResponse);
+                            }
+
+                        });
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+        return F.Promise.promise(new F.Function0<Result>() {
+
+            @Override
+            public Result apply() throws Throwable {
+                return ok(jsonResponse);
+            }
+
+        });
     }
 
 }
