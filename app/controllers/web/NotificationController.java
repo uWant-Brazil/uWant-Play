@@ -74,7 +74,7 @@ public class NotificationController extends AbstractApplication {
                     action.setCreatedAt(new Date());
                     action.setUser(user);
                     action.setFrom(finder.selectUnique(Long.valueOf(1)));
-                    action.setExtra("Mensagem enviada por ZEUS!");
+                    action.setExtra(message);
                     action.save();
 
                     try {

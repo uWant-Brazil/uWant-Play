@@ -36,12 +36,12 @@ class GoogleCloudMessage implements INotificationService {
     /**
      * Chave de autenticação nos servidores do Google Inc.
      */
-    private static final String API_KEY = "";
+    private static final String API_KEY = "AIzaSyBD_yhEGdm6vqFgx6E20INv0IUo_h_cGk8";
 
     /**
      * Collapse Key default do web service.
      */
-    private static final String DEFAULT_COLLAPSE_KEY = "default_notification";
+    private static final String DEFAULT_COLLAPSE_KEY = "1";
 
     @Override
     public void push(String title, Action action, List<Mobile> mobiles) {

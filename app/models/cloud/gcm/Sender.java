@@ -193,7 +193,7 @@ public class Sender {
 		if (!payload.isEmpty()) {
 			jsonRequest.put(Constants.JSON_PAYLOAD, payload);
 		}
-		String requestBody = jsonRequest.toString();
+		String requestBody = Json.toJson(jsonRequest).toString();
 		logger.finest("JSON request: " + requestBody);
 		HttpURLConnection conn = post(Constants.GCM_SEND_ENDPOINT, "application/json",
 				requestBody);
@@ -224,9 +224,15 @@ public class Sender {
 				for (int i = 0;i < results.size();i++) {
                     JsonNode jsonResult = results.get(i);
 					String messageId = jsonResult.get(Constants.JSON_MESSAGE_ID).asText();
-					String canonicalRegId = jsonResult
-							.get(Constants.TOKEN_CANONICAL_REG_ID).asText();
-					String error = jsonResult.get(Constants.JSON_ERROR).asText();
+					String canonicalRegId = null;
+                    if (jsonResult.has(Constants.TOKEN_CANONICAL_REG_ID)) {
+                        canonicalRegId = jsonResult
+                                .get(Constants.TOKEN_CANONICAL_REG_ID).asText();
+                    }
+					String error = null;
+                    if (jsonResult.has(Constants.JSON_ERROR)) {
+                        error = jsonResult.get(Constants.JSON_ERROR).asText();
+                    }
 					Result result = new Result.Builder().messageId(messageId)
 							.canonicalRegistrationId(canonicalRegId)
 							.errorCode(error).build();
@@ -260,7 +266,7 @@ public class Sender {
 	}
 
 	private Number getNumber(JsonNode json, String field) {
-		Object value = json.get(field);
+		Object value = json.get(field).asInt(0);
 		if (value == null) {
 			throw new CustomParserException("Missing field: " + field);
 		}
@@ -288,6 +294,9 @@ public class Sender {
 		if (url == null || body == null) {
 			throw new IllegalArgumentException("arguments cannot be null");
 		}
+
+        play.Logger.info(url);
+
 		if (!url.startsWith("https://")) {
 			logger.warning("URL does not use https: " + url);
 		}

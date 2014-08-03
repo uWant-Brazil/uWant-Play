@@ -10,6 +10,9 @@ public abstract class ActionUtil {
 
     public static String generateMessage(Action action) throws IllegalAccessException {
         switch (action.getType()) {
+            case MESSAGE:
+                return notificationMessage(action);
+
             case ADD_FRIENDS_CIRCLE:
                 return addFriendsCircleMessage(action);
 
@@ -34,6 +37,10 @@ public abstract class ActionUtil {
             default:
                 throw new IllegalAccessException("A ação não possui nenhum tipo definido.");
         }
+    }
+
+    private static String notificationMessage(Action action) {
+        return action.getExtra();
     }
 
     private static String shareMessage(Action action) {
