@@ -21,6 +21,7 @@ import utils.RegexUtil;
 import utils.UserUtil;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -488,6 +489,71 @@ public class UserController extends AbstractApplication {
                 } else {
                     throw new JSONBodyException();
                 }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+        return F.Promise.promise(new F.Function0<Result>() {
+
+            @Override
+            public Result apply() throws Throwable {
+                return ok(jsonResponse);
+            }
+
+        });
+    }
+
+    @Security.Authenticated(MobileAuthenticator.class)
+    public static F.Promise<Result> listCircle() {
+        final ObjectNode jsonResponse = Json.newObject();
+        try {
+            final User user = authenticateToken();
+            if (user != null && UserUtil.isAvailable(user)) {
+                F.Promise promise = F.Promise.promise(new F.Function0<List<User>>() {
+
+                      @Override
+                      public List<User> apply() throws Throwable {
+                          FinderFactory factory = FinderFactory.getInstance();
+                          IFinder<FriendsCircle> finder = factory.get(FriendsCircle.class);
+                          IFinder<User> finderUser = factory.get(User.class);
+
+                          List<FriendsCircle> requesterCircle = finder.selectAll(
+                                  new String[] { FinderKey.REQUESTER_ID},
+                                  new Object[] { user.getId() });
+
+                          List<User> circle = new ArrayList<User>(requesterCircle.size() + 5);
+                          for (FriendsCircle friendsCircle : requesterCircle) {
+                              FriendsCircle.Relation relation = friendsCircle.getRelation();
+                              User userTarget = finderUser.selectUnique(relation.getTargetId());
+
+                              if (UserUtil.isAvailable(userTarget)) {
+                                  FriendsCircle.FriendshipLevel level = UserUtil.getFriendshipLevel(user, userTarget);
+                                  if (level == FriendsCircle.FriendshipLevel.MUTUAL) {
+                                      circle.add(userTarget);
+                                  }
+                              }
+                          }
+                          return circle;
+                      }
+
+                });
+
+                return promise.map(new F.Function<List<User>, Result>() {
+
+                    @Override
+                    public Result apply(List<User> circle) throws Throwable {
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, "Os amigos de " + user.getName() + " foram listados com sucesso.");
+                        jsonResponse.put(ParameterKey.FRIENDS, Json.toJson(circle));
+                        return ok(jsonResponse);
+                    }
+
+                });
             } else {
                 throw new AuthenticationException();
             }
