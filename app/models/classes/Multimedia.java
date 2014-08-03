@@ -1,5 +1,6 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.cdn.CDNType;
 import play.data.format.Formats;
 import play.db.ebean.Model;
@@ -31,6 +32,7 @@ public class Multimedia extends Model {
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
+    @JsonIgnore
     public long getId() {
         return id;
     }
@@ -55,6 +57,7 @@ public class Multimedia extends Model {
         this.url = url;
     }
 
+    @JsonIgnore
     public CDNType getCdn() {
         return cdn;
     }

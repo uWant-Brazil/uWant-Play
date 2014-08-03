@@ -70,6 +70,7 @@ public class SocialController extends AbstractApplication {
                                 jsonResponse.put(ParameterKey.STATUS, true);
                                 jsonResponse.put(ParameterKey.MESSAGE, "Este usuário já existe no sistema. Ele está autenticado para acessar o sistema.");
                                 jsonResponse.put(ParameterKey.REGISTERED, true);
+                                jsonResponse.put(ParameterKey.USER, Json.toJson(user));
                             } else {
                                 throw new AuthenticationException();
                             }
@@ -102,6 +103,7 @@ public class SocialController extends AbstractApplication {
                                         jsonResponse.put(ParameterKey.STATUS, true);
                                         jsonResponse.put(ParameterKey.MESSAGE, "Este usuário já existe no sistema. Ele está autenticado para acessar o sistema.");
                                         jsonResponse.put(ParameterKey.REGISTERED, true);
+                                        jsonResponse.put(ParameterKey.USER, Json.toJson(user));
                                     } else {
                                         throw new AuthenticationException();
                                     }

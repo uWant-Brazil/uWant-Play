@@ -60,6 +60,9 @@ public class User extends Model implements IMobileUser {
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
     private List<WishList> wishList;
 
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private Multimedia picture;
+
     public User() {
         // Do nothing...
     }
@@ -164,6 +167,11 @@ public class User extends Model implements IMobileUser {
     }
 
     @Override
+    public Multimedia getPicture() {
+        return this.picture;
+    }
+
+    @Override
     public String getName() {
         return this.name;
     }
@@ -179,5 +187,9 @@ public class User extends Model implements IMobileUser {
 
     public void setWishList(List<WishList> wishList) {
         this.wishList = wishList;
+    }
+
+    public void setPicture(Multimedia picture) {
+        this.picture = picture;
     }
 }

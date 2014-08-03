@@ -50,6 +50,7 @@ public class AuthenticationController extends AbstractApplication {
 
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, "Usuário autenticado com sucesso.");
+                            jsonResponse.put(ParameterKey.USER, Json.toJson(user));
                         } else {
                             throw new AuthenticationException();
                         }

@@ -32,4 +32,10 @@ public interface IMobileUser {
      */
     List<Mobile> getMobiles();
 
+    /**
+     * Método responsável por retornar os dados da foto do usuário.
+     * @return
+     */
+    Multimedia getPicture();
+
 }

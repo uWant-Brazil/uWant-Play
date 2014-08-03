@@ -130,6 +130,7 @@ create table users (
   since                     timestamp,
   gender                    integer,
   status                    integer,
+  picture_id                bigint,
   modified_at               timestamp not null,
   constraint ck_users_gender check (gender in (0,1)),
   constraint ck_users_status check (status in (0,1,2,3)),
@@ -244,18 +245,20 @@ alter table social_profile add constraint fk_social_profile_user_13 foreign key 
 create index ix_social_profile_user_13 on social_profile (user_id);
 alter table token add constraint fk_token_user_14 foreign key (user_id) references users (id);
 create index ix_token_user_14 on token (user_id);
-alter table user_mail_interaction add constraint fk_user_mail_interaction_user_15 foreign key (user_id) references users (id);
-create index ix_user_mail_interaction_user_15 on user_mail_interaction (user_id);
-alter table action_wants add constraint fk_action_wants_action_16 foreign key (action_id) references actions (id);
-create index ix_action_wants_action_16 on action_wants (action_id);
-alter table action_wants add constraint fk_action_wants_user_17 foreign key (user_id) references users (id);
-create index ix_action_wants_user_17 on action_wants (user_id);
-alter table wishlist add constraint fk_wishlist_user_18 foreign key (user_id) references users (id);
-create index ix_wishlist_user_18 on wishlist (user_id);
-alter table wishlist_product add constraint fk_wishlist_product_wishList_19 foreign key (wishlist_id) references wishlist (id);
-create index ix_wishlist_product_wishList_19 on wishlist_product (wishlist_id);
-alter table wishlist_product add constraint fk_wishlist_product_product_20 foreign key (product_id) references product (id);
-create index ix_wishlist_product_product_20 on wishlist_product (product_id);
+alter table users add constraint fk_users_picture_15 foreign key (picture_id) references multimedia (id);
+create index ix_users_picture_15 on users (picture_id);
+alter table user_mail_interaction add constraint fk_user_mail_interaction_user_16 foreign key (user_id) references users (id);
+create index ix_user_mail_interaction_user_16 on user_mail_interaction (user_id);
+alter table action_wants add constraint fk_action_wants_action_17 foreign key (action_id) references actions (id);
+create index ix_action_wants_action_17 on action_wants (action_id);
+alter table action_wants add constraint fk_action_wants_user_18 foreign key (user_id) references users (id);
+create index ix_action_wants_user_18 on action_wants (user_id);
+alter table wishlist add constraint fk_wishlist_user_19 foreign key (user_id) references users (id);
+create index ix_wishlist_user_19 on wishlist (user_id);
+alter table wishlist_product add constraint fk_wishlist_product_wishList_20 foreign key (wishlist_id) references wishlist (id);
+create index ix_wishlist_product_wishList_20 on wishlist_product (wishlist_id);
+alter table wishlist_product add constraint fk_wishlist_product_product_21 foreign key (product_id) references product (id);
+create index ix_wishlist_product_product_21 on wishlist_product (product_id);
 
 
 
