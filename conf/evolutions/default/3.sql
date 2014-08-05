@@ -41,4 +41,6 @@ delete from user_mail_interaction;
 delete from user_mobiles;
 delete from token;
 delete from actions;
+delete from notifications;
+
 delete from users;

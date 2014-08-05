@@ -6,9 +6,8 @@ import controllers.AbstractApplication;
 import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
-import models.exceptions.AuthenticationException;
-import models.exceptions.JSONBodyException;
-import models.exceptions.UWException;
+import models.exceptions.*;
+import play.libs.F;
 import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -204,6 +203,88 @@ public class ActionController extends AbstractApplication {
         }
 
         return ok(jsonResponse);
+    }
+
+    /**
+     * Método responsável por 'bloquear' as ações de um determinado usuário para não serem
+     * exibidas no seu feed de atividades.
+     * @return JSON
+     */
+    public static F.Promise<Result> toggleBlock() {
+        final ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.hasNonNull(ParameterKey.LOGIN)) {
+                    String login = body.get(ParameterKey.LOGIN).asText();
+                    if (!login.isEmpty()) {
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<User> finder = factory.get(User.class);
+                        User userFriend = finder.selectUnique(
+                                new String[] { FinderKey.LOGIN },
+                                new Object[] { login });
+
+                        if (userFriend != null && UserUtil.isAvailable(userFriend)) {
+                            FriendsCircle.FriendshipLevel level = UserUtil.getFriendshipLevel(user, userFriend);
+                            if (level == FriendsCircle.FriendshipLevel.MUTUAL) {
+                                F.Promise<String> promise = F.Promise.promise(new F.Function0<String>() {
+
+                                    @Override
+                                    public String apply() throws Throwable {
+                                        IFinder<FriendsCircle> finderFC = factory.get(FriendsCircle.class);
+                                        FriendsCircle friendsCircle = finderFC.selectUnique(
+                                                new String[] { FinderKey.REQUESTER_ID, FinderKey.TARGET_ID },
+                                                new Object[] { user.getId(), userFriend.getId() });
+
+                                        friendsCircle.setBlocked(!friendsCircle.isBlocked());
+                                        friendsCircle.update();
+
+                                        return login;
+                                    }
+
+                                });
+
+                                return promise.map(new F.Function<String, Result>() {
+
+                                    @Override
+                                    public Result apply(String s) throws Throwable {
+                                        jsonResponse.put(ParameterKey.STATUS, true);
+                                        jsonResponse.put(ParameterKey.MESSAGE, "O usuário (" + login + ") foi bloqueado com sucesso!");
+
+                                        return ok(jsonResponse);
+                                    }
+
+                                });
+                            } else {
+                                throw new UnavailableBlockFriend();
+                            }
+                        } else {
+                            throw new UserDoesntExistException();
+                        }
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new UserDoesntExistException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+        }
+        return F.Promise.promise(new F.Function0<Result>() {
+
+            @Override
+            public Result apply() throws Throwable {
+                return ok(jsonResponse);
+            }
+
+        });
     }
 
 }

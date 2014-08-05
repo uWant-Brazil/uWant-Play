@@ -31,6 +31,7 @@ POST    /v1/mobile/user/circle/list             controllers.mobile.UserControlle
 POST    /v1/mobile/action/comment               controllers.mobile.ActionController.comment()
 POST    /v1/mobile/action/want                  controllers.mobile.ActionController.want()
 POST    /v1/mobile/action/report                controllers.mobile.ActionController.report()
+POST    /v1/mobile/action/toggleBlock           controllers.mobile.ActionController.toggleBlock()
 
 # Web methods
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)

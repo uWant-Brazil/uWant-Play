@@ -34,6 +34,7 @@ create table action_comments (
 create table friends_circle (
   requester_id              bigint,
   target_id                 bigint,
+  is_blocked                BOOLEAN DEFAULT false not null,
   constraint pk_friends_circle primary key (requester_id, target_id))
 ;
 

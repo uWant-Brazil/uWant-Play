@@ -24,6 +24,9 @@ public class FriendsCircle extends Model {
     @EmbeddedId
     private Relation relation;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false")
+    private boolean isBlocked;
+
     public FriendsCircle() {
 
     }
@@ -38,6 +41,14 @@ public class FriendsCircle extends Model {
 
     public void setRelation(Relation relation) {
         this.relation = relation;
+    }
+
+    public boolean isBlocked() {
+        return isBlocked;
+    }
+
+    public void setBlocked(boolean isBlocked) {
+        this.isBlocked = isBlocked;
     }
 
     /**
