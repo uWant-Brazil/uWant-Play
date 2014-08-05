@@ -37,6 +37,7 @@ POST    /v1/mobile/action/share                 controllers.mobile.ActionControl
 POST    /v1/mobile/action/feeds                 controllers.mobile.ActionController.feeds()
 
 # Web methods
+GET     /v1/about                               controllers.AbstractApplication.about()
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)
 POST    /v1/web/user/recoveryPassword           controllers.web.UserController.recoveryPassword(id:Long ?= 0, mailId:Long ?= 0)
 GET     /v1/web/admin/notification/:id          controllers.web.NotificationController.sendView(id:Long)

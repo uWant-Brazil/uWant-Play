@@ -10,6 +10,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import views.html.uwant_sobre;
 
 import java.util.UUID;
 
@@ -187,6 +188,10 @@ public class AbstractApplication extends Controller {
         jsonResponse.put(ParameterKey.ERROR, -999);
         jsonResponse.put(ParameterKey.MESSAGE, "Você não está autorizado a realizar este tipo de ação.");
         return ok(jsonResponse);
+    }
+
+    public static Result about() {
+        return ok(uwant_sobre.render());
     }
 
 }
