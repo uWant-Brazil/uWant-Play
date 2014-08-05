@@ -351,4 +351,83 @@ public class ActionController extends AbstractApplication {
         });
     }
 
+    /**
+     * Método responsável por contar os 'compartilhamentos' as ações de um determinado usuário.
+     * @return JSON.
+     */
+    public static F.Promise<Result> share() {
+        final ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.has(ParameterKey.ACTION_ID)) {
+                    long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
+                    if (actionId > 0) {
+                        F.Promise<JsonNode> promise = F.Promise.promise(new F.Function0<JsonNode>() {
+
+                            @Override
+                            public JsonNode apply() throws Throwable {
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<Action> finder = factory.get(Action.class);
+
+                                Action action = finder.selectUnique(actionId);
+                                User userAction = action.getUser();
+
+                                ActionShare share = new ActionShare();
+                                share.setUser(user);
+                                share.setAction(action);
+                                share.save();
+
+                                Action actionShare = new Action();
+                                actionShare.setCreatedAt(new Date());
+                                actionShare.setFrom(user);
+                                actionShare.setUser(userAction);
+                                actionShare.setType(Action.Type.SHARE);
+                                actionShare.save();
+
+                                IMobileUser mobileUser = userAction;
+                                NotificationUtil.send(actionShare, mobileUser);
+
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, "O compartilhamento foi efetuado com sucesso.");
+                                return jsonResponse;
+                            }
+
+                        });
+
+                        return promise.map(new F.Function<JsonNode, Result>() {
+
+                            @Override
+                            public Result apply(JsonNode jsonNode) throws Throwable {
+                                return ok(jsonNode);
+                            }
+
+                        });
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+        }
+
+        return F.Promise.promise(new F.Function0<Result>() {
+
+            @Override
+            public Result apply() throws Throwable {
+                return ok(jsonResponse);
+            }
+
+        });
+    }
+
 }

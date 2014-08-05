@@ -22,6 +22,13 @@ create table actions_report (
   constraint pk_actions_report primary key (id))
 ;
 
+create table action_shares (
+  id                        bigint not null,
+  action_id                 bigint,
+  user_id                   bigint,
+  constraint pk_action_shares primary key (id))
+;
+
 create table action_comments (
   id                        bigint not null,
   text                      varchar(255) not null,
@@ -188,6 +195,8 @@ create sequence actions_id_seq;
 
 create sequence actions_report_id_seq;
 
+create sequence action_shares_id_seq;
+
 create sequence action_comments_id_seq;
 
 create sequence friends_circle_seq;
@@ -224,42 +233,46 @@ alter table actions add constraint fk_actions_user_2 foreign key (user_id) refer
 create index ix_actions_user_2 on actions (user_id);
 alter table actions_report add constraint fk_actions_report_action_3 foreign key (action_id) references actions (id);
 create index ix_actions_report_action_3 on actions_report (action_id);
-alter table action_comments add constraint fk_action_comments_action_4 foreign key (action_id) references actions (id);
-create index ix_action_comments_action_4 on action_comments (action_id);
-alter table action_comments add constraint fk_action_comments_user_5 foreign key (user_id) references users (id);
-create index ix_action_comments_user_5 on action_comments (user_id);
-alter table social_profile_logins add constraint fk_social_profile_logins_profi_6 foreign key (profile_id) references social_profile (id);
-create index ix_social_profile_logins_profi_6 on social_profile_logins (profile_id);
-alter table user_mobiles add constraint fk_user_mobiles_user_7 foreign key (user_id) references users (id);
-create index ix_user_mobiles_user_7 on user_mobiles (user_id);
-alter table user_mobiles add constraint fk_user_mobiles_token_8 foreign key (token_id) references token (id);
-create index ix_user_mobiles_token_8 on user_mobiles (token_id);
-alter table user_notifications add constraint fk_user_notifications_user_9 foreign key (user_id) references users (id);
-create index ix_user_notifications_user_9 on user_notifications (user_id);
-alter table user_notifications add constraint fk_user_notifications_action_10 foreign key (action_id) references actions (id);
-create index ix_user_notifications_action_10 on user_notifications (action_id);
-alter table product add constraint fk_product_manufacturer_11 foreign key (manufacturer_id) references manufacturer (id);
-create index ix_product_manufacturer_11 on product (manufacturer_id);
-alter table product add constraint fk_product_multimedia_12 foreign key (multimedia) references multimedia (id);
-create index ix_product_multimedia_12 on product (multimedia);
-alter table social_profile add constraint fk_social_profile_user_13 foreign key (user_id) references users (id);
-create index ix_social_profile_user_13 on social_profile (user_id);
-alter table token add constraint fk_token_user_14 foreign key (user_id) references users (id);
-create index ix_token_user_14 on token (user_id);
-alter table users add constraint fk_users_picture_15 foreign key (picture_id) references multimedia (id);
-create index ix_users_picture_15 on users (picture_id);
-alter table user_mail_interaction add constraint fk_user_mail_interaction_user_16 foreign key (user_id) references users (id);
-create index ix_user_mail_interaction_user_16 on user_mail_interaction (user_id);
-alter table action_wants add constraint fk_action_wants_action_17 foreign key (action_id) references actions (id);
-create index ix_action_wants_action_17 on action_wants (action_id);
-alter table action_wants add constraint fk_action_wants_user_18 foreign key (user_id) references users (id);
-create index ix_action_wants_user_18 on action_wants (user_id);
-alter table wishlist add constraint fk_wishlist_user_19 foreign key (user_id) references users (id);
-create index ix_wishlist_user_19 on wishlist (user_id);
-alter table wishlist_product add constraint fk_wishlist_product_wishList_20 foreign key (wishlist_id) references wishlist (id);
-create index ix_wishlist_product_wishList_20 on wishlist_product (wishlist_id);
-alter table wishlist_product add constraint fk_wishlist_product_product_21 foreign key (product_id) references product (id);
-create index ix_wishlist_product_product_21 on wishlist_product (product_id);
+alter table action_shares add constraint fk_action_shares_action_4 foreign key (action_id) references actions (id);
+create index ix_action_shares_action_4 on action_shares (action_id);
+alter table action_shares add constraint fk_action_shares_user_5 foreign key (user_id) references users (id);
+create index ix_action_shares_user_5 on action_shares (user_id);
+alter table action_comments add constraint fk_action_comments_action_6 foreign key (action_id) references actions (id);
+create index ix_action_comments_action_6 on action_comments (action_id);
+alter table action_comments add constraint fk_action_comments_user_7 foreign key (user_id) references users (id);
+create index ix_action_comments_user_7 on action_comments (user_id);
+alter table social_profile_logins add constraint fk_social_profile_logins_profi_8 foreign key (profile_id) references social_profile (id);
+create index ix_social_profile_logins_profi_8 on social_profile_logins (profile_id);
+alter table user_mobiles add constraint fk_user_mobiles_user_9 foreign key (user_id) references users (id);
+create index ix_user_mobiles_user_9 on user_mobiles (user_id);
+alter table user_mobiles add constraint fk_user_mobiles_token_10 foreign key (token_id) references token (id);
+create index ix_user_mobiles_token_10 on user_mobiles (token_id);
+alter table user_notifications add constraint fk_user_notifications_user_11 foreign key (user_id) references users (id);
+create index ix_user_notifications_user_11 on user_notifications (user_id);
+alter table user_notifications add constraint fk_user_notifications_action_12 foreign key (action_id) references actions (id);
+create index ix_user_notifications_action_12 on user_notifications (action_id);
+alter table product add constraint fk_product_manufacturer_13 foreign key (manufacturer_id) references manufacturer (id);
+create index ix_product_manufacturer_13 on product (manufacturer_id);
+alter table product add constraint fk_product_multimedia_14 foreign key (multimedia) references multimedia (id);
+create index ix_product_multimedia_14 on product (multimedia);
+alter table social_profile add constraint fk_social_profile_user_15 foreign key (user_id) references users (id);
+create index ix_social_profile_user_15 on social_profile (user_id);
+alter table token add constraint fk_token_user_16 foreign key (user_id) references users (id);
+create index ix_token_user_16 on token (user_id);
+alter table users add constraint fk_users_picture_17 foreign key (picture_id) references multimedia (id);
+create index ix_users_picture_17 on users (picture_id);
+alter table user_mail_interaction add constraint fk_user_mail_interaction_user_18 foreign key (user_id) references users (id);
+create index ix_user_mail_interaction_user_18 on user_mail_interaction (user_id);
+alter table action_wants add constraint fk_action_wants_action_19 foreign key (action_id) references actions (id);
+create index ix_action_wants_action_19 on action_wants (action_id);
+alter table action_wants add constraint fk_action_wants_user_20 foreign key (user_id) references users (id);
+create index ix_action_wants_user_20 on action_wants (user_id);
+alter table wishlist add constraint fk_wishlist_user_21 foreign key (user_id) references users (id);
+create index ix_wishlist_user_21 on wishlist (user_id);
+alter table wishlist_product add constraint fk_wishlist_product_wishList_22 foreign key (wishlist_id) references wishlist (id);
+create index ix_wishlist_product_wishList_22 on wishlist_product (wishlist_id);
+alter table wishlist_product add constraint fk_wishlist_product_product_23 foreign key (product_id) references product (id);
+create index ix_wishlist_product_product_23 on wishlist_product (product_id);
 
 
 
@@ -274,6 +287,8 @@ drop table if exists actions cascade;
 drop table if exists actions_report cascade;
 
 drop table if exists actions_report_user cascade;
+
+drop table if exists action_shares cascade;
 
 drop table if exists action_comments cascade;
 
@@ -308,6 +323,8 @@ drop table if exists wishlist_product cascade;
 drop sequence if exists actions_id_seq;
 
 drop sequence if exists actions_report_id_seq;
+
+drop sequence if exists action_shares_id_seq;
 
 drop sequence if exists action_comments_id_seq;
 

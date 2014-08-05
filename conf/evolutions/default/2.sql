@@ -29,14 +29,3 @@ insert into product (id,name,modified_at) values (nextVal('product_id_seq'),'Cam
 insert into wishlist_product (id,wishlist_id,product_id,status) values (nextVal('wishlist_product_id_seq'),1,5,0);
 
 # --- !Downs
-delete from wishlist_product;
-delete from wishlist;
-delete from product;
-
-delete from social_profile_logins;
-delete from social_profile;
-delete from user_mail_interaction;
-delete from user_mobiles;
-delete from token;
-delete from actions;
-delete from users;

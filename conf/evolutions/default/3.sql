@@ -31,16 +31,3 @@ insert into actions (id,user_id,from_id,type,extra,created_at,modified_at) value
 insert into actions (id,user_id,from_id,type,extra,created_at,modified_at) values (nextVal('actions_id_seq'),2,1,1,null,now(),now());
 
 # --- !Downs
-delete from wishlist_product;
-delete from wishlist;
-delete from product;
-
-delete from social_profile_logins;
-delete from social_profile;
-delete from user_mail_interaction;
-delete from user_mobiles;
-delete from token;
-delete from actions;
-delete from notifications;
-
-delete from users;
