@@ -11,7 +11,7 @@ create table actions (
   extra                     varchar(255),
   created_at                timestamp not null,
   modified_at               timestamp not null,
-  constraint ck_actions_type check (type in (0,1,2,3,4,5,6,7)),
+  constraint ck_actions_type check (type in (0,1,2,3,4,5,6,7,8)),
   constraint pk_actions primary key (id))
 ;
 
@@ -171,6 +171,7 @@ create table wishlist (
   description               varchar(255),
   user_id                   bigint,
   status                    integer,
+  action_id                 bigint,
   modified_at               timestamp not null,
   constraint ck_wishlist_status check (status in (0,1,2)),
   constraint pk_wishlist primary key (id))
@@ -269,10 +270,12 @@ alter table action_wants add constraint fk_action_wants_user_20 foreign key (use
 create index ix_action_wants_user_20 on action_wants (user_id);
 alter table wishlist add constraint fk_wishlist_user_21 foreign key (user_id) references users (id);
 create index ix_wishlist_user_21 on wishlist (user_id);
-alter table wishlist_product add constraint fk_wishlist_product_wishList_22 foreign key (wishlist_id) references wishlist (id);
-create index ix_wishlist_product_wishList_22 on wishlist_product (wishlist_id);
-alter table wishlist_product add constraint fk_wishlist_product_product_23 foreign key (product_id) references product (id);
-create index ix_wishlist_product_product_23 on wishlist_product (product_id);
+alter table wishlist add constraint fk_wishlist_action_22 foreign key (action_id) references actions (id);
+create index ix_wishlist_action_22 on wishlist (action_id);
+alter table wishlist_product add constraint fk_wishlist_product_wishList_23 foreign key (wishlist_id) references wishlist (id);
+create index ix_wishlist_product_wishList_23 on wishlist_product (wishlist_id);
+alter table wishlist_product add constraint fk_wishlist_product_product_24 foreign key (product_id) references product (id);
+create index ix_wishlist_product_product_24 on wishlist_product (product_id);
 
 
 

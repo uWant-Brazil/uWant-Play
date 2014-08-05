@@ -2,14 +2,23 @@ package utils;
 
 import models.classes.Action;
 import models.classes.User;
+import models.classes.WishList;
+import models.classes.WishListProduct;
+
+import java.util.List;
 
 /**
  * Classe utilitária para ações relacionadas a ações tomadas pelos usuários.
  */
 public abstract class ActionUtil {
 
+    private static final char CHAR_SPACE = ' ';
+
     public static String generateMessage(Action action) throws IllegalAccessException {
         switch (action.getType()) {
+            case ACTIVITY:
+                return activityMessage(action);
+
             case MESSAGE:
                 return notificationMessage(action);
 
@@ -37,6 +46,30 @@ public abstract class ActionUtil {
             default:
                 throw new IllegalAccessException("A ação não possui nenhum tipo definido.");
         }
+    }
+
+    private static String activityMessage(Action action) {
+        User user = action.getUser();
+        WishList wishList = action.getWishList();
+        List<WishListProduct> products = wishList.getWishLists();
+        int size = products != null ? products.size() : 0;
+
+        StringBuilder builder = new StringBuilder();
+
+        builder.append(user.getName());
+        builder.append(CHAR_SPACE);
+        builder.append("adicionou");
+        builder.append(CHAR_SPACE);
+        builder.append(size);
+        builder.append(CHAR_SPACE);
+        builder.append(size > 1 ? ("desejos") : "desejo");
+        builder.append(CHAR_SPACE);
+        builder.append("na sua lista");
+        builder.append(CHAR_SPACE);
+        builder.append(wishList.getTitle());
+        builder.append(".");
+
+        return builder.toString();
     }
 
     private static String notificationMessage(Action action) {

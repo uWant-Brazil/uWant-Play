@@ -34,6 +34,7 @@ POST    /v1/mobile/action/want                  controllers.mobile.ActionControl
 POST    /v1/mobile/action/report                controllers.mobile.ActionController.report()
 POST    /v1/mobile/action/toggleBlock           controllers.mobile.ActionController.toggleBlock()
 POST    /v1/mobile/action/share                 controllers.mobile.ActionController.share()
+POST    /v1/mobile/action/feeds                 controllers.mobile.ActionController.feeds()
 
 # Web methods
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h, m)

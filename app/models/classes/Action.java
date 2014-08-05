@@ -27,7 +27,8 @@ public class Action extends Model {
         SHARE,
         WANT,
         REPORT,
-        MESSAGE;
+        MESSAGE,
+        ACTIVITY;
     }
 
     @Id
@@ -59,6 +60,9 @@ public class Action extends Model {
 
     @OneToMany(mappedBy = "action", fetch = FetchType.LAZY)
     private List<Comment> comments;
+
+    @OneToOne(mappedBy = "action", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private WishList wishList;
 
     @JsonIgnore
     public long getId() {
@@ -120,12 +124,22 @@ public class Action extends Model {
         this.modifiedAt = modifiedAt;
     }
 
+    @JsonIgnore
     public List<Comment> getComments() {
         return comments;
     }
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    @JsonIgnore
+    public WishList getWishList() {
+        return wishList;
+    }
+
+    public void setWishList(WishList wishList) {
+        this.wishList = wishList;
     }
 
     @Override

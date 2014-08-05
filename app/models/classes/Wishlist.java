@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "wishlist")
 @SequenceGenerator(name = WishList.SEQUENCE_NAME, sequenceName = WishList.SEQUENCE_NAME, initialValue = 1, allocationSize = 1)
-public class WishList extends Model{
+public class WishList extends Model {
 
     public static final String SEQUENCE_NAME = "wishlist_id_seq";
 
@@ -34,7 +34,7 @@ public class WishList extends Model{
     public User user;
 
     @OneToMany(mappedBy = "wishList", fetch = FetchType.LAZY)
-    private List<WishListProduct> wishlists;
+    private List<WishListProduct> wishLists;
 
     @Enumerated(EnumType.ORDINAL)
     private Status status;
@@ -42,6 +42,9 @@ public class WishList extends Model{
     @Version
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private Action action;
 
     public String getTitle() {
         return title;
@@ -78,11 +81,11 @@ public class WishList extends Model{
 
     @JsonIgnore
     public List<WishListProduct> getWishLists() {
-        return wishlists;
+        return wishLists;
     }
 
     public void setWishLists(List<WishListProduct> wishlists) {
-        this.wishlists = wishlists;
+        this.wishLists = wishlists;
     }
 
     @JsonIgnore
@@ -100,5 +103,14 @@ public class WishList extends Model{
 
     public void setModifiedAt(Date modifiedAt) {
         this.modifiedAt = modifiedAt;
+    }
+
+    @JsonIgnore
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
     }
 }

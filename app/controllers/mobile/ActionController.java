@@ -1,5 +1,9 @@
 package controllers.mobile;
 
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
+import com.avaje.ebean.SqlQuery;
+import com.avaje.ebean.SqlRow;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
@@ -7,6 +11,7 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
+import play.db.ebean.Model;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Result;
@@ -24,6 +29,156 @@ import java.util.List;
  */
 @Security.Authenticated(MobileAuthenticator.class)
 public class ActionController extends AbstractApplication {
+
+    /**
+     * Método responsável por listar todos os feeds de ações realizadas
+     * pelos amigos não-bloqueados do usuário autenticado.
+     * @return JSON
+     */
+    public static F.Promise<Result> feeds() {
+        final ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.hasNonNull(ParameterKey.START_INDEX)) {
+                    final int startIndex = body.get(ParameterKey.START_INDEX).asInt(0);
+                    final int endIndex;
+                    if (body.hasNonNull(ParameterKey.END_INDEX)) {
+                        endIndex = body.get(ParameterKey.END_INDEX).asInt(startIndex + 10);
+                    } else {
+                        endIndex = startIndex + 10;
+                    }
+
+                    F.Promise<List<ObjectNode>> promise = F.Promise.promise(new F.Function0<List<ObjectNode>>() {
+
+                        @Override
+                        public List<ObjectNode> apply() throws Throwable {
+                            // FIXME Como utilizar inner join com o Finder?
+                            SqlQuery query = Ebean.createSqlQuery("SELECT fc1.target_id FROM friends_circle fc1 " +
+                                    "INNER JOIN friends_circle fc2 ON fc2.target_id = fc1.requester_id AND fc2.requester_id = fc1.target_id " +
+                                    "WHERE fc1.requester_id = " + user.getId() + " AND fc1.is_blocked = false");
+
+                            List<ObjectNode> actionsNode = null;
+                            List<SqlRow> rows = query.findList();
+                            if (rows != null && rows.size() > 0) {
+                                actionsNode = new ArrayList<ObjectNode>(rows.size() + 5);
+
+                                Object[] targetIds = new Object[rows.size()];
+                                for (int i = 0; i < rows.size(); i++) {
+                                    SqlRow row = rows.get(i);
+                                    Long targetId = row.getLong(FinderKey.TARGET_ID);
+                                    targetIds[i] = targetId;
+                                }
+
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<Action> finderActions = factory.get(Action.class);
+                                List<Action> actions = finderActions.getFinder()
+                                        .where()
+                                        .in(FinderKey.USER_ID, targetIds)
+                                        .eq(FinderKey.TYPE, Action.Type.ACTIVITY.ordinal())
+                                        .setFirstRow(startIndex)
+                                        .setMaxRows(endIndex - startIndex)
+                                        .orderBy(FinderKey.MODIFIED_AT + " desc")
+                                        .findList();
+
+                                for (Action action : actions) {
+                                    long id = action.getId();
+                                    String message = action.toString();
+                                    WishList wishList = action.getWishList();
+                                    List<WishListProduct> wishListProducts = wishList.getWishLists();
+
+                                    IFinder<Want> finderWants = factory.get(Want.class);
+                                    int wantsCount = finderWants.getFinder()
+                                            .where()
+                                            .eq(FinderKey.ACTION_ID, id)
+                                            .findRowCount();
+
+                                    IFinder<Comment> finderComments = factory.get(Comment.class);
+                                    int commentsCount = finderComments.getFinder()
+                                            .where()
+                                            .eq(FinderKey.ACTION_ID, id)
+                                            .findRowCount();
+
+                                    IFinder<ActionShare> finderShares = factory.get(ActionShare.class);
+                                    int sharesCount = finderShares.getFinder()
+                                            .where()
+                                            .eq(FinderKey.ACTION_ID, id)
+                                            .findRowCount();
+
+                                    List<Multimedia> nodesProducts = new ArrayList<Multimedia>();
+                                    if (wishListProducts != null) {
+                                        for (WishListProduct product : wishListProducts) {
+                                            if (product.getStatus() == WishListProduct.Status.ACTIVE) {
+                                                Multimedia multimedia = product.getProduct().getMultimedia();
+                                                if (multimedia != null) {
+                                                    nodesProducts.add(multimedia);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    ObjectNode nodeWishList = Json.newObject();
+                                    nodeWishList.put(ParameterKey.ID, wishList.getId());
+                                    nodeWishList.put(ParameterKey.MULTIMEDIAS, Json.toJson(nodesProducts));
+
+                                    User actionUser = action.getUser();
+                                    ObjectNode nodeUser = Json.newObject();
+                                    nodeUser.put(ParameterKey.LOGIN, actionUser.getLogin());
+
+                                    ObjectNode node = Json.newObject();
+                                    node.put(ParameterKey.ID, id);
+                                    node.put(ParameterKey.MESSAGE, message);
+                                    node.put(ParameterKey.EXTRA, action.getExtra());
+                                    node.put(ParameterKey.WISHLIST, nodeWishList);
+                                    node.put(ParameterKey.USER, nodeUser);
+                                    node.put(ParameterKey.UWANTS_COUNT, wantsCount);
+                                    node.put(ParameterKey.COMMENTS_COUNT, commentsCount);
+                                    node.put(ParameterKey.SHARES_COUNT, sharesCount);
+
+                                    actionsNode.add(node);
+                                }
+                            }
+
+                            return actionsNode;
+                        }
+
+                    });
+
+                    return promise.map(new F.Function<List<ObjectNode>, Result>() {
+
+                        @Override
+                        public Result apply(List<ObjectNode> actions) throws Throwable {
+                            jsonResponse.put(ParameterKey.STATUS, true);
+                            jsonResponse.put(ParameterKey.MESSAGE, "As ações dos seus amigos foram listadas com sucesso.");
+                            jsonResponse.put(ParameterKey.ACTIONS, Json.toJson(actions));
+
+                            return ok(jsonResponse);
+                        }
+
+                    });
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+        }
+
+        return F.Promise.promise(new F.Function0<Result>() {
+
+            @Override
+            public Result apply() throws Throwable {
+                return ok(jsonResponse);
+            }
+
+        });
+    }
 
     /**
      * Método responsável por vincular um novo comentário a uma ação

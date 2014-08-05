@@ -56,6 +56,7 @@ public class Product extends Model{
         this.nickName = nickName;
     }
 
+    @JsonIgnore
     public List<WishListProduct> getWishListProducts() {
         return wishListProducts;
     }
@@ -80,7 +81,6 @@ public class Product extends Model{
         this.id = id;
     }
 
-    @JsonIgnore
     public Multimedia getMultimedia() {
         return multimedia;
     }

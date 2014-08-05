@@ -78,6 +78,10 @@ public class AbstractApplication extends Controller {
         public static final String COMMENT = "comment";
         public static final String CONTACTS = "contacts";
         public static final String COMMENTS = "comments";
+        public static final String UWANTS_COUNT = "uwantsCount";
+        public static final String COMMENTS_COUNT = "commentsCount";
+        public static final String SHARES_COUNT = "sharesCount";
+        public static final String MULTIMEDIAS = "multimedias";
     }
 
     /**
@@ -101,6 +105,7 @@ public class AbstractApplication extends Controller {
         public static final String REQUESTER_ID = "requester_id";
         public static final String TARGET_ID = "target_id";
         public static final String ACTION_ID = "action_id";
+        public static final String MODIFIED_AT = "modified_at";
     }
 
     /**
