@@ -77,6 +77,7 @@ public class AbstractApplication extends Controller {
         public static final String ACTION_ID = "actionId";
         public static final String COMMENT = "comment";
         public static final String CONTACTS = "contacts";
+        public static final String COMMENTS = "comments";
     }
 
     /**

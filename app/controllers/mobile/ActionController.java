@@ -87,6 +87,70 @@ public class ActionController extends AbstractApplication {
     }
 
     /**
+     * Mëtodo responsável por listar todos os comentários de uma determinada ação realizada por algum usuário.
+     * @return JSON
+     */
+    public static F.Promise<Result> listComments() {
+        final ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null && body.has(ParameterKey.ACTION_ID)) {
+                    long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
+                    if (actionId > 0) {
+                        F.Promise<List<Comment>> promise = F.Promise.promise(new F.Function0<List<Comment>>() {
+
+                            @Override
+                            public List<Comment> apply() throws Throwable {
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<Action> finder = factory.get(Action.class);
+
+                                Action action = finder.selectUnique(actionId);
+                                List<Comment> comments = action.getComments();
+                                return comments;
+                            }
+
+                        });
+
+                        return promise.map(new F.Function<List<Comment>, Result>() {
+
+                            @Override
+                            public Result apply(List<Comment> comments) throws Throwable {
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, "Foram listados " + (comments != null ? comments.size() : 0) + " comentários com sucesso.");
+                                jsonResponse.put(ParameterKey.COMMENTS, Json.toJson(comments));
+
+                                return ok(jsonResponse);
+                            }
+
+                        });
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new UserDoesntExistException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+        }
+        return F.Promise.promise(new F.Function0<Result>() {
+
+            @Override
+            public Result apply() throws Throwable {
+                return ok(jsonResponse);
+            }
+
+        });
+    }
+
+    /**
      * Método responsável por 'wantar' uma ação compartilhada/criada por um usuário.
      * @return JSON
      */

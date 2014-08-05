@@ -35,7 +35,6 @@ public class Comment extends Model {
     @Column(nullable = false, updatable = false)
     private Date since;
 
-    @JsonIgnore
     public long getId() {
         return id;
     }
@@ -61,7 +60,6 @@ public class Comment extends Model {
         this.action = action;
     }
 
-    @JsonIgnore
     public User getUser() {
         return user;
     }
