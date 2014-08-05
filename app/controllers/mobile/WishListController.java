@@ -7,6 +7,7 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
+import play.libs.F;
 import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -525,4 +526,131 @@ public class WishListController extends AbstractApplication {
         }
         return ok(jsonResponse);
     }
+
+    /**
+     * Método responsável por editar uma lista de produtos em uma lista de desejos já criada.
+     * Apenas os donos da lista de desejos podem efetuar tal ação.
+     * @return JSON
+     */
+    public static F.Promise<Result> editProductsWishList() {
+        final ObjectNode jsonResponse = Json.newObject();
+        try {
+            User user = authenticateToken();
+            if (UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                if (body != null) {
+                    if (body.hasNonNull(ParameterKey.ID) && body.hasNonNull(ParameterKey.PRODUCTS)) {
+                        final Long idWishList = body.get(ParameterKey.ID).asLong();
+
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<WishList> finder = factory.get(WishList.class);
+                        WishList wishList = finder.selectUnique(
+                                new String[] { FinderKey.ID },
+                                new Object[] { idWishList });
+
+                        if (wishList != null && WishListUtil.isOwner(wishList, user)) {
+                            JsonNode products = body.get(ParameterKey.PRODUCTS);
+                            if (products.isArray()) {
+                                F.Promise<Integer> promise = F.Promise.promise(new F.Function0<Integer>() {
+
+                                    @Override
+                                    public Integer apply() throws Throwable {
+                                        IFinder<Product> finderProduct = factory.get(WishList.class);
+
+                                        int countProductsEdited = 0;
+                                        for(int i = 0; i < products.size(); i++) {
+                                            JsonNode jsonProduct = products.get(i);
+
+                                            if (jsonProduct.hasNonNull(ParameterKey.ID)
+                                                    && jsonProduct.hasNonNull(ParameterKey.NAME)
+                                                    && jsonProduct.has(ParameterKey.NICK_NAME)
+                                                    && jsonProduct.hasNonNull(ParameterKey.MANUFACTURER)) {
+                                                long productId = jsonProduct.get(ParameterKey.ID).asLong();
+                                                Product productFounded = finderProduct.selectUnique(
+                                                        new String[] { FinderKey.ID, FinderKey.WISHLIST_ID },
+                                                        new Object[] { productId, idWishList });
+
+                                                Manufacturer manufacturer = null;
+
+                                                JsonNode jsonManufacturer = jsonProduct.get(ParameterKey.MANUFACTURER);
+                                                if (jsonManufacturer != null
+                                                        && jsonManufacturer.hasNonNull(ParameterKey.NAME)) {
+                                                    if (jsonManufacturer.hasNonNull(ParameterKey.ID)) {
+                                                        long manufacturerId = jsonManufacturer.get(ParameterKey.ID).asLong();
+
+                                                        IFinder<Manufacturer> finderManufacturer = factory.get(Manufacturer.class);
+                                                        manufacturer = finderManufacturer.selectUnique(manufacturerId);
+                                                    }
+
+                                                    String name = jsonManufacturer.get(ParameterKey.NAME).asText();
+
+                                                    if (manufacturer == null) {
+                                                        manufacturer = new Manufacturer();
+                                                        manufacturer.setName(name);
+                                                        manufacturer.save();
+                                                    } else {
+                                                        manufacturer.setName(name);
+                                                        manufacturer.update();
+                                                    }
+                                                    manufacturer.refresh();
+                                                }
+
+                                                String name = jsonProduct.get(ParameterKey.NAME).asText();
+                                                String nickName = jsonProduct.get(ParameterKey.NICK_NAME).asText();
+
+                                                productFounded.setName(name);
+                                                productFounded.setNickName(nickName);
+                                                productFounded.setManufacturer(manufacturer);
+                                                productFounded.update();
+
+                                                countProductsEdited++;
+                                            }
+                                        }
+                                        return countProductsEdited;
+                                    }
+
+                                });
+
+                                return promise.map(new F.Function<Integer, Result>() {
+
+                                    @Override
+                                    public Result apply(Integer countProductsEdited) throws Throwable {
+                                        jsonResponse.put(ParameterKey.STATUS, true);
+                                        jsonResponse.put(ParameterKey.MESSAGE, countProductsEdited + " produtos foram editados na lista " + wishList.getTitle() + " com sucesso.");
+                                        return ok(jsonResponse);
+                                    }
+
+                                });
+                            } else {
+                                throw new JSONBodyException();
+                            }
+                        } else {
+                            throw new WishListDontExistException();
+                        }
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new JSONBodyException();
+                }
+            } else {
+                throw new UserDoesntExistException();
+            }
+        } catch (UWException e) {
+            e.printStackTrace();
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+            jsonResponse.put(ParameterKey.ERROR, e.getCode());
+        }
+
+        return F.Promise.promise(new F.Function0<Result>() {
+
+            @Override
+            public Result apply() throws Throwable {
+                return ok(jsonResponse);
+            }
+
+        });
+    };
+
 }
