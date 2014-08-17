@@ -21,9 +21,7 @@ import utils.DateUtil;
 import utils.NotificationUtil;
 import utils.UserUtil;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Controlador responsável pelas requisições mobile relacionadas a ações realizadas por usuários no sistema.
@@ -80,7 +78,7 @@ public class ActionController extends AbstractApplication {
                                         .eq(FinderKey.TYPE, Action.Type.ACTIVITY.ordinal())
                                         .setFirstRow(startIndex)
                                         .setMaxRows(endIndex - startIndex)
-                                        .orderBy(FinderKey.MODIFIED_AT + " desc")
+                                        .orderBy(FinderKey.CREATED_AT + " desc")
                                         .findList();
 
                                 for (Action action : actions) {
