@@ -83,6 +83,7 @@ public class AbstractApplication extends Controller {
         public static final String COMMENTS_COUNT = "commentsCount";
         public static final String SHARES_COUNT = "sharesCount";
         public static final String MULTIMEDIAS = "multimedias";
+        public static final String PICTURE = "picture";
     }
 
     /**

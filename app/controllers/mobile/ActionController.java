@@ -17,6 +17,7 @@ import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
+import utils.DateUtil;
 import utils.NotificationUtil;
 import utils.UserUtil;
 
@@ -125,13 +126,16 @@ public class ActionController extends AbstractApplication {
                                     User actionUser = action.getUser();
                                     ObjectNode nodeUser = Json.newObject();
                                     nodeUser.put(ParameterKey.LOGIN, actionUser.getLogin());
+                                    nodeUser.put(ParameterKey.PICTURE, Json.toJson(actionUser.getPicture()));
 
                                     ObjectNode node = Json.newObject();
                                     node.put(ParameterKey.ID, id);
+                                    node.put(ParameterKey.TYPE, action.getType().ordinal());
+                                    node.put(ParameterKey.WHEN, DateUtil.format(action.getCreatedAt(), DateUtil.DATE_HOUR_PATTERN));
                                     node.put(ParameterKey.MESSAGE, message);
                                     node.put(ParameterKey.EXTRA, action.getExtra());
                                     node.put(ParameterKey.WISHLIST, nodeWishList);
-                                    node.put(ParameterKey.USER, nodeUser);
+                                    node.put(ParameterKey.USER_FROM, nodeUser);
                                     node.put(ParameterKey.UWANTS_COUNT, wantsCount);
                                     node.put(ParameterKey.COMMENTS_COUNT, commentsCount);
                                     node.put(ParameterKey.SHARES_COUNT, sharesCount);
