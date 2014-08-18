@@ -92,6 +92,10 @@ public class ActionController extends AbstractApplication {
                                             .where()
                                             .eq(FinderKey.ACTION_ID, id)
                                             .findRowCount();
+                                    boolean uWant = finderWants.selectUnique(
+                                            new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
+                                            new Object[] { action.getId(), user.getId() })
+                                            != null;
 
                                     IFinder<Comment> finderComments = factory.get(Comment.class);
                                     int commentsCount = finderComments.getFinder()
@@ -104,6 +108,10 @@ public class ActionController extends AbstractApplication {
                                             .where()
                                             .eq(FinderKey.ACTION_ID, id)
                                             .findRowCount();
+                                    boolean uShare = finderShares.selectUnique(
+                                            new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
+                                            new Object[] { action.getId(), user.getId() })
+                                            != null;
 
                                     List<Multimedia> nodesProducts = new ArrayList<Multimedia>();
                                     if (wishListProducts != null) {
@@ -126,6 +134,14 @@ public class ActionController extends AbstractApplication {
                                     nodeUser.put(ParameterKey.LOGIN, actionUser.getLogin());
                                     nodeUser.put(ParameterKey.PICTURE, Json.toJson(actionUser.getPicture()));
 
+                                    ObjectNode nodeWant = Json.newObject();
+                                    nodeWant.put(ParameterKey.COUNT, wantsCount);
+                                    nodeWant.put(ParameterKey.UWANT, uWant);
+
+                                    ObjectNode nodeShare = Json.newObject();
+                                    nodeShare.put(ParameterKey.COUNT, sharesCount);
+                                    nodeShare.put(ParameterKey.USHARE, uShare);
+
                                     ObjectNode node = Json.newObject();
                                     node.put(ParameterKey.ID, id);
                                     node.put(ParameterKey.TYPE, action.getType().ordinal());
@@ -134,9 +150,9 @@ public class ActionController extends AbstractApplication {
                                     node.put(ParameterKey.EXTRA, action.getExtra());
                                     node.put(ParameterKey.WISHLIST, nodeWishList);
                                     node.put(ParameterKey.USER_FROM, nodeUser);
-                                    node.put(ParameterKey.UWANTS_COUNT, wantsCount);
                                     node.put(ParameterKey.COMMENTS_COUNT, commentsCount);
-                                    node.put(ParameterKey.SHARES_COUNT, sharesCount);
+                                    node.put(ParameterKey.WANT, nodeWant);
+                                    node.put(ParameterKey.SHARE, nodeShare);
 
                                     actionsNode.add(node);
                                 }
@@ -323,27 +339,36 @@ public class ActionController extends AbstractApplication {
                     if (actionId > 0) {
                         FinderFactory factory = FinderFactory.getInstance();
                         IFinder<Action> finder = factory.get(Action.class);
+                        IFinder<Want> finderWant = factory.get(Want.class);
 
                         Action action = finder.selectUnique(actionId);
                         User userAction = action.getUser();
 
-                        Want want = new Want();
-                        want.setUser(user);
-                        want.setAction(action);
-                        want.save();
+                        Want want = finderWant.selectUnique(
+                                new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
+                                new Object[] { actionId, user.getId() });
 
-                        Action actionComment = new Action();
-                        actionComment.setCreatedAt(new Date());
-                        actionComment.setFrom(user);
-                        actionComment.setUser(userAction);
-                        actionComment.setType(Action.Type.WANT);
-                        actionComment.save();
+                        if (want == null) {
+                            want = new Want();
+                            want.setUser(user);
+                            want.setAction(action);
+                            want.save();
 
-                        IMobileUser mobileUser = userAction;
-                        NotificationUtil.send(actionComment, mobileUser);
+                            Action actionWant = new Action();
+                            actionWant.setCreatedAt(new Date());
+                            actionWant.setFrom(user);
+                            actionWant.setUser(userAction);
+                            actionWant.setType(Action.Type.WANT);
+                            actionWant.save();
+
+                            IMobileUser mobileUser = userAction;
+                            NotificationUtil.send(actionWant, mobileUser);
+                        } else {
+                            want.delete();
+                        }
 
                         jsonResponse.put(ParameterKey.STATUS, true);
-                        jsonResponse.put(ParameterKey.MESSAGE, "O comentário foi adicionado com sucesso.");
+                        jsonResponse.put(ParameterKey.MESSAGE, "O feed foi 'wantado ou não' com sucesso.");
                     } else {
                         throw new JSONBodyException();
                     }

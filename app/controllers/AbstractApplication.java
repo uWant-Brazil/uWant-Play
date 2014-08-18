@@ -79,11 +79,14 @@ public class AbstractApplication extends Controller {
         public static final String COMMENT = "comment";
         public static final String CONTACTS = "contacts";
         public static final String COMMENTS = "comments";
-        public static final String UWANTS_COUNT = "uwantsCount";
         public static final String COMMENTS_COUNT = "commentsCount";
-        public static final String SHARES_COUNT = "sharesCount";
         public static final String MULTIMEDIAS = "multimedias";
         public static final String PICTURE = "picture";
+        public static final String COUNT = "count";
+        public static final String WANT = "want";
+        public static final String SHARE = "share";
+        public static final String UWANT = "uWant";
+        public static final String USHARE = "uShare";
     }
 
     /**

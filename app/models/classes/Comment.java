@@ -1,7 +1,10 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import play.data.format.Formats;
 import play.db.ebean.Model;
+import utils.DateUtil;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -68,6 +71,7 @@ public class Comment extends Model {
         this.user = user;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_HOUR_PATTERN)
     public Date getSince() {
         return since;
     }
