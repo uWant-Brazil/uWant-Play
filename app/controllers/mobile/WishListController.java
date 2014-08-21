@@ -327,8 +327,10 @@ public class WishListController extends AbstractApplication {
 
                             if (wishList != null && WishListUtil.isOwner(wishList, user)) {
                                 String title = wishList.getTitle();
-                                wishList.setStatus(WishList.Status.REMOVED);
-                                wishList.update();
+
+                                WishList wishListUpdated = new WishList();
+                                wishListUpdated.setStatus(WishList.Status.REMOVED);
+                                wishListUpdated.update(wishList.getId());
 
                                 jsonResponse.put(ParameterKey.STATUS, true);
                                 jsonResponse.put(ParameterKey.MESSAGE, "A lista de desejos (" + title + ") foi excluida com sucesso.");
