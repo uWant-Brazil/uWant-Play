@@ -378,10 +378,6 @@ public class UserController extends AbstractApplication {
      * círculo de amigos. Além disso, também é capaz de desfazer
      * a solicitação de amizade que ainda não foi aceita pelo usuário.
      *
-     * OBS: Uma vez desfeita a solicitação, o usuário que está com a
-     * notificação de amizade não poderá mais aceita-la. Por isso, não
-     * é interessante disponibilizar este recurso enquanto não vinculamos
-     * uma ação de adição ao círculo de amigos.
      * @return JSON
      */
     @Security.Authenticated(MobileAuthenticator.class)

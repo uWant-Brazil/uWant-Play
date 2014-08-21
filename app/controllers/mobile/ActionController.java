@@ -54,9 +54,14 @@ public class ActionController extends AbstractApplication {
                         @Override
                         public List<ObjectNode> apply() throws Throwable {
                             // FIXME Como utilizar inner join com o Finder?
-                            SqlQuery query = Ebean.createSqlQuery("SELECT fc1.target_id FROM friends_circle fc1 " +
+                            SqlQuery query = Ebean.createSqlQuery("SELECT id AS target_id " +
+                                    "FROM users " +
+                                    "WHERE id IN " +
+                                    "(SELECT fc1.target_id FROM friends_circle fc1 " +
                                     "INNER JOIN friends_circle fc2 ON fc2.target_id = fc1.requester_id AND fc2.requester_id = fc1.target_id " +
-                                    "WHERE fc1.requester_id = " + user.getId() + " AND fc1.is_blocked = false");
+                                    "INNER JOIN users u ON u.id = fc1.target_id " +
+                                    "WHERE fc1.requester_id = " + user.getId() + " AND fc1.is_blocked = false) " +
+                                    "AND status = 0");
 
                             List<ObjectNode> actionsNode = null;
                             List<SqlRow> rows = query.findList();
@@ -108,7 +113,7 @@ public class ActionController extends AbstractApplication {
                                             .where()
                                             .eq(FinderKey.ACTION_ID, id)
                                             .findRowCount();
-                                    boolean uShare = finderShares.selectUnique(
+                                    boolean uShare = finderShares.selectAll(
                                             new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
                                             new Object[] { action.getId(), user.getId() })
                                             != null;
