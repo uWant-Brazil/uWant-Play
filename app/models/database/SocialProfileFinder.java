@@ -6,7 +6,7 @@ import models.classes.SocialProfile;
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade User.class
+ * Entidade para acesso ao Finder da entidade SocialProfile.class
  */
 public class SocialProfileFinder extends AbstractFinder<SocialProfile> implements IFinder<SocialProfile> {
 

@@ -2,7 +2,6 @@ package models.cloud;
 
 import models.classes.Action;
 import models.classes.Mobile;
-import models.classes.Notification;
 
 import java.util.List;
 

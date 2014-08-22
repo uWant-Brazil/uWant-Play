@@ -1,7 +1,7 @@
 package models.exceptions;
 
 /**
- * Exception - Problemas no index acesso pela sistema (Paginação).
+ * Exception - Problemas quando o usuário tenta realizar algum envio de push e não possui aparelhos vinculados.
  */
 public class UserWithoutMobileException extends UWException {
 

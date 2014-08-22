@@ -48,4 +48,5 @@ public abstract class DateUtil {
     public static String format(Date dateHour, String pattern) {
         return new SimpleDateFormat(pattern).format(dateHour);
     }
+
 }

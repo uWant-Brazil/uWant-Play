@@ -184,10 +184,19 @@ public class AbstractApplication extends Controller {
         }
     }
 
+    /**
+     * Obtém o token que foi enviado no cabeçalho do body no HTTP.
+     * @param request
+     * @return token
+     */
     public static String getToken(Http.Request request) {
         return request.getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
     }
 
+    /**
+     * Método default quando uma sessão for inválida no mobile.
+     * @return JSON
+     */
     public static Result invalidMobileSession() {
         ObjectNode jsonResponse = Json.newObject();
         jsonResponse.put(ParameterKey.ERROR, -999);
@@ -195,6 +204,10 @@ public class AbstractApplication extends Controller {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por exibir a view contendo o 'Sobre' do app.
+     * @return HTML
+     */
     public static Result about() {
         return ok(uwant_sobre.render());
     }

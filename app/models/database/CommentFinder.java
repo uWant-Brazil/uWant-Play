@@ -2,12 +2,11 @@ package models.database;
 
 import com.avaje.ebean.ExpressionList;
 import models.classes.Comment;
-import models.classes.Want;
 
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade Token.class
+ * Entidade para acesso ao Finder da entidade Comment.class
  */
 public class CommentFinder extends AbstractFinder<Comment> implements IFinder<Comment> {
 

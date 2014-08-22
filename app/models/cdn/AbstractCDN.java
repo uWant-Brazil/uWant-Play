@@ -44,10 +44,18 @@ abstract class AbstractCDN<K> {
         return multimedia;
     }
 
+    /**
+     * Getter para a URL da CDN;
+     * @return
+     */
     public String getHost() {
         return host;
     }
 
+    /**
+     * Getter para o tipo da CDN.
+     * @return
+     */
     public CDNType getType() {
         return type;
     }

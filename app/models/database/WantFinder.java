@@ -2,12 +2,11 @@ package models.database;
 
 import com.avaje.ebean.ExpressionList;
 import models.classes.Want;
-import models.classes.WishList;
 
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade Token.class
+ * Entidade para acesso ao Finder da entidade Want.class
  */
 public class WantFinder extends AbstractFinder<Want> implements IFinder<Want> {
 

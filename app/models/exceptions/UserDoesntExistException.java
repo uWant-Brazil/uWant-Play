@@ -1,7 +1,8 @@
 package models.exceptions;
 
 /**
- * Created by felipebonezi on 24/05/14.
+ * Exceção quando o sistema não tem nenhum usuário cadastrado com os dados informados
+ * ou então o usuário está bloqueado/excluído/etc.
  */
 public class UserDoesntExistException extends UWException {
 

@@ -14,6 +14,12 @@ public abstract class ActionUtil {
 
     private static final char CHAR_SPACE = ' ';
 
+    /** Método responsável por gerar a mensagem baseado no tipo da Action.class
+     *
+     * @param action - Ação
+     * @return mensagem
+     * @throws IllegalAccessException
+     */
     public static String generateMessage(Action action) throws IllegalAccessException {
         switch (action.getType()) {
             case ACTIVITY:
@@ -48,6 +54,11 @@ public abstract class ActionUtil {
         }
     }
 
+    /** Método responsável por gerar a mensagem do tipo ACTIVITY
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String activityMessage(Action action) {
         User user = action.getUser();
         WishList wishList = action.getWishList();
@@ -72,10 +83,20 @@ public abstract class ActionUtil {
         return builder.toString();
     }
 
+    /** Método responsável por gerar a mensagem do tipo MESSAGE
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String notificationMessage(Action action) {
         return action.getExtra();
     }
 
+    /** Método responsável por gerar a mensagem do tipo SHARE
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String shareMessage(Action action) {
         StringBuilder builder = new StringBuilder();
 
@@ -87,6 +108,11 @@ public abstract class ActionUtil {
         return builder.toString();
     }
 
+    /** Método responsável por gerar a mensagem do tipo MENTION
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String mentionMessage(Action action) {
         StringBuilder builder = new StringBuilder();
 
@@ -100,6 +126,11 @@ public abstract class ActionUtil {
         return builder.toString();
     }
 
+    /** Método responsável por gerar a mensagem do tipo COMMENT
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String commentMessage(Action action) {
         StringBuilder builder = new StringBuilder();
 
@@ -113,6 +144,11 @@ public abstract class ActionUtil {
         return builder.toString();
     }
 
+    /** Método responsável por gerar a mensagem do tipo ADD FRIEND
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String addFriendsCircleMessage(Action action) {
         StringBuilder builder = new StringBuilder();
 
@@ -124,6 +160,11 @@ public abstract class ActionUtil {
         return builder.toString();
     }
 
+    /** Método responsável por gerar a mensagem do tipo ACCEPT FRIEND
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String acceptedFriendsCircleMessage(Action action) {
         StringBuilder builder = new StringBuilder();
 
@@ -135,6 +176,11 @@ public abstract class ActionUtil {
         return builder.toString();
     }
 
+    /** Método responsável por gerar a mensagem do tipo REPORT
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String reportActionMessage(Action action) {
         StringBuilder builder = new StringBuilder();
 
@@ -154,6 +200,11 @@ public abstract class ActionUtil {
         return builder.toString();
     }
 
+    /** Método responsável por gerar a mensagem do tipo WANT
+     *
+     * @param action - Ação
+     * @return mensagem
+     */
     private static String wantActionMessage(Action action) {
         StringBuilder builder = new StringBuilder();
 

@@ -2,12 +2,11 @@ package models.database;
 
 import com.avaje.ebean.ExpressionList;
 import models.classes.SocialProfile;
-import models.classes.UserMailInteraction;
 
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade User.class
+ * Entidade para acesso ao Finder da entidade SocialProfile.Login.class
  */
 public class SocialProfileLoginsFinder extends AbstractFinder<SocialProfile.Login> implements IFinder<SocialProfile.Login> {
 

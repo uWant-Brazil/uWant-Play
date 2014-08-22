@@ -1,7 +1,7 @@
 package models.exceptions;
 
 /**
- * Exception - Problemas na formatação do e-mail informado.
+ * Exception - Problemas na formatação da data informada.
  */
 public class InvalidDateException extends UWException {
 

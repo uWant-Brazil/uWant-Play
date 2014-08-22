@@ -2,12 +2,11 @@ package models.database;
 
 import com.avaje.ebean.ExpressionList;
 import models.classes.ActionShare;
-import models.classes.WishList;
 
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade Token.class
+ * Entidade para acesso ao Finder da entidade ActionShare.class
  */
 public class ActionShareFinder extends AbstractFinder<ActionShare> implements IFinder<ActionShare> {
 

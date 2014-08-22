@@ -2,12 +2,11 @@ package models.database;
 
 import com.avaje.ebean.ExpressionList;
 import models.classes.Notification;
-import models.classes.User;
 
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade User.class
+ * Entidade para acesso ao Finder da entidade Notification.class
  */
 public class NotificationFinder extends AbstractFinder<Notification> implements IFinder<Notification> {
 

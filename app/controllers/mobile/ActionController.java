@@ -1,7 +1,6 @@
 package controllers.mobile;
 
 import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Expr;
 import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,7 +10,6 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
-import play.db.ebean.Model;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Result;
@@ -21,7 +19,9 @@ import utils.DateUtil;
 import utils.NotificationUtil;
 import utils.UserUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Controlador responsável pelas requisições mobile relacionadas a ações realizadas por usuários no sistema.

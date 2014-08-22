@@ -2,7 +2,6 @@ package models.database;
 
 import com.avaje.ebean.ExpressionList;
 import models.classes.Action;
-import models.classes.Token;
 
 import java.util.List;
 

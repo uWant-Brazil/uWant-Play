@@ -5,7 +5,6 @@ import models.classes.IMobileUser;
 import models.classes.Mobile;
 import models.cloud.INotificationService;
 import models.cloud.NotificationServiceFactory;
-import models.exceptions.UserWithoutMobileException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,7 +85,7 @@ public abstract class NotificationUtil {
      * @param mobiles - Dispositivos Móveis
      */
     private static void pushAsync(String title, Action action, final Mobile.OS os, final List<Mobile> mobiles) {
-        Thread thread = new Thread() {
+        final Thread thread = new Thread() {
 
             @Override
             public void run() {

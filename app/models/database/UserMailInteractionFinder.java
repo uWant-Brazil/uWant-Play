@@ -1,13 +1,12 @@
 package models.database;
 
 import com.avaje.ebean.ExpressionList;
-import models.classes.User;
 import models.classes.UserMailInteraction;
 
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade User.class
+ * Entidade para acesso ao Finder da entidade UserMailInteraction.class
  */
 public class UserMailInteractionFinder extends AbstractFinder<UserMailInteraction> implements IFinder<UserMailInteraction> {
 

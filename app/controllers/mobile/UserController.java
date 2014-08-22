@@ -329,6 +329,14 @@ public class UserController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /** Método responsável por realizar o CRUD para que os usuários
+     * possam ser adicionados aos seus círculos de amigos.
+     *
+     * @param user - Usuário adicionando/aceitando
+     * @param factory - Fábrica de Finder's (BD)
+     * @param userTarget - Usuário a ser adicionado/aceito.
+     * @return true ou false, se foram amigos mútuos após essa ação.
+     */
     private static boolean joinCircle(User user, FinderFactory factory, User userTarget) {
         IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
         FriendsCircle friendsCircle = finderCircle.selectUnique(
@@ -434,6 +442,13 @@ public class UserController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    /**
+     * Método responsável por tratar o envio de amigos do usuário
+     * que estavam na agenda ou em outro tipo de lugar para que sejam
+     * adicionados ao círculo de amigos (caso eles possuam conta no uWant)
+     * ou serem convidados a utilizar o sistema.
+     * @return JSON
+     */
     @Security.Authenticated(MobileAuthenticator.class)
     public static F.Promise<Result> analyzeContacts() {
         final ObjectNode jsonResponse = Json.newObject();
@@ -504,6 +519,11 @@ public class UserController extends AbstractApplication {
         });
     }
 
+    /**
+     * Método responsável por listar todos os amigos que estão contidos
+     * no círculo de amigos do usuário logado.
+     * @return JSON
+     */
     @Security.Authenticated(MobileAuthenticator.class)
     public static F.Promise<Result> listCircle() {
         final ObjectNode jsonResponse = Json.newObject();

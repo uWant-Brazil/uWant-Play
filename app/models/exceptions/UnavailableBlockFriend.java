@@ -1,5 +1,9 @@
 package models.exceptions;
 
+/**
+ * Exception - Exceção caso você tente bloquear um usuário que não está no seu
+ * círculo de amigos.
+ */
 public class UnavailableBlockFriend extends UWException {
 
     private static final int CODE = 75;

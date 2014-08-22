@@ -2,12 +2,11 @@ package models.database;
 
 import com.avaje.ebean.ExpressionList;
 import models.classes.ActionReport;
-import models.classes.FriendsCircle;
 
 import java.util.List;
 
 /**
- * Entidade para acesso ao Finder da entidade FriendsCircle.class
+ * Entidade para acesso ao Finder da entidade ActionReport.class
  */
 public class ActionReportFinder extends AbstractFinder<ActionReport> implements IFinder<ActionReport> {
 

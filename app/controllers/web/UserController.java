@@ -7,7 +7,8 @@ import models.classes.UserMailInteraction;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import play.mvc.Result;
-import views.html.*;
+import views.html.recoveryPassword;
+import views.html.unauthorized;
 
 import java.util.Date;
 import java.util.List;
