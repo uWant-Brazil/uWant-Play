@@ -7,6 +7,7 @@ import models.classes.Product;
 import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
+import models.exceptions.AuthenticationException;
 import models.exceptions.MultipartBodyException;
 import models.exceptions.UWException;
 import play.libs.F;
@@ -16,6 +17,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
 import utils.CDNUtil;
+import utils.UserUtil;
 
 import java.io.File;
 import java.util.Map;
@@ -35,8 +37,8 @@ public class CDNController extends AbstractApplication {
     public static F.Promise<Result> retrieve() {
         final ObjectNode jsonResponse = Json.newObject();
         try {
-            User user = authenticateToken();
-            if (user != null) {
+            final User user = authenticateToken();
+            if (user != null && UserUtil.isAvailable(user)) {
                 String contentType = request().getHeader(HeaderKey.CONTENT_TYPE);
                 if (contentType.startsWith(HeaderKey.MULTIPART_FORM_DATA)) {
                     Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
@@ -67,37 +69,43 @@ public class CDNController extends AbstractApplication {
 
                             });
                         } else if (formEncoded.containsKey(ParameterKey.MULTIMEDIA_USER_PICTURE)) {
-                            // TODO Envio da foto do usuário...
-                            throw new MultipartBodyException();
+                            promise = F.Promise.promise(new F.Function0<Multimedia>() {
+
+                                @Override
+                                public Multimedia apply() throws Throwable {
+                                    Multimedia multimedia = CDNUtil.sendFile(file);
+                                    user.setPicture(multimedia);
+                                    user.update();
+                                    return multimedia;
+                                }
+
+                            });
                         } else {
                             throw new MultipartBodyException();
                         }
 
-                        F.Promise<Result> resultPromise = promise.map(new F.Function<Multimedia, Result>() {
+                        return promise.map(new F.Function<Multimedia, Result>() {
 
                             @Override
                             public Result apply(Multimedia multimedia) throws Throwable {
-                                ObjectNode jsonMultimedia = Json.newObject();
-                                jsonMultimedia.put(ParameterKey.URL, multimedia.getUrl());
-
                                 ObjectNode jsonResponse = Json.newObject();
 
                                 jsonResponse.put(ParameterKey.STATUS, true);
-                                jsonResponse.put(ParameterKey.MESSAGE, "O arquivo multimídia foi enviado...");
-                                jsonResponse.put(ParameterKey.MULTIMEDIA, jsonMultimedia);
+                                jsonResponse.put(ParameterKey.MESSAGE, "O arquivo multimídia foi salvo com sucesso.");
+                                jsonResponse.put(ParameterKey.MULTIMEDIA, Json.toJson(multimedia));
 
                                 return ok(jsonResponse);
                             }
 
                         });
-
-                        return resultPromise;
                     } else {
                         throw new MultipartBodyException();
                     }
                 } else {
                     throw new MultipartBodyException();
                 }
+            } else {
+                throw new AuthenticationException();
             }
         } catch (UWException e) {
             e.printStackTrace();
