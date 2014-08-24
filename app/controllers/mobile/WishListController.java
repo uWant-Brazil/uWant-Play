@@ -16,7 +16,9 @@ import utils.UserUtil;
 import utils.WishListUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Controlador responsável pelo tratamento em requisições mobile relacionados a lista de desejos.
@@ -49,6 +51,7 @@ public class WishListController extends AbstractApplication {
                             wishList.save();
                             wishList.refresh();
 
+                            Map<Integer, Long> productIds = new HashMap<Integer, Long>(25);
                             if (body.hasNonNull(ParameterKey.PRODUCTS)) {
                                 JsonNode products = body.get(ParameterKey.PRODUCTS);
                                 if (products.isArray()) {
@@ -77,6 +80,8 @@ public class WishListController extends AbstractApplication {
                                             product.save();
                                             product.refresh();
 
+                                            productIds.put(i, product.getId());
+
                                             WishListProduct wishListProduct = new WishListProduct();
                                             wishListProduct.setProduct(product);
                                             wishListProduct.setWishList(wishList);
@@ -89,6 +94,7 @@ public class WishListController extends AbstractApplication {
 
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, "Lista de desejo (" + title + ") foi criada com sucesso.");
+                            jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
                         } else {
                             throw new JSONBodyException();
                         }
