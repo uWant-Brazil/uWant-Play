@@ -185,11 +185,20 @@ public class WishListController extends AbstractApplication {
             User user = authenticateToken();
             if (user != null) {
                 if (UserUtil.isAvailable(user)) {
+                    long userId;
+
+                    JsonNode body = request().body().asJson();
+                    if (body != null && body.has(ParameterKey.ID)) {
+                        userId = body.get(ParameterKey.ID).asLong();
+                    } else {
+                        userId = user.getId();
+                    }
+
                     FinderFactory factory = FinderFactory.getInstance();
                     IFinder<WishList> finder = factory.get(WishList.class);
                     List<WishList> wishLists = finder.selectAll(
                             new String[] { FinderKey.USER_ID , FinderKey.STATUS },
-                            new Object[] { user.getId(), WishList.Status.ACTIVE.ordinal() });
+                            new Object[] { userId, WishList.Status.ACTIVE.ordinal() });
 
                     if (wishLists != null) {
                         jsonResponse.put(ParameterKey.STATUS, true);
@@ -550,14 +559,14 @@ public class WishListController extends AbstractApplication {
                     if (body.hasNonNull(ParameterKey.ID) && body.hasNonNull(ParameterKey.PRODUCTS)) {
                         final Long idWishList = body.get(ParameterKey.ID).asLong();
 
-                        FinderFactory factory = FinderFactory.getInstance();
-                        IFinder<WishList> finder = factory.get(WishList.class);
-                        WishList wishList = finder.selectUnique(
+                        final FinderFactory factory = FinderFactory.getInstance();
+                        final IFinder<WishList> finder = factory.get(WishList.class);
+                        final WishList wishList = finder.selectUnique(
                                 new String[] { FinderKey.ID },
                                 new Object[] { idWishList });
 
                         if (wishList != null && WishListUtil.isOwner(wishList, user)) {
-                            JsonNode products = body.get(ParameterKey.PRODUCTS);
+                            final JsonNode products = body.get(ParameterKey.PRODUCTS);
                             if (products.isArray()) {
                                 F.Promise<Integer> promise = F.Promise.promise(new F.Function0<Integer>() {
 

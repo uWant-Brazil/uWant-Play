@@ -67,7 +67,6 @@ public class User extends Model implements IMobileUser {
         // Do nothing...
     }
 
-    @JsonIgnore
     public long getId() {
         return id;
     }
