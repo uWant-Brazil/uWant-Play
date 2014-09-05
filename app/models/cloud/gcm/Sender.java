@@ -17,6 +17,7 @@ package models.cloud.gcm;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.cloud.gcm.exceptions.InvalidRequestException;
+import org.apache.http.protocol.HTTP;
 import play.libs.Json;
 
 import java.io.*;
@@ -195,7 +196,7 @@ public class Sender {
 		}
 		String requestBody = Json.toJson(jsonRequest).toString();
 		logger.finest("JSON request: " + requestBody);
-		HttpURLConnection conn = post(Constants.GCM_SEND_ENDPOINT, "application/json",
+		HttpURLConnection conn = post(Constants.GCM_SEND_ENDPOINT, "application/json;charset=utf-8;",
 				requestBody);
 		int status = conn.getResponseCode();
 		String responseBody;
@@ -223,19 +224,24 @@ public class Sender {
 			if (results != null && results.isArray()) {
 				for (int i = 0;i < results.size();i++) {
                     JsonNode jsonResult = results.get(i);
-					String messageId = jsonResult.get(Constants.JSON_MESSAGE_ID).asText();
-					String canonicalRegId = null;
-                    if (jsonResult.has(Constants.TOKEN_CANONICAL_REG_ID)) {
-                        canonicalRegId = jsonResult
-                                .get(Constants.TOKEN_CANONICAL_REG_ID).asText();
-                    }
-					String error = null;
+
+                    Result.Builder builder1 = new Result.Builder();
+
                     if (jsonResult.has(Constants.JSON_ERROR)) {
-                        error = jsonResult.get(Constants.JSON_ERROR).asText();
+                        String error = jsonResult.get(Constants.JSON_ERROR).asText();
+                        builder1.errorCode(error);
+                    } else {
+                        String messageId = jsonResult.get(Constants.JSON_MESSAGE_ID).asText();
+                        String canonicalRegId = null;
+                        if (jsonResult.has(Constants.TOKEN_CANONICAL_REG_ID)) {
+                            canonicalRegId = jsonResult
+                                    .get(Constants.TOKEN_CANONICAL_REG_ID).asText();
+                        }
+                        builder1.messageId(messageId)
+                                .canonicalRegistrationId(canonicalRegId);
                     }
-					Result result = new Result.Builder().messageId(messageId)
-							.canonicalRegistrationId(canonicalRegId)
-							.errorCode(error).build();
+
+                    Result result = builder1.build();
 					builder.addResult(result);
 				}
 			}
@@ -302,7 +308,7 @@ public class Sender {
 		}
 		logger.fine("Sending POST to " + url);
 		logger.finest("POST body: " + body);
-		byte[] bytes = body.getBytes();
+		byte[] bytes = body.getBytes(HTTP.UTF_8);
 		HttpURLConnection conn = getConnection(url);
 		conn.setDoOutput(true);
 		conn.setUseCaches(false);

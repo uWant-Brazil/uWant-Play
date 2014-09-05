@@ -16,7 +16,7 @@
             @helper.form(action = controllers.web.routes.NotificationController.send(user.getId())) {
                 <input type="text" name="title" class="form-control" placeholder="Digite o título" required autofocus>
                 <input type="text" name="message" class="form-control" placeholder="Digite a mensagem" required>
-                <input type="datetime-local" name="when" class="form-control" placeholder="dd/MM/yyyy HH:mm" required>
+                <input type="datetime-local" name="when" class="form-control" placeholder="dd/MM/yyyy HH:mm">
                 <button class="btn btn-lg btn-primary btn-block" type="submit">Enviar</button>
             }
         </div>

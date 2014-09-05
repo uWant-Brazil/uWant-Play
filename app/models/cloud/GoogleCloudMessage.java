@@ -9,11 +9,15 @@ import models.cloud.gcm.Message;
 import models.cloud.gcm.MulticastResult;
 import models.cloud.gcm.Result;
 import models.cloud.gcm.Sender;
+import play.libs.Akka;
+import scala.concurrent.ExecutionContext;
+import scala.concurrent.duration.Duration;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Classe responsável por efetuar as chamadas ao Google Cloud Message.
@@ -42,12 +46,22 @@ class GoogleCloudMessage implements INotificationService {
      */
     private static final String DEFAULT_COLLAPSE_KEY = "1";
 
-    @Override
-    public void push(String title, Action action, List<Mobile> mobiles) {
-        String message = action.toString();
-        String uniqueIdentifier = UUID.randomUUID().toString();
+    /**
+     * Constante para identificação de um regId inválido.
+     */
+    private static final String CONST_INVALID_REGISTRATION = "Invalid registration";
 
-        Message cloudMessage = new Message.Builder()
+    /**
+     * Delay para execução do schedule em minutos.
+     */
+    public static final int SCHEDULE_DELAY = 15;
+
+    @Override
+    public void push(final String title, final Action action, final List<Mobile> mobiles) {
+        final String uniqueIdentifier = UUID.randomUUID().toString();
+        final String message = action.toString();
+
+        final Message cloudMessage = new Message.Builder()
                 .timeToLive(MAX_TTL)
                 .delayWhileIdle(true)
                 .collapseKey(DEFAULT_COLLAPSE_KEY)
@@ -56,12 +70,26 @@ class GoogleCloudMessage implements INotificationService {
                 .addData(AbstractApplication.ParameterKey.IDENTIFIER, uniqueIdentifier)
                 .build();
 
-        Sender sender = new Sender(API_KEY);
+        final Sender sender = new Sender(API_KEY);
         try {
             pushExecute(title, message, action, mobiles, uniqueIdentifier, cloudMessage, sender);
         } catch (IOException e) {
             e.printStackTrace();
-            // TODO Tratamento do erro...
+            
+            /** Caso o envio da notificação caia em alguma exceção,
+                uma nova tentativa irá ser agendada após 15 minutos. **/
+            Akka.system()
+                    .scheduler()
+                    .scheduleOnce(Duration.create(SCHEDULE_DELAY, TimeUnit.MINUTES),
+                            new Runnable() {
+
+                                @Override
+                                public void run() {
+                                    push(title, action, mobiles);
+                                }
+
+                            },
+                            Akka.system().dispatcher());
         }
     }
 
@@ -103,12 +131,14 @@ class GoogleCloudMessage implements INotificationService {
                 notification.setUser(user);
                 notification.setUniqueIdentifier(uniqueIdentifier);
                 notification.setServiceIdentifier(result.getMessageId());
-                notification.setExtra("MessageId=" + result.getMessageId() + ";");
+                notification.setExtra(String.format("MessageId=%s;", result.getMessageId()));
                 notification.setAction(action);
                 notification.save();
             } else if (result.getErrorCodeName() != null) {
-                // Error...
-                // TODO Tratamento do erro...
+                // Failure...
+                if (result.getErrorCodeName().contains(CONST_INVALID_REGISTRATION)) {
+                    mobile.delete();
+                }
             } else if (result.getCanonicalRegistrationId() != null) {
                 // Failure... Update and try again!
                 Mobile mobileChanged = new Mobile();
