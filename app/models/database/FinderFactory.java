@@ -51,6 +51,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new WantFinder();
         } else if (id == Comment.class) {
             finder = new CommentFinder();
+        } else if (id == Product.class) {
+            finder = new ProductFinder();
         }
 
         return finder;

@@ -25,7 +25,7 @@ public class AbstractApplication extends Controller {
     public static class HeaderKey {
         public static final String HEADER_AUTHENTICATION_TOKEN = "Authentication";
         public static final String CONTENT_TYPE = "Content-Type";
-        public static final String MULTIPART_FORM_DATA = "";
+        public static final String MULTIPART_FORM_DATA = "multipart/form-data";
     }
 
     /**

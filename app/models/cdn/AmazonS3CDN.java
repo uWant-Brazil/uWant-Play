@@ -55,7 +55,7 @@ public class AmazonS3CDN extends AbstractCDN<AWSCredentials> implements ICDN {
         AmazonS3 s3Client = new AmazonS3Client(credentials);
 
         try {
-            s3Client.putObject(BUCKET, fileName, file);
+            s3Client.putObject(BUCKET, "images/" + fileName, file);
 
             String url = HOST + fileName;
             return super.createMultimedia(fileName, url);
