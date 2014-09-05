@@ -9,6 +9,7 @@ import models.database.IFinder;
 import play.mvc.Result;
 import views.html.recoveryPassword;
 import views.html.unauthorized;
+import views.html.confirmMail;
 
 import java.util.Date;
 import java.util.List;
@@ -22,7 +23,7 @@ public class UserController extends AbstractApplication {
     /**
      * Mensagem default para aviso na alteração da senha.
      */
-    private static final String DEFAULT_CONFIRM_MAIL_MESSAGE = "Não se esqueça da sua senha!";
+    private static final String DEFAULT_RECOVERY_PASSWORD_MESSAGE = "Não se esqueça da sua senha!";
 
     /**
      * Tempo máximo para resposta de uma interação com o e-mail do usuário.
@@ -32,6 +33,11 @@ public class UserController extends AbstractApplication {
     private static final long MAX_TIME_AVERAGE = 604800000;
 
     /**
+     * Mensagem default para aviso na confirmação do e-mail.
+     */
+    private static final String DEFAULT_CONFIRM_MAIL_MESSAGE = "Olá %s, o seu endereço de e-mail (%s) foi confirmado com sucesso!";
+
+    /**
      * Método responsável por exibir a View que irá informar se
      * o e-mail do usuário foi confirmado com sucesso.
      * @param ts - Milisegundos
@@ -39,21 +45,30 @@ public class UserController extends AbstractApplication {
      * @param m - Email
      * @return View
      */
-    public static Result confirmMail(Long ts, String h, String m) {
+    public static Result confirmMailView(Long ts, String h, String m) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
         UserMailInteraction umi = finder.selectUnique(
                 new String[] { FinderKey.HASH, FinderKey.MAIL },
                 new Object[] { h, m });
 
-        UserMailInteraction userMailInteraction = new UserMailInteraction();
-        userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
-        userMailInteraction.update(umi.getId());
+        if (umi != null) {
+            if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
+                UserMailInteraction userMailInteraction = new UserMailInteraction();
+                userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
+                userMailInteraction.update(umi.getId());
 
-        // TODO Está faltando criar o route responsável por este método.
-        // TODO Está faltando criar a View da confirmação do e-mail.
+                User user = umi.getUser();
+                User userModified = new User();
+                userModified.setStatus(User.Status.ACTIVE);
+                userModified.update(user.getId());
+            }
 
-        return ok("E-mail confirmado com sucesso!");
+            User user = umi.getUser();
+            return ok(confirmMail.render(String.format(DEFAULT_CONFIRM_MAIL_MESSAGE, user.getName(), user.getMail())));
+        }
+
+        return unauthorized(unauthorized.render("Não existe nenhuma solicitação para confirmação de e-mail..."));
     }
 
     /**
@@ -72,9 +87,9 @@ public class UserController extends AbstractApplication {
                 new Object[] { h, m });
 
         Date now = new Date();
-        long currentTimeInMilis = now.getTime();
+        long currentTimeInMillis = now.getTime();
         if (umi != null) {
-            if ((currentTimeInMilis - ts > MAX_TIME_AVERAGE) || umi.getStatus() == UserMailInteraction.Status.CANCELED) {
+            if ((currentTimeInMillis - ts > MAX_TIME_AVERAGE) || umi.getStatus() == UserMailInteraction.Status.CANCELED) {
                 if (umi.getStatus() != UserMailInteraction.Status.CANCELED) {
                     UserMailInteraction userMailInteraction = new UserMailInteraction();
                     userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
@@ -90,7 +105,7 @@ public class UserController extends AbstractApplication {
                 }
 
                 User user = umi.getUser();
-                return ok(recoveryPassword.render(DEFAULT_CONFIRM_MAIL_MESSAGE, user.getId(), umi.getId()));
+                return ok(recoveryPassword.render(DEFAULT_RECOVERY_PASSWORD_MESSAGE, user.getId(), umi.getId()));
             }
         }
 
