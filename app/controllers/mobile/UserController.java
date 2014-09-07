@@ -105,6 +105,8 @@ public class UserController extends AbstractApplication {
                                 }
                             }
 
+                            generateToken(user, Token.Target.MOBILE);
+
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, "O usuário (" + login + ") foi registrado com sucesso.");
                             jsonResponse.put(ParameterKey.USER, Json.toJson(user));
