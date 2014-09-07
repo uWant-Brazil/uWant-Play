@@ -288,6 +288,8 @@ public class WishListController extends AbstractApplication {
                                         jsonProduct.put(ParameterKey.ID, pId);
                                         jsonProduct.put(ParameterKey.NAME, pName);
                                         jsonProduct.put(ParameterKey.NICK_NAME, pNickName);
+                                        jsonProduct.put(ParameterKey.PICTURE, jsonMultimedia);
+                                        jsonProduct.put(ParameterKey.MANUFACTURER, jsonManufacturer);
 
                                         arrayProducts.add(jsonProduct);
                                     }
