@@ -48,16 +48,26 @@ public class NotificationController extends AbstractApplication {
 
                     Mobile.OS[] oses = Mobile.OS.values();
                     if (!identifier.isEmpty() && osId >= 0 && osId < oses.length) {
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<Mobile> finder = factory.get(Mobile.class);
+                        Mobile mobile = finder.selectUnique(new String[] { FinderKey.IDENTIFIER }, new Object[] { identifier });
+
                         String tokenContent = request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
                         Token token = listToken(tokenContent);
                         Mobile.OS os = oses[osId];
 
-                        Mobile mobile = new Mobile();
-                        mobile.setIdentifier(identifier);
-                        mobile.setToken(token);
-                        mobile.setUser(user);
-                        mobile.setOS(os);
-                        mobile.save();
+                        if (mobile == null) {
+                            mobile = new Mobile();
+                            mobile.setIdentifier(identifier);
+                            mobile.setToken(token);
+                            mobile.setUser(user);
+                            mobile.setOS(os);
+                            mobile.save();
+                        } else {
+                            Mobile mobileUpdated = new Mobile();
+                            mobileUpdated.setToken(token);
+                            mobileUpdated.update(mobile.getId());
+                        }
 
                         jsonResponse.put(ParameterKey.STATUS, true);
                         jsonResponse.put(ParameterKey.MESSAGE, "O dispositivo móvel foi registrado para " + user.getLogin());

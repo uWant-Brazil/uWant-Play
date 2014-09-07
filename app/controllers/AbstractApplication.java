@@ -113,6 +113,7 @@ public class AbstractApplication extends Controller {
         public static final String ACTION_ID = "action_id";
         public static final String MODIFIED_AT = "modified_at";
         public static final String CREATED_AT = "created_at";
+        public static final String IDENTIFIER = "identifier";
     }
 
     /**
