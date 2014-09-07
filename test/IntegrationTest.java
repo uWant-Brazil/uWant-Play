@@ -59,7 +59,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -105,7 +105,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -141,7 +141,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
 
                 assertAuthenticationHeader(result);
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -181,7 +181,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -225,7 +225,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -281,7 +281,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -337,7 +337,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -393,7 +393,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
 
                 assertAuthenticationHeader(result);
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -429,7 +429,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -474,7 +474,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -535,7 +535,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -596,7 +596,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -661,7 +661,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -712,7 +712,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -752,7 +752,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -811,7 +811,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);

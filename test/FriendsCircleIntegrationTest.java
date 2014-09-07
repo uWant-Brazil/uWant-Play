@@ -76,7 +76,7 @@ public class FriendsCircleIntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -97,7 +97,7 @@ public class FriendsCircleIntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
@@ -144,7 +144,7 @@ public class FriendsCircleIntegrationTest extends AbstractIntegrationTest {
                 assertThat(result).isNotNull();
                 assertThat(status).isTrue();
 
-                String responseBody = new String(JavaResultExtractor.getBody((SimpleResult) result));
+                String responseBody = new String(JavaResultExtractor.getBody(result, 10));
                 JsonNode jsonResponse = Json.parse(responseBody);
 
                 assertStatusMessage(jsonResponse, status);
