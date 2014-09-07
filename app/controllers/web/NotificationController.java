@@ -39,9 +39,8 @@ public class NotificationController extends AbstractApplication {
      * @param id - Id do usuário
      * @return View
      */
-    @Restrict({@Group({AdminUtil.Roles.GOD, AdminUtil.Roles.Notification.SEND})})
+    @Restrict({@Group({AdminUtil.Roles.Notification.SEND}), @Group({AdminUtil.Roles.Notification.SEND_SCHEDULE})})
     public static Result sendView(long id) {
-        // FIXME Por enquanto não temos restrição de usuários efetuarem essa ação.
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<User> finder = factory.get(User.class);
         User user = finder.selectUnique(id);
@@ -57,6 +56,7 @@ public class NotificationController extends AbstractApplication {
      * @param id - Id do usuário
      * @return View
      */
+    @Restrict({@Group({AdminUtil.Roles.Notification.SEND}), @Group({AdminUtil.Roles.Notification.SEND_SCHEDULE})})
     public static Result send(long id) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<User> finder = factory.get(User.class);
