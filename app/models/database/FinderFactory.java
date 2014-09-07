@@ -2,6 +2,7 @@ package models.database;
 
 import models.AbstractFactory;
 import models.classes.*;
+import models.classes.admin.Administrator;
 
 /**
  * Factory de Finder para banco de dados.
@@ -53,6 +54,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new CommentFinder();
         } else if (id == Product.class) {
             finder = new ProductFinder();
+        } else if (id == Administrator.class) {
+            finder = new AdministratorFinder();
         }
 
         return finder;

@@ -6,6 +6,7 @@ import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.TokenException;
+import play.libs.F;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
@@ -202,6 +203,14 @@ public class AbstractApplication extends Controller {
         jsonResponse.put(ParameterKey.ERROR, -999);
         jsonResponse.put(ParameterKey.MESSAGE, "Você não está autorizado a realizar este tipo de ação.");
         return ok(jsonResponse);
+    }
+
+    /**
+     * Método default quando uma sessão for inválida no mobile.
+     * @return JSON
+     */
+    public static F.Promise<Result> invalidWebSession(String message) {
+        return F.Promise.pure(ok(views.html.unauthorized.render(message)));
     }
 
     /**

@@ -1,5 +1,7 @@
 package controllers.web;
 
+import be.objectify.deadbolt.java.actions.Group;
+import be.objectify.deadbolt.java.actions.Restrict;
 import controllers.AbstractApplication;
 import models.classes.Action;
 import models.classes.Mobile;
@@ -12,6 +14,7 @@ import models.exceptions.UserWithoutMobileException;
 import play.libs.Akka;
 import play.mvc.Result;
 import scala.concurrent.duration.Duration;
+import utils.AdminUtil;
 import utils.DateUtil;
 import utils.NotificationUtil;
 import utils.UserUtil;
@@ -36,6 +39,7 @@ public class NotificationController extends AbstractApplication {
      * @param id - Id do usuário
      * @return View
      */
+    @Restrict({@Group({AdminUtil.Roles.GOD, AdminUtil.Roles.Notification.SEND})})
     public static Result sendView(long id) {
         // FIXME Por enquanto não temos restrição de usuários efetuarem essa ação.
         FinderFactory factory = FinderFactory.getInstance();

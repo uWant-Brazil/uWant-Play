@@ -10,7 +10,6 @@ import models.cloud.gcm.MulticastResult;
 import models.cloud.gcm.Result;
 import models.cloud.gcm.Sender;
 import play.libs.Akka;
-import scala.concurrent.ExecutionContext;
 import scala.concurrent.duration.Duration;
 
 import java.io.IOException;

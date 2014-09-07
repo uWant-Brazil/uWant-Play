@@ -32,8 +32,6 @@ import java.util.logging.Logger;
  */
 public class Sender {
 
-	protected static final String UTF8 = "UTF-8";
-
 	/**
 	 * Initial delay before first retry, without jitter.
 	 */
@@ -79,7 +77,7 @@ public class Sender {
 	 */
 	public MulticastResult send(Message message, List<String> regIds, int retries) throws IOException {
 		int attempt = 0;
-		MulticastResult multicastResult = null;
+		MulticastResult multicastResult;
 		int backoff = BACKOFF_INITIAL_DELAY;
 		// Map of results by registration id, it will be updated after each
 		// attempt
@@ -245,8 +243,7 @@ public class Sender {
 					builder.addResult(result);
 				}
 			}
-			MulticastResult multicastResult = builder.build();
-			return multicastResult;
+			return builder.build();
 		} catch (CustomParserException e) {
 			throw newIoException(responseBody, e);
 		}

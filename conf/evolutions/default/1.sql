@@ -29,6 +29,17 @@ create table action_shares (
   constraint pk_action_shares primary key (id))
 ;
 
+create table administrators (
+  id                        bigint not null,
+  login                     varchar(255) not null,
+  name                      varchar(255),
+  mail                      varchar(255),
+  status                    integer,
+  constraint ck_administrators_status check (status in (0,1,2)),
+  constraint uq_administrators_login unique (login),
+  constraint pk_administrators primary key (id))
+;
+
 create table action_comments (
   id                        bigint not null,
   text                      varchar(255) not null,
@@ -103,6 +114,12 @@ create table product (
   multimedia                bigint,
   modified_at               timestamp not null,
   constraint pk_product primary key (id))
+;
+
+create table roles (
+  id                        bigint not null,
+  name                      varchar(255) not null,
+  constraint pk_roles primary key (id))
 ;
 
 create table social_profile (
@@ -192,11 +209,19 @@ create table actions_report_user (
   action_report_id               bigint not null,
   constraint pk_actions_report_user primary key (user_id, action_report_id))
 ;
+
+create table administrators_roles (
+  administrators_id              bigint not null,
+  roles_id                       bigint not null,
+  constraint pk_administrators_roles primary key (administrators_id, roles_id))
+;
 create sequence actions_id_seq;
 
 create sequence actions_report_id_seq;
 
 create sequence action_shares_id_seq;
+
+create sequence administrators_id_seq;
 
 create sequence action_comments_id_seq;
 
@@ -213,6 +238,8 @@ create sequence multimedia_id_seq;
 create sequence user_notifications_id_seq;
 
 create sequence product_id_seq;
+
+create sequence roles_id_seq;
 
 create sequence social_profile_id_seq;
 
@@ -283,6 +310,10 @@ alter table actions_report_user add constraint fk_actions_report_user_action_01 
 
 alter table actions_report_user add constraint fk_actions_report_user_users_02 foreign key (action_report_id) references users (id);
 
+alter table administrators_roles add constraint fk_administrators_roles_admin_01 foreign key (administrators_id) references administrators (id);
+
+alter table administrators_roles add constraint fk_administrators_roles_roles_02 foreign key (roles_id) references roles (id);
+
 # --- !Downs
 
 drop table if exists actions cascade;
@@ -292,6 +323,10 @@ drop table if exists actions_report cascade;
 drop table if exists actions_report_user cascade;
 
 drop table if exists action_shares cascade;
+
+drop table if exists administrators cascade;
+
+drop table if exists administrators_roles cascade;
 
 drop table if exists action_comments cascade;
 
@@ -308,6 +343,8 @@ drop table if exists multimedia cascade;
 drop table if exists user_notifications cascade;
 
 drop table if exists product cascade;
+
+drop table if exists roles cascade;
 
 drop table if exists social_profile cascade;
 
@@ -329,6 +366,8 @@ drop sequence if exists actions_report_id_seq;
 
 drop sequence if exists action_shares_id_seq;
 
+drop sequence if exists administrators_id_seq;
+
 drop sequence if exists action_comments_id_seq;
 
 drop sequence if exists friends_circle_seq;
@@ -344,6 +383,8 @@ drop sequence if exists multimedia_id_seq;
 drop sequence if exists user_notifications_id_seq;
 
 drop sequence if exists product_id_seq;
+
+drop sequence if exists roles_id_seq;
 
 drop sequence if exists social_profile_id_seq;
 
