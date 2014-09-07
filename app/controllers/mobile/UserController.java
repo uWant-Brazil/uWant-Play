@@ -83,6 +83,7 @@ public class UserController extends AbstractApplication {
                             user.setStatus(User.Status.PARTIAL_ACTIVE);
                             user.setSince(new Date());
                             user.save();
+                            user.refresh();
 
                             UserUtil.confirmEmail(user, false);
 
@@ -106,6 +107,7 @@ public class UserController extends AbstractApplication {
 
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, "O usuário (" + login + ") foi registrado com sucesso.");
+                            jsonResponse.put(ParameterKey.USER, Json.toJson(user));
                         } else {
                             throw new UserAlreadyExistException();
                         }
