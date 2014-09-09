@@ -5,6 +5,7 @@ import models.classes.User;
 import models.classes.WishList;
 import models.classes.WishListProduct;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -214,6 +215,21 @@ public abstract class ActionUtil {
         builder.append("acaba de 'wantar' sua ação!");
 
         return builder.toString();
+    }
+
+    public static void feed(WishList wishList) {
+        Action action = new Action();
+        action.setCreatedAt(new Date());
+        action.setType(Action.Type.ACTIVITY);
+        action.setExtra(wishList.getDescription());
+        action.setUser(wishList.getUser());
+        action.setFrom(wishList.getUser());
+        action.save();
+        action.refresh();
+
+        WishList wishListUpdated = new WishList();
+        wishListUpdated.setAction(action);
+        wishListUpdated.update(wishList.getId());
     }
 
 }

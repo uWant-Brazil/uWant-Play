@@ -12,6 +12,7 @@ import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
+import utils.ActionUtil;
 import utils.UserUtil;
 import utils.WishListUtil;
 
@@ -91,6 +92,9 @@ public class WishListController extends AbstractApplication {
                                     }
                                 }
                             }
+
+                            wishList.refresh();
+                            ActionUtil.feed(wishList);
 
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, "Lista de desejo (" + title + ") foi criada com sucesso.");
