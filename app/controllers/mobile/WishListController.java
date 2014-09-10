@@ -189,16 +189,21 @@ public class WishListController extends AbstractApplication {
             User user = authenticateToken();
             if (user != null) {
                 if (UserUtil.isAvailable(user)) {
-                    long userId;
-
                     JsonNode body = request().body().asJson();
+                    FinderFactory factory = FinderFactory.getInstance();
+
+                    long userId;
                     if (body != null && body.has(ParameterKey.ID)) {
                         userId = body.get(ParameterKey.ID).asLong();
+
+                        if ((userId != user.getId())
+                                && UserUtil.getFriendshipLevel(user.getId(), userId) != FriendsCircle.FriendshipLevel.MUTUAL) {
+                            throw new UnauthorizedOperationException();
+                        }
                     } else {
                         userId = user.getId();
                     }
 
-                    FinderFactory factory = FinderFactory.getInstance();
                     IFinder<WishList> finder = factory.get(WishList.class);
                     List<WishList> wishLists = finder.selectAll(
                             new String[] { FinderKey.USER_ID , FinderKey.STATUS },
