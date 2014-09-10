@@ -254,7 +254,7 @@ public class UserController extends AbstractApplication {
                         perfilNode.put(ParameterKey.USER, usersNode);
 
                         if (user.getId() != userFounded.getId()) {
-                            FriendsCircle.FriendshipLevel friendshipLevel = UserUtil.getFriendshipLevel(user, userFounded);
+                            FriendsCircle.FriendshipLevel friendshipLevel = UserUtil.getFriendshipLevel(user.getId(), userFounded.getId());
 
                             IFinder<WishList> wFinder = factory.get(WishList.class);
                             List<WishList> wishLists = wFinder.selectAll(
@@ -552,7 +552,7 @@ public class UserController extends AbstractApplication {
                               User userTarget = finderUser.selectUnique(relation.getTargetId());
 
                               if (UserUtil.isAvailable(userTarget)) {
-                                  FriendsCircle.FriendshipLevel level = UserUtil.getFriendshipLevel(user, userTarget);
+                                  FriendsCircle.FriendshipLevel level = UserUtil.getFriendshipLevel(user.getId(), userTarget.getId());
                                   if (level == FriendsCircle.FriendshipLevel.MUTUAL) {
                                       circle.add(userTarget);
                                   }

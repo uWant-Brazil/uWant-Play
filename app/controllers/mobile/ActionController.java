@@ -18,6 +18,7 @@ import security.MobileAuthenticator;
 import utils.DateUtil;
 import utils.NotificationUtil;
 import utils.UserUtil;
+import utils.WishListUtil;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +32,7 @@ public class ActionController extends AbstractApplication {
 
     /**
      * Método responsável por listar todos os feeds de ações realizadas
-     * pelos amigos não-bloqueados do usuário autenticado.
+     * pelos amigos não-bloqueados, lista de desejos ou usuários espeíficios para o usuário autenticado.
      * @return JSON
      */
     public static F.Promise<Result> feeds() {
@@ -49,131 +50,23 @@ public class ActionController extends AbstractApplication {
                         endIndex = startIndex + 10;
                     }
 
-                    F.Promise<List<ObjectNode>> promise = F.Promise.promise(new F.Function0<List<ObjectNode>>() {
-
-                        @Override
-                        public List<ObjectNode> apply() throws Throwable {
-                            // FIXME Como utilizar inner join com o Finder?
-                            SqlQuery query = Ebean.createSqlQuery("SELECT id AS target_id " +
-                                    "FROM users " +
-                                    "WHERE id IN " +
-                                    "(SELECT fc1.target_id FROM friends_circle fc1 " +
-                                    "INNER JOIN friends_circle fc2 ON fc2.target_id = fc1.requester_id AND fc2.requester_id = fc1.target_id " +
-                                    "INNER JOIN users u ON u.id = fc1.target_id " +
-                                    "WHERE fc1.requester_id = " + user.getId() + " AND fc1.is_blocked = false) " +
-                                    "AND status = 0");
-
-                            List<ObjectNode> actionsNode = null;
-                            List<SqlRow> rows = query.findList();
-                            if (rows != null && rows.size() > 0) {
-                                actionsNode = new ArrayList<ObjectNode>(rows.size() + 5);
-
-                                Object[] targetIds = new Object[rows.size()];
-                                for (int i = 0; i < rows.size(); i++) {
-                                    SqlRow row = rows.get(i);
-                                    Long targetId = row.getLong(FinderKey.TARGET_ID);
-                                    targetIds[i] = targetId;
-                                }
-
-                                FinderFactory factory = FinderFactory.getInstance();
-                                IFinder<Action> finderActions = factory.get(Action.class);
-                                List<Action> actions = finderActions.getFinder()
-                                        .where()
-                                        .in(FinderKey.USER_ID, targetIds)
-                                        .eq(FinderKey.TYPE, Action.Type.ACTIVITY.ordinal())
-                                        .setFirstRow(startIndex)
-                                        .setMaxRows(endIndex - startIndex)
-                                        .orderBy(FinderKey.CREATED_AT + " desc")
-                                        .findList();
-
-                                for (Action action : actions) {
-                                    long id = action.getId();
-                                    String message = action.toString();
-                                    WishList wishList = action.getWishList();
-                                    List<WishListProduct> wishListProducts = wishList.getWishLists();
-
-                                    IFinder<Want> finderWants = factory.get(Want.class);
-                                    int wantsCount = finderWants.getFinder()
-                                            .where()
-                                            .eq(FinderKey.ACTION_ID, id)
-                                            .findRowCount();
-                                    boolean uWant = finderWants.selectUnique(
-                                            new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
-                                            new Object[] { action.getId(), user.getId() })
-                                            != null;
-
-                                    IFinder<Comment> finderComments = factory.get(Comment.class);
-                                    int commentsCount = finderComments.getFinder()
-                                            .where()
-                                            .eq(FinderKey.ACTION_ID, id)
-                                            .findRowCount();
-
-                                    IFinder<ActionShare> finderShares = factory.get(ActionShare.class);
-                                    int sharesCount = finderShares.getFinder()
-                                            .where()
-                                            .eq(FinderKey.ACTION_ID, id)
-                                            .findRowCount();
-                                    boolean uShare = finderShares.selectAll(
-                                            new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
-                                            new Object[] { action.getId(), user.getId() })
-                                            != null;
-
-                                    List<Multimedia> nodesProducts = new ArrayList<Multimedia>();
-                                    if (wishListProducts != null) {
-                                        for (WishListProduct product : wishListProducts) {
-                                            if (product.getStatus() == WishListProduct.Status.ACTIVE) {
-                                                Multimedia multimedia = product.getProduct().getMultimedia();
-                                                if (multimedia != null) {
-                                                    nodesProducts.add(multimedia);
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    ObjectNode nodeWishList = Json.newObject();
-                                    nodeWishList.put(ParameterKey.ID, wishList.getId());
-                                    nodeWishList.put(ParameterKey.MULTIMEDIAS, Json.toJson(nodesProducts));
-
-                                    User actionUser = action.getUser();
-                                    ObjectNode nodeUser = Json.newObject();
-                                    nodeUser.put(ParameterKey.LOGIN, actionUser.getLogin());
-                                    nodeUser.put(ParameterKey.PICTURE, Json.toJson(actionUser.getPicture()));
-
-                                    ObjectNode nodeWant = Json.newObject();
-                                    nodeWant.put(ParameterKey.COUNT, wantsCount);
-                                    nodeWant.put(ParameterKey.UWANT, uWant);
-
-                                    ObjectNode nodeShare = Json.newObject();
-                                    nodeShare.put(ParameterKey.COUNT, sharesCount);
-                                    nodeShare.put(ParameterKey.USHARE, uShare);
-
-                                    ObjectNode node = Json.newObject();
-                                    node.put(ParameterKey.ID, id);
-                                    node.put(ParameterKey.TYPE, action.getType().ordinal());
-                                    node.put(ParameterKey.WHEN, DateUtil.format(action.getCreatedAt(), DateUtil.DATE_HOUR_PATTERN));
-                                    node.put(ParameterKey.MESSAGE, message);
-                                    node.put(ParameterKey.EXTRA, action.getExtra());
-                                    node.put(ParameterKey.WISHLIST, nodeWishList);
-                                    node.put(ParameterKey.USER_FROM, nodeUser);
-                                    node.put(ParameterKey.COMMENTS_COUNT, commentsCount);
-                                    node.put(ParameterKey.WANT, nodeWant);
-                                    node.put(ParameterKey.SHARE, nodeShare);
-
-                                    actionsNode.add(node);
-                                }
-                            }
-
-                            return actionsNode;
-                        }
-
-                    });
+                    F.Promise<List<ObjectNode>> promise;
+                    if (body.hasNonNull(ParameterKey.USER_ID)) {
+                        long userId = body.get(ParameterKey.USER_ID).asLong(Long.MIN_VALUE);
+                        promise = listUserFeeds(user, userId, startIndex, endIndex);
+                    } else if (body.hasNonNull(ParameterKey.WISHLIST_ID)) {
+                        long wishListId = body.get(ParameterKey.WISHLIST_ID).asLong(Long.MIN_VALUE);
+                        promise = listWishListFeeds(user, wishListId, startIndex, endIndex);
+                    } else {
+                        promise = listFriendsFeeds(user, startIndex, endIndex);
+                    }
 
                     return promise.map(new F.Function<List<ObjectNode>, Result>() {
 
                         @Override
                         public Result apply(List<ObjectNode> actions) throws Throwable {
                             jsonResponse.put(ParameterKey.STATUS, true);
-                            jsonResponse.put(ParameterKey.MESSAGE, "As ações dos seus amigos foram listadas com sucesso.");
+                            jsonResponse.put(ParameterKey.MESSAGE, "As ações foram listadas com sucesso.");
                             jsonResponse.put(ParameterKey.ACTIONS, Json.toJson(actions));
 
                             return ok(jsonResponse);
@@ -201,6 +94,184 @@ public class ActionController extends AbstractApplication {
             }
 
         });
+    }
+
+    private static F.Promise<List<ObjectNode>> listUserFeeds(final User user, final long userId,
+                                                             final int startIndex, final int endIndex) throws UserDoesntExistException {
+        if (UserUtil.getFriendshipLevel(user.getId(), userId) == FriendsCircle.FriendshipLevel.MUTUAL) {
+            return F.Promise.promise(new F.Function0<List<ObjectNode>>() {
+
+                @Override
+                public List<ObjectNode> apply() throws Throwable {
+                    Object[] targetIds = new Object[1];
+                    targetIds[0] = userId;
+
+                    return getUserFeeds(targetIds, startIndex, endIndex, user);
+                }
+
+            });
+        } else {
+            throw new UserDoesntExistException();
+        }
+    }
+
+    private static F.Promise<List<ObjectNode>> listWishListFeeds(final User user, final long wishListId,
+                                                                 final int startIndex, final int endIndex) throws WishListDontExistException {
+        FinderFactory factory = FinderFactory.getInstance();
+        IFinder<WishList> finder = factory.get(WishList.class);
+        WishList wishList = finder.selectUnique(wishListId);
+        User owner = wishList.getUser();
+        Action action = wishList.getAction();
+
+        if (WishListUtil.isOwner(wishList, user)
+                || UserUtil.getFriendshipLevel(user.getId(), owner.getId()) == FriendsCircle.FriendshipLevel.MUTUAL) {
+            return F.Promise.promise(new F.Function0<List<ObjectNode>>() {
+
+                @Override
+                public List<ObjectNode> apply() throws Throwable {
+                    List<ObjectNode> nodes = null;
+                    ObjectNode node = getFeed(factory, action, user);
+                    if (node != null) {
+                        nodes = new ArrayList<ObjectNode>();
+                        nodes.add(node);
+                    }
+                    return nodes;
+                }
+
+            });
+        } else {
+            throw new WishListDontExistException();
+        }
+    }
+
+    private static F.Promise<List<ObjectNode>> listFriendsFeeds(final User user, final int startIndex, final int endIndex) {
+        return F.Promise.promise(new F.Function0<List<ObjectNode>>() {
+
+            @Override
+            public List<ObjectNode> apply() throws Throwable {
+                // FIXME Como utilizar inner join com o Finder?
+                SqlQuery query = Ebean.createSqlQuery("SELECT id AS target_id " +
+                        "FROM users " +
+                        "WHERE id IN " +
+                        "(SELECT fc1.target_id FROM friends_circle fc1 " +
+                        "INNER JOIN friends_circle fc2 ON fc2.target_id = fc1.requester_id AND fc2.requester_id = fc1.target_id " +
+                        "INNER JOIN users u ON u.id = fc1.target_id " +
+                        "WHERE fc1.requester_id = " + user.getId() + " AND fc1.is_blocked = false) " +
+                        "AND status = 0");
+
+                List<ObjectNode> actionsNode = null;
+                List<SqlRow> rows = query.findList();
+                if (rows != null && rows.size() > 0) {
+                    Object[] targetIds = new Object[rows.size()];
+                    for (int i = 0; i < rows.size(); i++) {
+                        SqlRow row = rows.get(i);
+                        Long targetId = row.getLong(FinderKey.TARGET_ID);
+                        targetIds[i] = targetId;
+                    }
+
+                    actionsNode = getUserFeeds(targetIds, startIndex, endIndex, user);
+                }
+
+                return actionsNode;
+            }
+
+        });
+    }
+
+    private static List<ObjectNode> getUserFeeds(Object[] targetIds, int startIndex, int endIndex, User user) {
+        List<ObjectNode> actionsNode;
+        actionsNode = new ArrayList<ObjectNode>((endIndex - startIndex) + 5);
+        FinderFactory factory = FinderFactory.getInstance();
+        IFinder<Action> finderActions = factory.get(Action.class);
+        List<Action> actions = finderActions.getFinder()
+                .where()
+                .in(FinderKey.USER_ID, targetIds)
+                .eq(FinderKey.TYPE, Action.Type.ACTIVITY.ordinal())
+                .setFirstRow(startIndex)
+                .setMaxRows(endIndex - startIndex)
+                .orderBy(FinderKey.CREATED_AT + " desc")
+                .findList();
+
+        for (Action action : actions) {
+            ObjectNode node = getFeed(factory, action, user);
+            actionsNode.add(node);
+        }
+        return actionsNode;
+    }
+
+    private static ObjectNode getFeed(FinderFactory factory, Action action, User user) {
+        long id = action.getId();
+        String message = action.toString();
+        WishList wishList = action.getWishList();
+        List<WishListProduct> wishListProducts = wishList.getWishLists();
+
+        IFinder<Want> finderWants = factory.get(Want.class);
+        int wantsCount = finderWants.getFinder()
+                .where()
+                .eq(FinderKey.ACTION_ID, id)
+                .findRowCount();
+        boolean uWant = finderWants.selectUnique(
+                new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
+                new Object[] { action.getId(), user.getId() })
+                != null;
+
+        IFinder<Comment> finderComments = factory.get(Comment.class);
+        int commentsCount = finderComments.getFinder()
+                .where()
+                .eq(FinderKey.ACTION_ID, id)
+                .findRowCount();
+
+        IFinder<ActionShare> finderShares = factory.get(ActionShare.class);
+        int sharesCount = finderShares.getFinder()
+                .where()
+                .eq(FinderKey.ACTION_ID, id)
+                .findRowCount();
+        boolean uShare = finderShares.selectAll(
+                new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
+                new Object[] { action.getId(), user.getId() })
+                != null;
+
+        List<Multimedia> nodesProducts = new ArrayList<Multimedia>();
+        if (wishListProducts != null) {
+            for (WishListProduct product : wishListProducts) {
+                if (product.getStatus() == WishListProduct.Status.ACTIVE) {
+                    Multimedia multimedia = product.getProduct().getMultimedia();
+                    if (multimedia != null) {
+                        nodesProducts.add(multimedia);
+                    }
+                }
+            }
+        }
+
+        ObjectNode nodeWishList = Json.newObject();
+        nodeWishList.put(ParameterKey.ID, wishList.getId());
+        nodeWishList.put(ParameterKey.MULTIMEDIAS, Json.toJson(nodesProducts));
+
+        User actionUser = action.getUser();
+        ObjectNode nodeUser = Json.newObject();
+        nodeUser.put(ParameterKey.LOGIN, actionUser.getLogin());
+        nodeUser.put(ParameterKey.PICTURE, Json.toJson(actionUser.getPicture()));
+
+        ObjectNode nodeWant = Json.newObject();
+        nodeWant.put(ParameterKey.COUNT, wantsCount);
+        nodeWant.put(ParameterKey.UWANT, uWant);
+
+        ObjectNode nodeShare = Json.newObject();
+        nodeShare.put(ParameterKey.COUNT, sharesCount);
+        nodeShare.put(ParameterKey.USHARE, uShare);
+
+        ObjectNode node = Json.newObject();
+        node.put(ParameterKey.ID, id);
+        node.put(ParameterKey.TYPE, action.getType().ordinal());
+        node.put(ParameterKey.WHEN, DateUtil.format(action.getCreatedAt(), DateUtil.DATE_HOUR_PATTERN));
+        node.put(ParameterKey.MESSAGE, message);
+        node.put(ParameterKey.EXTRA, action.getExtra());
+        node.put(ParameterKey.WISHLIST, nodeWishList);
+        node.put(ParameterKey.USER_FROM, nodeUser);
+        node.put(ParameterKey.COMMENTS_COUNT, commentsCount);
+        node.put(ParameterKey.WANT, nodeWant);
+        node.put(ParameterKey.SHARE, nodeShare);
+        return node;
     }
 
     /**
@@ -477,7 +548,7 @@ public class ActionController extends AbstractApplication {
                                 new Object[] { login });
 
                         if (userFriend != null && UserUtil.isAvailable(userFriend)) {
-                            FriendsCircle.FriendshipLevel level = UserUtil.getFriendshipLevel(user, userFriend);
+                            FriendsCircle.FriendshipLevel level = UserUtil.getFriendshipLevel(user.getId(), userFriend.getId());
                             if (level == FriendsCircle.FriendshipLevel.MUTUAL) {
                                 F.Promise<String> promise = F.Promise.promise(new F.Function0<String>() {
 
