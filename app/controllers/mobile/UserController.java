@@ -191,7 +191,7 @@ public class UserController extends AbstractApplication {
                     if (query.isEmpty()) {
                         expression = finder.where().ne(FinderKey.ID, user.getId());
                     } else {
-                        expression = finder.where().or(Expr.or(Expr.like(FinderKey.LOGIN, query), Expr.like(FinderKey.MAIL, query)), Expr.like(FinderKey.NAME, query));
+                        expression = finder.where().or(Expr.or(Expr.icontains(FinderKey.LOGIN, query), Expr.icontains(FinderKey.MAIL, query)), Expr.icontains(FinderKey.NAME, query));
                     }
                     
                     if (body.hasNonNull(ParameterKey.START_INDEX) && body.hasNonNull(ParameterKey.END_INDEX)) {
