@@ -534,6 +534,19 @@ public class UserController extends AbstractApplication {
         try {
             final User user = authenticateToken();
             if (user != null && UserUtil.isAvailable(user)) {
+                JsonNode body = request().body().asJson();
+                final long userId;
+                if (body != null && body.has(ParameterKey.ID)) {
+                    userId = body.get(ParameterKey.ID).asLong();
+
+                    if ((userId != user.getId())
+                            && UserUtil.getFriendshipLevel(user.getId(), userId) != FriendsCircle.FriendshipLevel.MUTUAL) {
+                        throw new UnauthorizedOperationException();
+                    }
+                } else {
+                    userId = user.getId();
+                }
+
                 F.Promise promise = F.Promise.promise(new F.Function0<List<User>>() {
 
                       @Override
@@ -544,7 +557,7 @@ public class UserController extends AbstractApplication {
 
                           List<FriendsCircle> requesterCircle = finder.selectAll(
                                   new String[] { FinderKey.REQUESTER_ID},
-                                  new Object[] { user.getId() });
+                                  new Object[] { userId });
 
                           List<User> circle = new ArrayList<User>(requesterCircle.size() + 5);
                           for (FriendsCircle friendsCircle : requesterCircle) {
@@ -552,7 +565,7 @@ public class UserController extends AbstractApplication {
                               User userTarget = finderUser.selectUnique(relation.getTargetId());
 
                               if (UserUtil.isAvailable(userTarget)) {
-                                  FriendsCircle.FriendshipLevel level = UserUtil.getFriendshipLevel(user.getId(), userTarget.getId());
+                                  FriendsCircle.FriendshipLevel level = UserUtil.getFriendshipLevel(userId, userTarget.getId());
                                   if (level == FriendsCircle.FriendshipLevel.MUTUAL) {
                                       circle.add(userTarget);
                                   }
@@ -568,7 +581,7 @@ public class UserController extends AbstractApplication {
                     @Override
                     public Result apply(List<User> circle) throws Throwable {
                         jsonResponse.put(ParameterKey.STATUS, true);
-                        jsonResponse.put(ParameterKey.MESSAGE, "Os amigos de " + user.getName() + " foram listados com sucesso.");
+                        jsonResponse.put(ParameterKey.MESSAGE, "Os amigos foram listados com sucesso.");
                         jsonResponse.put(ParameterKey.FRIENDS, Json.toJson(circle));
                         return ok(jsonResponse);
                     }
