@@ -3,8 +3,8 @@ package utils;
 import models.classes.Action;
 import models.classes.IMobileUser;
 import models.classes.Mobile;
-import models.cloud.INotificationService;
-import models.cloud.NotificationServiceFactory;
+import models.cloud.notifications.INotificationService;
+import models.cloud.notifications.NotificationServiceFactory;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package models.cloud;
+package models.cloud.notifications;
 
 import models.classes.Action;
 import models.classes.Mobile;

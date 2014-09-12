@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package models.cloud.gcm;
+package models.cloud.notifications.gcm;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import models.cloud.gcm.exceptions.InvalidRequestException;
+import models.cloud.notifications.gcm.exceptions.InvalidRequestException;
 import org.apache.http.protocol.HTTP;
 import play.libs.Json;
 
@@ -72,7 +72,7 @@ public class Sender {
 	 * @return combined result of all requests made.
 	 * 
 	 * @throws IllegalArgumentException if registrationIds is {@literal null} or empty.
-	 * @throws models.cloud.gcm.exceptions.InvalidRequestException if GCM didn't returned a 200 or 503 status.
+	 * @throws models.cloud.notifications.gcm.exceptions.InvalidRequestException if GCM didn't returned a 200 or 503 status.
 	 * @throws java.io.IOException if message could not be sent.
 	 */
 	public MulticastResult send(Message message, List<String> regIds, int retries) throws IOException {
@@ -171,7 +171,7 @@ public class Sender {
 	 * 
 	 * @throws IllegalArgumentException
 	 *             if registrationIds is {@literal null} or empty.
-	 * @throws models.cloud.gcm.exceptions.InvalidRequestException
+	 * @throws models.cloud.notifications.gcm.exceptions.InvalidRequestException
 	 *             if GCM didn't returned a 200 status.
 	 * @throws java.io.IOException
 	 *             if message could not be sent or received.

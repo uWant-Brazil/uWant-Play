@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package models.cloud.gcm;
+package models.cloud.notifications.gcm;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -25,7 +25,7 @@ import java.util.Map;
  *
  * <p>
  * Instances of this class are immutable and should be created using a
- * {@link models.cloud.gcm.Message.Builder}. Examples:
+ * {@link models.cloud.notifications.gcm.Message.Builder}. Examples:
  *
  * <strong>Simplest message:</strong>
  * <pre><code>

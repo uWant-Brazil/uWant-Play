@@ -1,14 +1,14 @@
-package models.cloud;
+package models.cloud.notifications;
 
 import controllers.AbstractApplication;
 import models.classes.Action;
 import models.classes.Mobile;
 import models.classes.Notification;
 import models.classes.User;
-import models.cloud.gcm.Message;
-import models.cloud.gcm.MulticastResult;
-import models.cloud.gcm.Result;
-import models.cloud.gcm.Sender;
+import models.cloud.notifications.gcm.Message;
+import models.cloud.notifications.gcm.MulticastResult;
+import models.cloud.notifications.gcm.Result;
+import models.cloud.notifications.gcm.Sender;
 import play.libs.Akka;
 import scala.concurrent.duration.Duration;
 
