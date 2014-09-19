@@ -16,7 +16,7 @@ insert into user_mobiles (id,identifier,user_id,token_id,os,modified_at) values 
 
 insert into actions (id,type,from_id,user_id,extra,created_at,modified_at) values (nextVal('actions_id_seq'),8,(select id from users where login = 'zeus'),(select id from users where login = 'zeus'),'#IMORAL #SENSACIONAL',now(),now());
 
-insert into wishlist (id,title,description,user_id,status,modified_at,action_id) values (nextVal('wishlist_id_seq'),'Desejos do Olimpo','O que todo DEUS dejesa!',1,0,now(),(select id from actions where type=8 and extra = '#IMORAL #SENSACIONAL'));
+insert into wishlist (id,title,description,user_id,status,modified_at,action_id,uuid) values (nextVal('wishlist_id_seq'),'Desejos do Olimpo','O que todo DEUS dejesa!',1,0,now(),(select id from actions where type=8 and extra = '#IMORAL #SENSACIONAL'),'8a2d2c80-3ab7-11e4-ba70-0002a5d5c51b' );
 
 insert into multimedia (id,file_name,url,cdn,modified_at) values (nextVal('multimedia_id_seq'),'play4.jpg','http://mlb-s1-p.mlstatic.com/playstation-4-sony-500gb-bivolt-ps4-bluray-play4-17346-MLB20137063623_072014-F.jpg',0,now());
 insert into product (id,name,nick_name,modified_at,multimedia) values (nextVal('product_id_seq'),'Sony Playstation 4','Play 4',now(),(select id from multimedia where file_name = 'play4.jpg'));

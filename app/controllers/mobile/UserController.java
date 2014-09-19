@@ -175,7 +175,8 @@ public class UserController extends AbstractApplication {
      * @return JSON
      */
     @Security.Authenticated(MobileAuthenticator.class)
-    public static Result search() {
+    public static Result
+    search() {
         ObjectNode jsonResponse = Json.newObject();
         JsonNode body = request().body().asJson();
         try {
@@ -207,7 +208,18 @@ public class UserController extends AbstractApplication {
                     }
 
                     List<User> users = expression.findList();
-                    JsonNode usersNode = Json.toJson(users);
+                    List<ObjectNode> userNodes = new ArrayList<ObjectNode>(users.size() + 5);
+                    for (User userSearched : users) {
+                        JsonNode node = Json.toJson(userSearched);
+
+                        FriendsCircle.FriendshipLevel friendshipLevel = UserUtil.getFriendshipLevel(user.getId(), userSearched.getId());
+                        ObjectNode userNode = Json.newObject();
+                        userNode.put(ParameterKey.USER, node);
+                        userNode.put(ParameterKey.FRIENDSHIP_LEVEL, friendshipLevel.ordinal());
+
+                        userNodes.add(userNode);
+                    }
+                    JsonNode usersNode = Json.toJson(userNodes);
 
                     jsonResponse.put(ParameterKey.STATUS, true);
                     jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
@@ -233,7 +245,8 @@ public class UserController extends AbstractApplication {
      * @return JSON
      */
     @Security.Authenticated(MobileAuthenticator.class)
-    public static Result list() {
+    public static Result
+    list() {
         ObjectNode jsonResponse = Json.newObject();
         try {
             User user = authenticateToken();

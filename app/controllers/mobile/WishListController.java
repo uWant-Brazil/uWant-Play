@@ -16,10 +16,7 @@ import utils.ActionUtil;
 import utils.UserUtil;
 import utils.WishListUtil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Controlador responsável pelo tratamento em requisições mobile relacionados a lista de desejos.
@@ -49,6 +46,7 @@ public class WishListController extends AbstractApplication {
                             wishList.setDescription(description);
                             wishList.setUser(user);
                             wishList.setStatus(WishList.Status.ACTIVE);
+                            wishList.setUUID(UUID.randomUUID().toString());
                             wishList.save();
                             wishList.refresh();
 
@@ -196,10 +194,13 @@ public class WishListController extends AbstractApplication {
                     if (body != null && body.has(ParameterKey.ID)) {
                         userId = body.get(ParameterKey.ID).asLong();
 
+                        FriendsCircle.FriendshipLevel fsl = UserUtil.getFriendshipLevel(user.getId(), userId);
                         if ((userId != user.getId())
-                                && UserUtil.getFriendshipLevel(user.getId(), userId) != FriendsCircle.FriendshipLevel.MUTUAL) {
+                                && fsl != FriendsCircle.FriendshipLevel.MUTUAL) {
                             throw new UnauthorizedOperationException();
                         }
+
+                        jsonResponse.put(ParameterKey.FRIENDSHIP_LEVEL, fsl.ordinal());
                     } else {
                         userId = user.getId();
                     }

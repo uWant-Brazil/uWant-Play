@@ -5,14 +5,29 @@
 <html>
     <head>
         <title>@title</title>
+        <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")" />
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
     </head>
-    <body>
-        @content
+    <body id="main-body">
+        <div class="main-header">
+            <nav class="main-header-nav">
+                <a href="@controllers.web.routes.AuthenticationController.authorizeView()" class="">ENTRAR</a>
+            </nav>
+        </div>
+            @content
+        <div class="main-footer">
+            <div>
+                <nav class="main-footer-nav">
+                    <span>SOBRE</span>
+                    <span>EMPREGOS</span>
+                    <span>NOTÍCIAS</span>
+                </nav>
+            </div>
+            <span>copyright @@ 2014</span>
+        </div>
     </body>
-    <script src="@routes.Assets.at("javascripts/jquery-1.9.0.min.js")" type="text/javascript"></script>
-    <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
 </html>

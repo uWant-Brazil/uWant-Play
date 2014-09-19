@@ -26,6 +26,9 @@ public class WishList extends Model {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
     private long id;
 
+    @Column(name =  "uuid", nullable = false, unique = true)
+    private String UUID;
+
     private String title;
     private String description;
 
@@ -112,5 +115,13 @@ public class WishList extends Model {
 
     public void setAction(Action action) {
         this.action = action;
+    }
+
+    public String getUUID() {
+        return UUID;
+    }
+
+    public void setUUID(String UUID) {
+        this.UUID = UUID;
     }
 }

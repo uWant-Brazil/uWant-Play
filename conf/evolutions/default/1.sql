@@ -184,6 +184,7 @@ create table action_wants (
 
 create table wishlist (
   id                        bigint not null,
+  uuid                      varchar(255) not null,
   title                     varchar(255),
   description               varchar(255),
   user_id                   bigint,
@@ -191,6 +192,7 @@ create table wishlist (
   action_id                 bigint,
   modified_at               timestamp not null,
   constraint ck_wishlist_status check (status in (0,1,2)),
+  constraint uq_wishlist_uuid unique (uuid),
   constraint pk_wishlist primary key (id))
 ;
 

@@ -6,6 +6,7 @@ import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.TokenException;
+import play.data.Form;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -19,6 +20,11 @@ import java.util.UUID;
  * Controlador-pai <GOD> de todos os controladores.
  */
 public class AbstractApplication extends Controller {
+
+    /**
+     * Mensagem default para sessões inválidas na web.
+     */
+    private static final String DEFAULT_INVALID_WEB_SESSION_MESSAGE = "Você tem certeza que está no lugar certo? :-)";
 
     /**
      * Classe estática responsável por manter todas as chaves de acesso à cabeçalhos HTTP.
@@ -117,6 +123,7 @@ public class AbstractApplication extends Controller {
         public static final String MODIFIED_AT = "modified_at";
         public static final String CREATED_AT = "created_at";
         public static final String IDENTIFIER = "identifier";
+        public static final String UUID = "uuid";
     }
 
     /**
@@ -210,11 +217,20 @@ public class AbstractApplication extends Controller {
     }
 
     /**
-     * Método default quando uma sessão for inválida no mobile.
+     * Método default quando uma sessão for inválida na web.
+     * @param message - Mensagem que será exibida.
      * @return JSON
      */
     public static F.Promise<Result> invalidWebSession(String message) {
         return F.Promise.pure(ok(views.html.unauthorized.render(message)));
+    }
+
+    /**
+     * Método default quando uma sessão for inválida na web.
+     * @return JSON
+     */
+    public static F.Promise<Result> invalidWebSession() {
+        return invalidWebSession(DEFAULT_INVALID_WEB_SESSION_MESSAGE);
     }
 
     /**
@@ -223,6 +239,23 @@ public class AbstractApplication extends Controller {
      */
     public static Result about() {
         return ok(uwant_sobre.render());
+    }
+
+    /**
+     * Método para verificar se o formulário web não contém erros de validações.
+     * @param form - Formulário web
+     * @return true or false
+     */
+    public static boolean isValidForm(Form<?> form) {
+        return !(form.hasErrors() || form.hasGlobalErrors());
+    }
+
+    /**
+     * Método responsável por renderizar a página inicial do uWant.
+     * @return HTML
+     */
+    public static Result index() {
+        return ok(views.html.index.render());
     }
 
 }
