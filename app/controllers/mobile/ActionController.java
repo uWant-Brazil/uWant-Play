@@ -117,11 +117,11 @@ public class ActionController extends AbstractApplication {
 
     private static F.Promise<List<ObjectNode>> listWishListFeeds(final User user, final long wishListId,
                                                                  final int startIndex, final int endIndex) throws WishListDontExistException {
-        FinderFactory factory = FinderFactory.getInstance();
-        IFinder<WishList> finder = factory.get(WishList.class);
-        WishList wishList = finder.selectUnique(wishListId);
-        User owner = wishList.getUser();
-        Action action = wishList.getAction();
+        final FinderFactory factory = FinderFactory.getInstance();
+        final IFinder<WishList> finder = factory.get(WishList.class);
+        final WishList wishList = finder.selectUnique(wishListId);
+        final User owner = wishList.getUser();
+        final Action action = wishList.getAction();
 
         if (WishListUtil.isOwner(wishList, user)
                 || UserUtil.getFriendshipLevel(user.getId(), owner.getId()) == FriendsCircle.FriendshipLevel.MUTUAL) {
@@ -346,7 +346,7 @@ public class ActionController extends AbstractApplication {
             if (UserUtil.isAvailable(user)) {
                 JsonNode body = request().body().asJson();
                 if (body != null && body.has(ParameterKey.ACTION_ID)) {
-                    long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
+                    final long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
                     if (actionId > 0) {
                         F.Promise<List<Comment>> promise = F.Promise.promise(new F.Function0<List<Comment>>() {
 
@@ -535,15 +535,15 @@ public class ActionController extends AbstractApplication {
     public static F.Promise<Result> toggleBlock() {
         final ObjectNode jsonResponse = Json.newObject();
         try {
-            User user = authenticateToken();
+            final User user = authenticateToken();
             if (UserUtil.isAvailable(user)) {
                 JsonNode body = request().body().asJson();
                 if (body != null && body.hasNonNull(ParameterKey.LOGIN)) {
-                    String login = body.get(ParameterKey.LOGIN).asText();
+                    final String login = body.get(ParameterKey.LOGIN).asText();
                     if (!login.isEmpty()) {
-                        FinderFactory factory = FinderFactory.getInstance();
-                        IFinder<User> finder = factory.get(User.class);
-                        User userFriend = finder.selectUnique(
+                        final FinderFactory factory = FinderFactory.getInstance();
+                        final IFinder<User> finder = factory.get(User.class);
+                        final User userFriend = finder.selectUnique(
                                 new String[] { FinderKey.LOGIN },
                                 new Object[] { login });
 
@@ -616,11 +616,11 @@ public class ActionController extends AbstractApplication {
     public static F.Promise<Result> share() {
         final ObjectNode jsonResponse = Json.newObject();
         try {
-            User user = authenticateToken();
+            final User user = authenticateToken();
             if (UserUtil.isAvailable(user)) {
                 JsonNode body = request().body().asJson();
                 if (body != null && body.has(ParameterKey.ACTION_ID)) {
-                    long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
+                    final long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
                     if (actionId > 0) {
                         F.Promise<JsonNode> promise = F.Promise.promise(new F.Function0<JsonNode>() {
 

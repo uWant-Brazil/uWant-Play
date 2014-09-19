@@ -24,8 +24,8 @@ import utils.UserUtil;
  */
 public class AuthenticationController extends AbstractApplication {
 
-    public static F.Promise<Result> authorizeView() {
-        return F.Promise.pure(ok());
+    public static Result authorizeView() {
+        return ok();
     }
 
     /**
@@ -34,7 +34,7 @@ public class AuthenticationController extends AbstractApplication {
      * requisições seguintes a fim de validar sua sessão.
      * @return JSON
      */
-    public static F.Promise<Result> authorize() {
+    public static Result authorize() {
         Form<AuthenticationViewModel> form = Form.form(AuthenticationViewModel.class).bindFromRequest(request());
         if (isValidForm(form)) {
             final AuthenticationViewModel model = form.get();
@@ -83,7 +83,7 @@ public class AuthenticationController extends AbstractApplication {
             jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
         }
 
-        return F.Promise.pure(ok(jsonResponse));
+        return ok(jsonResponse);
     }
 
 }
