@@ -97,6 +97,7 @@ public class AbstractApplication extends Controller {
         public static final String USER_ID = "userId";
         public static final String WISHLIST_ID = "wishlistId";
         public static final String LINKED = "linked";
+        public static final String PRODUCTS_REMOVED = "productsRemoved";
     }
 
     /**

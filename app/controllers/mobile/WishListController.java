@@ -1,5 +1,7 @@
 package controllers.mobile;
 
+import com.amazonaws.util.json.JSONArray;
+import com.avaje.ebean.text.json.JsonElement;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
@@ -50,46 +52,7 @@ public class WishListController extends AbstractApplication {
                             wishList.save();
                             wishList.refresh();
 
-                            Map<Integer, Long> productIds = new HashMap<Integer, Long>(25);
-                            if (body.hasNonNull(ParameterKey.PRODUCTS)) {
-                                JsonNode products = body.get(ParameterKey.PRODUCTS);
-                                if (products.isArray()) {
-                                    for(int i = 0; i < products.size(); i++) {
-                                        JsonNode jsonProduct = products.get(i);
-                                        if (jsonProduct.hasNonNull(ParameterKey.NAME) && jsonProduct.has(ParameterKey.NICK_NAME) && jsonProduct.has(ParameterKey.MANUFACTURER)) {
-                                            Manufacturer manufacturer = null;
-
-                                            JsonNode jsonManufacturer = jsonProduct.get(ParameterKey.MANUFACTURER);
-                                            if (jsonManufacturer != null && jsonManufacturer.hasNonNull(ParameterKey.NAME)) {
-                                                String name = jsonManufacturer.get(ParameterKey.NAME).asText();
-
-                                                manufacturer = new Manufacturer();
-                                                manufacturer.setName(name);
-                                                manufacturer.save();
-                                                manufacturer.refresh();
-                                            }
-
-                                            String name = jsonProduct.get(ParameterKey.NAME).asText();
-                                            String nickName = jsonProduct.get(ParameterKey.NICK_NAME).asText();
-
-                                            Product product = new Product();
-                                            product.setName(name);
-                                            product.setNickName(nickName);
-                                            product.setManufacturer(manufacturer);
-                                            product.save();
-                                            product.refresh();
-
-                                            productIds.put(i, product.getId());
-
-                                            WishListProduct wishListProduct = new WishListProduct();
-                                            wishListProduct.setProduct(product);
-                                            wishListProduct.setWishList(wishList);
-                                            wishListProduct.setStatus(WishListProduct.Status.ACTIVE);
-                                            wishListProduct.save();
-                                        }
-                                    }
-                                }
-                            }
+                            Map<Integer, Long> productIds = fillProducts(body, wishList);
 
                             wishList.refresh();
                             ActionUtil.feed(wishList);
@@ -119,6 +82,50 @@ public class WishListController extends AbstractApplication {
         return ok(jsonResponse);
     }
 
+    private static Map<Integer, Long> fillProducts(JsonNode body, WishList wishList) {
+        Map<Integer, Long> productIds = new HashMap<Integer, Long>(25);
+        if (body.hasNonNull(ParameterKey.PRODUCTS)) {
+            JsonNode products = body.get(ParameterKey.PRODUCTS);
+            if (products.isArray()) {
+                for(int i = 0; i < products.size(); i++) {
+                    JsonNode jsonProduct = products.get(i);
+                    if (jsonProduct.hasNonNull(ParameterKey.NAME) && jsonProduct.has(ParameterKey.NICK_NAME) && jsonProduct.has(ParameterKey.MANUFACTURER)) {
+                        Manufacturer manufacturer = null;
+
+                        JsonNode jsonManufacturer = jsonProduct.get(ParameterKey.MANUFACTURER);
+                        if (jsonManufacturer != null && jsonManufacturer.hasNonNull(ParameterKey.NAME)) {
+                            String name = jsonManufacturer.get(ParameterKey.NAME).asText();
+
+                            manufacturer = new Manufacturer();
+                            manufacturer.setName(name);
+                            manufacturer.save();
+                            manufacturer.refresh();
+                        }
+
+                        String name = jsonProduct.get(ParameterKey.NAME).asText();
+                        String nickName = jsonProduct.get(ParameterKey.NICK_NAME).asText();
+
+                        Product product = new Product();
+                        product.setName(name);
+                        product.setNickName(nickName);
+                        product.setManufacturer(manufacturer);
+                        product.save();
+                        product.refresh();
+
+                        productIds.put(i, product.getId());
+
+                        WishListProduct wishListProduct = new WishListProduct();
+                        wishListProduct.setProduct(product);
+                        wishListProduct.setWishList(wishList);
+                        wishListProduct.setStatus(WishListProduct.Status.ACTIVE);
+                        wishListProduct.save();
+                    }
+                }
+            }
+        }
+        return productIds;
+    }
+
     /**
      * Método responsável pela atualização de uma lista de desejos - sem alterar os produtos na mesma.
      * Apenas os donos da lista de desejos podem efetuar tal ação.
@@ -132,7 +139,9 @@ public class WishListController extends AbstractApplication {
                 if (UserUtil.isAvailable(user)) {
                     JsonNode body = request().body().asJson();
                     if (body != null) {
-                        if (body.hasNonNull(ParameterKey.ID) && body.hasNonNull(ParameterKey.TITLE) && body.hasNonNull(ParameterKey.DESCRIPTION)) {
+                        if (body.hasNonNull(ParameterKey.ID)
+                                && body.hasNonNull(ParameterKey.TITLE)
+                                && body.hasNonNull(ParameterKey.DESCRIPTION)) {
                             Long id = body.get(ParameterKey.ID).asLong();
                             String title = body.get(ParameterKey.TITLE).asText();
                             String description = body.get(ParameterKey.DESCRIPTION).asText();
@@ -144,13 +153,37 @@ public class WishListController extends AbstractApplication {
                                     new Object[] { id });
 
                             if (wishList != null && WishListUtil.isOwner(wishList, user)) {
-                                wishList.setTitle(title);
-                                wishList.setDescription(description);
-                                wishList.setUser(user);
-                                wishList.update();
+                                WishList wishListUpdated = new WishList();
+                                wishListUpdated.setTitle(title);
+                                wishListUpdated.setDescription(description);
+                                wishListUpdated.update(wishList.getId());
+                                wishList.refresh();
+
+                                if (body.hasNonNull(ParameterKey.PRODUCTS_REMOVED)) {
+                                    JsonNode jsonElement = body.get(ParameterKey.PRODUCTS_REMOVED);
+                                    if (jsonElement.isArray()) {
+                                        IFinder<Product> finderProduct = factory.get(Product.class);
+                                        for (int i = 0;i < jsonElement.size();i++) {
+                                            JsonNode node = jsonElement.get(i);
+                                            if (node.hasNonNull(ParameterKey.ID)) {
+                                                long productId = node.get(ParameterKey.ID).asLong(0);
+                                                Product product = finderProduct.selectUnique(productId);
+                                                if (product != null) {
+                                                    WishListProduct wp = product.getWishListProducts().get(0);
+                                                    WishListProduct wpUpdated = new WishListProduct();
+                                                    wpUpdated.setStatus(WishListProduct.Status.REMOVED);
+                                                    wpUpdated.update(wp.getId());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Map<Integer, Long> productIds = fillProducts(body, wishList);
 
                                 jsonResponse.put(ParameterKey.STATUS, true);
                                 jsonResponse.put(ParameterKey.MESSAGE, "A lista de desejos (" + title + ") foi editada com sucesso.");
+                                jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
                             } else {
                                 throw new WishListDontExistException();
                             }
@@ -258,8 +291,8 @@ public class WishListController extends AbstractApplication {
                             if (wishList != null) {
                                 IFinder<WishListProduct> wishlistProductIFinder = factory.get(WishListProduct.class);
                                 List<WishListProduct> products = wishlistProductIFinder.selectAll(
-                                        new String[] { FinderKey.WISHLIST_ID },
-                                        new Object[] { wishList.getId() });
+                                        new String[] { FinderKey.WISHLIST_ID, FinderKey.STATUS },
+                                        new Object[] { wishList.getId(), WishListProduct.Status.ACTIVE.ordinal() });
 
                                 List<ObjectNode> arrayProducts = null;
                                 if (products != null) {
