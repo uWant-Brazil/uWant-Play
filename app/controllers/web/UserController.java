@@ -6,7 +6,10 @@ import models.classes.User;
 import models.classes.UserMailInteraction;
 import models.database.FinderFactory;
 import models.database.IFinder;
+import org.joda.time.DateTime;
+import org.joda.time.Hours;
 import play.mvc.Result;
+import utils.UserUtil;
 import views.html.recoveryPassword;
 import views.html.unauthorized;
 import views.html.confirmMail;
@@ -28,9 +31,9 @@ public class UserController extends AbstractApplication {
     /**
      * Tempo máximo para resposta de uma interação com o e-mail do usuário.
      * Caso o tempo seja excedido, o sistema deverá enviar uma nova interação
-     * para o e-mail do usuário.
+     * para o e-mail do usuário, em horas.
      */
-    private static final long MAX_TIME_AVERAGE = 604800000;
+    private static final long MAX_TIME_AVERAGE = 24;
 
     /**
      * Mensagem default para aviso na confirmação do e-mail.
@@ -53,19 +56,29 @@ public class UserController extends AbstractApplication {
                 new Object[] { h, m });
 
         if (umi != null) {
-            if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
-                UserMailInteraction userMailInteraction = new UserMailInteraction();
-                userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
-                userMailInteraction.update(umi.getId());
+            if (Hours.hoursBetween(DateTime.now(), new DateTime(ts)).getHours() > MAX_TIME_AVERAGE || umi.getStatus() == UserMailInteraction.Status.CANCELED) {
+                if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
+                    UserMailInteraction userMailInteraction = new UserMailInteraction();
+                    userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
+                    userMailInteraction.update(umi.getId());
+
+                    User user = umi.getUser();
+                    User userModified = new User();
+                    userModified.setStatus(User.Status.ACTIVE);
+                    userModified.update(user.getId());
+                }
 
                 User user = umi.getUser();
-                User userModified = new User();
-                userModified.setStatus(User.Status.ACTIVE);
-                userModified.update(user.getId());
-            }
+                return ok(confirmMail.render(String.format(DEFAULT_CONFIRM_MAIL_MESSAGE, user.getName(), user.getMail())));
+            } else {
+                UserMailInteraction userMailInteraction = new UserMailInteraction();
+                userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
+                userMailInteraction.update(umi.getId());
 
-            User user = umi.getUser();
-            return ok(confirmMail.render(String.format(DEFAULT_CONFIRM_MAIL_MESSAGE, user.getName(), user.getMail())));
+                UserUtil.confirmEmail(umi.getUser(), false);
+
+                return unauthorized(unauthorized.render("Esta ação expirou! Estaremos encaminhando uma nova confirmação para o e-mail cadastrado."));
+            }
         }
 
         return unauthorized(unauthorized.render("Não existe nenhuma solicitação para confirmação de e-mail..."));
@@ -86,10 +99,8 @@ public class UserController extends AbstractApplication {
                 new String[] { FinderKey.HASH, FinderKey.MAIL },
                 new Object[] { h, m });
 
-        Date now = new Date();
-        long currentTimeInMillis = now.getTime();
         if (umi != null) {
-            if ((currentTimeInMillis - ts > MAX_TIME_AVERAGE) || umi.getStatus() == UserMailInteraction.Status.CANCELED) {
+            if ((Hours.hoursBetween(DateTime.now(), new DateTime(ts)).getHours() > MAX_TIME_AVERAGE) || umi.getStatus() == UserMailInteraction.Status.CANCELED) {
                 if (umi.getStatus() != UserMailInteraction.Status.CANCELED) {
                     UserMailInteraction userMailInteraction = new UserMailInteraction();
                     userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
