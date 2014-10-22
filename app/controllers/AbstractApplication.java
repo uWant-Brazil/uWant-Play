@@ -6,12 +6,16 @@ import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.TokenException;
+import org.joda.time.Days;
+import play.cache.Cache;
+import play.cache.Cached;
 import play.data.Form;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
+import play.mvc.Results;
 import views.html.uwant_sobre;
 
 import java.util.UUID;
@@ -223,7 +227,15 @@ public class AbstractApplication extends Controller {
      * @return JSON
      */
     public static F.Promise<Result> invalidWebSession(String message) {
-        return F.Promise.pure(ok(views.html.unauthorized.render(message)));
+        String key = String.format("session.invalid.%s", message);
+        F.Promise<Result> result = (F.Promise<Result>) Cache.get(key);
+
+        if (result == null) {
+            result = F.Promise.promise(() -> ok(views.html.unauthorized.render(message)));
+            Cache.set(key, result, Days.days(1).toStandardSeconds().getSeconds()); // Cache diário.
+        }
+
+        return result;
     }
 
     /**
@@ -238,8 +250,9 @@ public class AbstractApplication extends Controller {
      * Método responsável por exibir a view contendo o 'Sobre' do app.
      * @return HTML
      */
-    public static Result about() {
-        return ok(uwant_sobre.render());
+    @Cached(key = "about")
+    public static F.Promise<Result> about() {
+        return F.Promise.promise(() -> ok(uwant_sobre.render()));
     }
 
     /**
@@ -255,8 +268,9 @@ public class AbstractApplication extends Controller {
      * Método responsável por renderizar a página inicial do uWant.
      * @return HTML
      */
-    public static Result index() {
-        return ok(views.html.index.render());
+    @Cached(key = "homepage")
+    public static F.Promise<Result> index() {
+        return F.Promise.promise(() -> ok(views.html.index.render()));
     }
 
 }
