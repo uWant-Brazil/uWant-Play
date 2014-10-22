@@ -7,6 +7,7 @@ import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.TokenException;
 import org.joda.time.Days;
+import org.joda.time.Hours;
 import play.cache.Cache;
 import play.cache.Cached;
 import play.data.Form;
@@ -15,7 +16,6 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Http;
 import play.mvc.Result;
-import play.mvc.Results;
 import views.html.uwant_sobre;
 
 import java.util.UUID;
@@ -29,6 +29,7 @@ public class AbstractApplication extends Controller {
      * Mensagem default para sessões inválidas na web.
      */
     private static final String DEFAULT_INVALID_WEB_SESSION_MESSAGE = "Você tem certeza que está no lugar certo? :-)";
+    private static final String DEFAULT_INVALID_MOBILE_SESSION = "Você não está autorizado a realizar este tipo de ação.";
 
     /**
      * Classe estática responsável por manter todas as chaves de acesso à cabeçalhos HTTP.
@@ -137,7 +138,7 @@ public class AbstractApplication extends Controller {
      * @throws TokenException
      */
     public static User authenticateToken() throws TokenException {
-        String tokenContent = request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+        String tokenContent = getToken(request());
         Token token = listToken(tokenContent);
 
         if (token == null)
@@ -171,8 +172,10 @@ public class AbstractApplication extends Controller {
         token.setUser(user);
         token.setTarget(target);
         token.save();
-
+        token.refresh();
         user.refresh();
+
+        Cache.set(tokenContent, token, Hours.ONE.toStandardSeconds().getSeconds()); // Cache de hora em hora.
     }
 
     /**
@@ -181,9 +184,13 @@ public class AbstractApplication extends Controller {
      * @return
      */
     public static Token listToken(String token) {
-        FinderFactory factory = FinderFactory.getInstance();
-        IFinder<Token> finder = factory.get(Token.class);
-        return finder.selectUnique(new String[] { FinderKey.CONTENT }, new String[] { token });
+        Token tokenCached = (Token) Cache.get(token);
+        if (tokenCached == null) {
+            FinderFactory factory = FinderFactory.getInstance();
+            IFinder<Token> finder = factory.get(Token.class);
+            tokenCached = finder.selectUnique(new String[]{FinderKey.CONTENT}, new String[]{token});
+        }
+        return tokenCached;
     }
 
     /**
@@ -195,6 +202,7 @@ public class AbstractApplication extends Controller {
         Token token = listToken(tokenContent);
 
         if (token != null) {
+            Cache.remove(tokenContent);
             token.refresh();
             token.delete();
             user.refresh();
@@ -214,11 +222,17 @@ public class AbstractApplication extends Controller {
      * Método default quando uma sessão for inválida no mobile.
      * @return JSON
      */
-    public static Result invalidMobileSession() {
-        ObjectNode jsonResponse = Json.newObject();
-        jsonResponse.put(ParameterKey.ERROR, -999);
-        jsonResponse.put(ParameterKey.MESSAGE, "Você não está autorizado a realizar este tipo de ação.");
-        return ok(jsonResponse);
+    public static F.Promise<Result> invalidMobileSession() {
+        F.Promise<Result> result = (F.Promise<Result>) Cache.get("mobile.session.invalid");
+        if (result == null) {
+            final ObjectNode jsonResponse = Json.newObject();
+            jsonResponse.put(ParameterKey.ERROR, -999);
+            jsonResponse.put(ParameterKey.MESSAGE, DEFAULT_INVALID_MOBILE_SESSION);
+            result = F.Promise.<Result>pure(ok(jsonResponse));
+
+            Cache.set("mobile.session.invalid", result, Days.ONE.toStandardSeconds().getSeconds()); // Cache diário.
+        }
+        return result;
     }
 
     /**
@@ -231,8 +245,8 @@ public class AbstractApplication extends Controller {
         F.Promise<Result> result = (F.Promise<Result>) Cache.get(key);
 
         if (result == null) {
-            result = F.Promise.promise(() -> ok(views.html.unauthorized.render(message)));
-            Cache.set(key, result, Days.days(1).toStandardSeconds().getSeconds()); // Cache diário.
+            result = F.Promise.<Result>pure(ok(views.html.unauthorized.render(message)));
+            Cache.set(key, result, Days.ONE.toStandardSeconds().getSeconds()); // Cache diário.
         }
 
         return result;
@@ -252,7 +266,7 @@ public class AbstractApplication extends Controller {
      */
     @Cached(key = "about")
     public static F.Promise<Result> about() {
-        return F.Promise.promise(() -> ok(uwant_sobre.render()));
+        return F.Promise.<Result>pure(ok(uwant_sobre.render()));
     }
 
     /**
@@ -270,7 +284,7 @@ public class AbstractApplication extends Controller {
      */
     @Cached(key = "homepage")
     public static F.Promise<Result> index() {
-        return F.Promise.promise(() -> ok(views.html.index.render()));
+        return F.Promise.<Result>pure(ok(views.html.index.render()));
     }
 
 }
