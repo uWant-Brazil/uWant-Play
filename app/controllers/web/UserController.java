@@ -8,6 +8,7 @@ import models.database.FinderFactory;
 import models.database.IFinder;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
+import play.filters.csrf.RequireCSRFCheck;
 import play.mvc.Result;
 import utils.UserUtil;
 import views.html.recoveryPassword;
@@ -131,6 +132,7 @@ public class UserController extends AbstractApplication {
      * @param mailId - Id da Interação por Email
      * @return View
      */
+    @RequireCSRFCheck
     public static Result recoveryPassword(Long id, Long mailId) {
         Map<String, String[]> body = request().body().asFormUrlEncoded();
 

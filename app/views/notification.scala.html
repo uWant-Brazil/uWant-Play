@@ -1,5 +1,7 @@
 @(message: String, user: models.classes.User)
 
+@import helper._
+
 @main("uWant @ Notificação") {
     @if(message != null && !message.isEmpty()) {
         <div class="alert alert-info alert-dismissable">
@@ -13,7 +15,9 @@
         <p>Configure a notificação que será enviada para @user.getName().</p>
 
         <div>
-            @helper.form(action = controllers.web.routes.NotificationController.send(user.getId())) {
+            @form(action = controllers.web.routes.NotificationController.send(user.getId())) {
+                @CSRF.formField
+
                 <input type="text" name="title" class="form-control" placeholder="Digite o título" required autofocus>
                 <input type="text" name="message" class="form-control" placeholder="Digite a mensagem" required>
                 <input type="datetime-local" name="when" class="form-control" placeholder="dd/MM/yyyy HH:mm">

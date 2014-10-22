@@ -11,6 +11,7 @@ import models.database.IFinder;
 import models.exceptions.InvalidDateException;
 import models.exceptions.UWException;
 import models.exceptions.UserWithoutMobileException;
+import play.filters.csrf.RequireCSRFCheck;
 import play.libs.Akka;
 import play.mvc.Result;
 import scala.concurrent.duration.Duration;
@@ -56,6 +57,7 @@ public class NotificationController extends AbstractApplication {
      * @param id - Id do usuário
      * @return View
      */
+    @RequireCSRFCheck
     @Restrict({@Group({AdminUtil.Roles.Notification.SEND}), @Group({AdminUtil.Roles.Notification.SEND_SCHEDULE})})
     public static Result send(long id) {
         FinderFactory factory = FinderFactory.getInstance();
