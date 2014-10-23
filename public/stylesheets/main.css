@@ -3,9 +3,13 @@
 }
 
 .main-header {
-    background-color: #ffe500;
+    background-color: #FFF;
 }
 
 .main-footer {
+    background-color: #ffe500;
+}
+
+.container {
     background-color: #ffe500;
 }
