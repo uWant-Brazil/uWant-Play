@@ -57,7 +57,7 @@ public class UserController extends AbstractApplication {
                 new Object[] { h, m });
 
         if (umi != null) {
-            if (Hours.hoursBetween(DateTime.now(), new DateTime(ts)).getHours() > MAX_TIME_AVERAGE || umi.getStatus() == UserMailInteraction.Status.CANCELED) {
+            if (umi.getStatus() == UserMailInteraction.Status.DONE || Hours.hoursBetween(new DateTime(ts), DateTime.now()).getHours() <= MAX_TIME_AVERAGE) {
                 if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
                     UserMailInteraction userMailInteraction = new UserMailInteraction();
                     userMailInteraction.setStatus(UserMailInteraction.Status.DONE);

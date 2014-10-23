@@ -31,11 +31,11 @@ public abstract class MailUtil {
     private static final String MAIL_SMTP_HOST = "mail.smtp.host";
     private static final String MAIL_USER = "mail.user";
     private static final String MAIL_PASSWORD = "mail.password";
-    private static final String HOST_SMTP = "smtp.uwant.com.br";
+    private static final String HOST_SMTP = "smtp.gmail.com";
     private static final String MAIL_SMTP_AUTH = "mail.smtp.auth";
     private static final String MAIL_SMTP_PORT = "mail.smtp.port";
     private static final String AUTH_TRUE = "true";
-    private static final String SMTP_PORT = "587";
+    private static final String SMTP_PORT = "465";
 
     /**
      * E-mail remetente dos e-mails.
@@ -45,7 +45,7 @@ public abstract class MailUtil {
     /**
      * Senha do e-mail remetende dos e-mails.
      */
-    private static final String PASSWORD = "n@o-43$90nda";
+    private static final String PASSWORD = "n0-r3plY@uw4NT";
 
     /**
      * Classe que guardará as propriedades do envio do e-mail.
