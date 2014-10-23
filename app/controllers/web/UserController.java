@@ -44,12 +44,11 @@ public class UserController extends AbstractApplication {
     /**
      * Método responsável por exibir a View que irá informar se
      * o e-mail do usuário foi confirmado com sucesso.
-     * @param ts - Milisegundos
      * @param h - Hash
      * @param m - Email
      * @return View
      */
-    public static Result confirmMailView(Long ts, String h, String m) {
+    public static Result confirmMailView(String h, String m) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
         UserMailInteraction umi = finder.selectUnique(
@@ -57,7 +56,7 @@ public class UserController extends AbstractApplication {
                 new Object[] { h, m });
 
         if (umi != null) {
-            if (umi.getStatus() == UserMailInteraction.Status.DONE || Hours.hoursBetween(new DateTime(ts), DateTime.now()).getHours() <= MAX_TIME_AVERAGE) {
+            if (umi.getStatus() == UserMailInteraction.Status.DONE || Hours.hoursBetween(new DateTime(umi.getCreatedAt()), DateTime.now()).getHours() <= MAX_TIME_AVERAGE) {
                 if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
                     UserMailInteraction userMailInteraction = new UserMailInteraction();
                     userMailInteraction.setStatus(UserMailInteraction.Status.DONE);

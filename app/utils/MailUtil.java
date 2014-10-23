@@ -34,8 +34,11 @@ public abstract class MailUtil {
     private static final String HOST_SMTP = "smtp.gmail.com";
     private static final String MAIL_SMTP_AUTH = "mail.smtp.auth";
     private static final String MAIL_SMTP_PORT = "mail.smtp.port";
+    private static final String MAIL_SMTP_SSL_PORT = "mail.smtp.socketFactory.port";
+    private static final String MAIL_SMTP_SSL_CLASS = "mail.smtp.socketFactory.class";
     private static final String AUTH_TRUE = "true";
     private static final String SMTP_PORT = "465";
+    private static final String SSL_CLASS = "javax.net.ssl.SSLSocketFactory";
 
     /**
      * E-mail remetente dos e-mails.
@@ -60,6 +63,8 @@ public abstract class MailUtil {
         PROPERTIES.setProperty(MAIL_PASSWORD, PASSWORD);
         PROPERTIES.setProperty(MAIL_SMTP_AUTH, AUTH_TRUE);
         PROPERTIES.setProperty(MAIL_SMTP_PORT, SMTP_PORT);
+        PROPERTIES.setProperty(MAIL_SMTP_SSL_PORT, SMTP_PORT);
+        PROPERTIES.setProperty(MAIL_SMTP_SSL_CLASS, SSL_CLASS);
     }
 
     /**
@@ -77,25 +82,15 @@ public abstract class MailUtil {
             @Override
             public void run() {
                 super.run();
-                SecurityManager security = System.getSecurityManager();
-                Session session;
-                if (security == null) {
-                    session = Session.getInstance(PROPERTIES, new javax.mail.Authenticator() {
+                Session session = Session.getInstance(PROPERTIES, new javax.mail.Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
                             return new PasswordAuthentication(USERNAME, PASSWORD);
                         }
                     });
-                } else {
-                    session = Session.getDefaultInstance(PROPERTIES, new javax.mail.Authenticator() {
-                        protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(USERNAME, PASSWORD);
-                        }
-                    });
-                }
 
                 MimeMessage mimeMessage = new MimeMessage(session);
                 try {
-                    mimeMessage.setFrom(USERNAME);
+                    mimeMessage.setFrom(new InternetAddress(USERNAME));
                     mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(to));
                     mimeMessage.setSubject(subject, CHARSET);
                     mimeMessage.setContent(content, CONTENT_TYPE);
@@ -116,14 +111,9 @@ public abstract class MailUtil {
      * @throws UnsupportedEncodingException
      */
     public static String generateHash() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String key = UUID.randomUUID().toString();
-        MessageDigest md = MessageDigest.getInstance("SHA");
-        md.update(key.getBytes("utf-8"));
-
-        String hash = "no-hash-provided";
-        MessageDigest m;
+        String hash = UUID.randomUUID().toString();
         try {
-            m = MessageDigest.getInstance("MD5");
+            MessageDigest m = MessageDigest.getInstance("MD5");
             m.update(hash.getBytes(), 0, hash.length());
             BigInteger i = new BigInteger(1, m.digest());
             hash = String.format("%1$032X", i);

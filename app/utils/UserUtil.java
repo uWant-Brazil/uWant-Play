@@ -13,6 +13,7 @@ import models.exceptions.UserAlreadyExistException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 /**
  * Classe utilitária para ações relacionadas ao usuário.
@@ -71,8 +72,8 @@ public abstract  class UserUtil {
             FinderFactory factory = FinderFactory.getInstance();
             IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
             UserMailInteraction confirmation = finder.selectUnique(
-                    new String[] { AbstractApplication.FinderKey.USER_ID, AbstractApplication.FinderKey.TYPE },
-                    new Object[] { user.getId(), UserMailInteraction.Type.MAIL_CONFIRMATION.ordinal() });
+                    new String[] { AbstractApplication.FinderKey.USER_ID, AbstractApplication.FinderKey.TYPE, AbstractApplication.FinderKey.STATUS },
+                    new Object[] { user.getId(), UserMailInteraction.Type.MAIL_CONFIRMATION.ordinal(), UserMailInteraction.Status.WAITING.ordinal() });
 
             hash = confirmation.getHash();
         } else {
@@ -89,13 +90,14 @@ public abstract  class UserUtil {
                     userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
                     userMailInteraction.setMail(mail);
                     userMailInteraction.setUser(user);
+                    userMailInteraction.setCreatedAt(new Date());
                     userMailInteraction.save();
 
             }
         }
 
         // TODO HTML para confirmação do e-mail do usuário.
-        final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
+        final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?h=" + hash + "&m=" + mail;
 
         try {
             MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);

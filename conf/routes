@@ -40,7 +40,7 @@ GET     /                                       controllers.AbstractApplication.
 GET     /v1/about                               controllers.AbstractApplication.about()
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h:String ?= "0", m:String ?= "0")
 POST    /v1/web/user/recoveryPassword           controllers.web.UserController.recoveryPassword(id:Long ?= 0, mailId:Long ?= 0)
-GET     /v1/web/user/confirmMail                controllers.web.UserController.confirmMailView(ts:Long ?= 0, h:String ?= "0", m:String ?= "0")
+GET     /v1/web/user/confirmMail                controllers.web.UserController.confirmMailView(h:String ?= "0", m:String ?= "0")
 GET     /v1/web/admin/notification/:id          controllers.web.NotificationController.sendView(id:Long)
 POST    /v1/web/admin/notification/:id          controllers.web.NotificationController.send(id:Long)
 GET     /v1/web/wishlist                        controllers.web.WishListController.view()
