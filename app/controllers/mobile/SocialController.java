@@ -15,6 +15,7 @@ import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
+import utils.SocialUtil;
 import utils.UserUtil;
 
 /**
@@ -186,18 +187,7 @@ public class SocialController extends AbstractApplication {
                                         new Object[]{accessToken, provider, SocialProfile.Status.ACTIVE.ordinal()});
 
                                 if (profile != null) {
-                                    User userProfile = profile.getUser();
-                                    if (userProfile.getId() == user.getId()) {
-                                        SocialProfile profileUpdated = new SocialProfile();
-                                        profileUpdated.setStatus(SocialProfile.Status.REMOVED);
-                                        profileUpdated.update(profile.getId());
-
-                                        jsonResponse.put(ParameterKey.STATUS, true);
-                                        jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.UNLINK_SUCCESS));
-                                        jsonResponse.put(ParameterKey.LINKED, false);
-                                    } else {
-                                        throw new SocialProfileAlreadyExistException();
-                                    }
+                                    SocialUtil.unlink(jsonResponse, user, profile);
                                 } else {
                                     IFinder<SocialProfile.Login> finderLogin = factory.get(SocialProfile.Login.class);
                                     SocialProfile.Login login = finderLogin.selectUnique(new String[]{FinderKey.LOGIN}, new String[]{email});
@@ -206,42 +196,33 @@ public class SocialController extends AbstractApplication {
                                         profile = login.getProfile();
                                         if (profile != null) {
                                             SocialProfile.Provider socialProvider = profile.getProvider();
-
                                             if (socialProvider == provider) {
-                                                User userProfile = profile.getUser();
-                                                if (userProfile.getId() == user.getId()) {
-                                                    SocialProfile profileUpdated = new SocialProfile();
-                                                    profileUpdated.setStatus(SocialProfile.Status.REMOVED);
-                                                    profileUpdated.update(profile.getId());
+                                                switch (profile.getStatus()) {
+                                                    case ACTIVE:
+                                                        SocialUtil.unlink(jsonResponse, user, profile);
+                                                        break;
 
-                                                    jsonResponse.put(ParameterKey.STATUS, true);
-                                                    jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.UNLINK_SUCCESS));
-                                                    jsonResponse.put(ParameterKey.LINKED, false);
-                                                } else {
-                                                    throw new SocialProfileAlreadyExistException();
+                                                    case REMOVED:
+                                                        SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+                                                        break;
+
+                                                    case WAITING_REGISTRATION:
+                                                    default:
+                                                        SocialProfile profileUpdated = new SocialProfile();
+                                                        profileUpdated.setStatus(SocialProfile.Status.REMOVED);
+                                                        profileUpdated.update(profile.getId());
+
+                                                        SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+                                                        break;
                                                 }
+                                            } else {
+                                                SocialUtil.link(jsonResponse, user, accessToken, email, provider);
                                             }
                                         } else {
                                             throw new UnknownException();
                                         }
                                     } else {
-                                        // Este usuario esta vinculando sua rede social ao sistema pela primeira vez!
-                                        // Registrando a rede social dele...
-                                        profile = new SocialProfile();
-                                        profile.setAccessToken(accessToken);
-                                        profile.setStatus(SocialProfile.Status.ACTIVE);
-                                        profile.setUser(user);
-                                        profile.setProvider(provider);
-                                        profile.save();
-
-                                        login = new SocialProfile.Login();
-                                        login.setLogin(email);
-                                        login.setProfile(profile);
-                                        login.save();
-
-                                        jsonResponse.put(ParameterKey.STATUS, true);
-                                        jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.LINK_SUCCESS));
-                                        jsonResponse.put(ParameterKey.LINKED, true);
+                                        SocialUtil.link(jsonResponse, user, accessToken, email, provider);
                                     }
                                 }
                             } else {
