@@ -282,7 +282,7 @@ public class AbstractApplication extends Controller {
      * Método responsável por renderizar a página inicial do uWant.
      * @return HTML
      */
-    @Cached(key = "homepage")
+    //@Cached(key = "homepage")
     public static F.Promise<Result> index() {
         return F.Promise.<Result>pure(ok(views.html.index.render()));
     }
