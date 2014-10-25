@@ -10,6 +10,8 @@ import models.database.IFinder;
 import models.exceptions.AuthenticationException;
 import models.exceptions.MultipartBodyException;
 import models.exceptions.UWException;
+import play.filters.csrf.AddCSRFToken;
+import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Http;
@@ -34,93 +36,61 @@ public class CDNController extends AbstractApplication {
      * consultas futuras pelos usuários.
      * @return JSON
      */
+    @AddCSRFToken
     public static F.Promise<Result> retrieve() {
-        final ObjectNode jsonResponse = Json.newObject();
-        try {
-            final User user = authenticateToken();
-            if (user != null && UserUtil.isAvailable(user)) {
-                String contentType = request().getHeader(HeaderKey.CONTENT_TYPE);
-                if (contentType.startsWith(HeaderKey.MULTIPART_FORM_DATA)) {
-                    Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
-                    Map<String, String[]> formEncoded = multipartFormData.asFormUrlEncoded();
+        return F.Promise.<Result>promise(() -> {
+            final ObjectNode jsonResponse = Json.newObject();
+            try {
+                final User user = authenticateToken();
+                if (user != null && UserUtil.isAvailable(user)) {
+                    String contentType = request().getHeader(HeaderKey.CONTENT_TYPE);
+                    if (contentType.startsWith(HeaderKey.MULTIPART_FORM_DATA)) {
+                        Http.MultipartFormData multipartFormData = request().body().asMultipartFormData();
+                        Map<String, String[]> formEncoded = multipartFormData.asFormUrlEncoded();
 
-                    if (formEncoded != null) {
-                        F.Promise<Multimedia> promise;
+                        if (formEncoded != null) {
+                            Http.MultipartFormData.FilePart filePart = multipartFormData.getFile(ParameterKey.MULTIMEDIA);
+                            final File file = filePart.getFile();
 
-                        Http.MultipartFormData.FilePart filePart = multipartFormData.getFile(ParameterKey.MULTIMEDIA);
-                        final File file = filePart.getFile();
+                            Multimedia multimedia;
+                            if (formEncoded.containsKey(ParameterKey.MULTIMEDIA_PRODUCT)) {
+                                long productId = Long.valueOf(formEncoded.get(ParameterKey.MULTIMEDIA_PRODUCT)[0]);
 
-                        if (formEncoded.containsKey(ParameterKey.MULTIMEDIA_PRODUCT)) {
-                            long productId = Long.valueOf(formEncoded.get(ParameterKey.MULTIMEDIA_PRODUCT)[0]);
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<Product> finder = factory.get(Product.class);
+                                final Product product = finder.selectUnique(productId);
 
-                            FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<Product> finder = factory.get(Product.class);
-                            final Product product = finder.selectUnique(productId);
+                                multimedia = CDNUtil.sendFile(file);
+                                product.setMultimedia(multimedia);
+                                product.update();
+                            } else if (formEncoded.containsKey(ParameterKey.MULTIMEDIA_USER_PICTURE)) {
+                                multimedia = CDNUtil.sendFile(file);
+                                user.setPicture(multimedia);
+                                user.update();
+                            } else {
+                                throw new MultipartBodyException();
+                            }
 
-                            promise = F.Promise.promise(new F.Function0<Multimedia>() {
-
-                                @Override
-                                public Multimedia apply() throws Throwable {
-                                    Multimedia multimedia = CDNUtil.sendFile(file);
-                                    product.setMultimedia(multimedia);
-                                    product.update();
-                                    return multimedia;
-                                }
-
-                            });
-                        } else if (formEncoded.containsKey(ParameterKey.MULTIMEDIA_USER_PICTURE)) {
-                            promise = F.Promise.promise(new F.Function0<Multimedia>() {
-
-                                @Override
-                                public Multimedia apply() throws Throwable {
-                                    Multimedia multimedia = CDNUtil.sendFile(file);
-                                    user.setPicture(multimedia);
-                                    user.update();
-                                    return multimedia;
-                                }
-
-                            });
+                            jsonResponse.put(ParameterKey.STATUS, true);
+                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.CDN.RETRIEVE_SUCCESS));
+                            jsonResponse.put(ParameterKey.MULTIMEDIA, Json.toJson(multimedia));
                         } else {
                             throw new MultipartBodyException();
                         }
-
-                        return promise.map(new F.Function<Multimedia, Result>() {
-
-                            @Override
-                            public Result apply(Multimedia multimedia) throws Throwable {
-                                ObjectNode jsonResponse = Json.newObject();
-
-                                jsonResponse.put(ParameterKey.STATUS, true);
-                                jsonResponse.put(ParameterKey.MESSAGE, "O arquivo multimídia foi salvo com sucesso.");
-                                jsonResponse.put(ParameterKey.MULTIMEDIA, Json.toJson(multimedia));
-
-                                return ok(jsonResponse);
-                            }
-
-                        });
                     } else {
                         throw new MultipartBodyException();
                     }
                 } else {
-                    throw new MultipartBodyException();
+                    throw new AuthenticationException();
                 }
-            } else {
-                throw new AuthenticationException();
-            }
-        } catch (UWException e) {
-            e.printStackTrace();
-            jsonResponse.put(ParameterKey.STATUS, false);
-            jsonResponse.put(ParameterKey.ERROR, e.getCode());
-            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
-        }
-
-        return F.Promise.promise(new F.Function0<Result>() {
-
-            @Override
-            public Result apply() throws Throwable {
-                return ok(jsonResponse);
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
             }
 
+            return ok(jsonResponse);
         });
     }
 

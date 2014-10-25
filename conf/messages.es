@@ -9,3 +9,5 @@ action.share.success=El reparto se ha realizado correctamente.
 authentication.recoverypassword.success=An email was sent to you to reset your new password.
 authentication.logoff.success=You logged out successfully.
 authentication.authorize.success=The user has been successfully authenticated.
+
+cdn.retrieve.success=The multimedia file has been saved successfully.

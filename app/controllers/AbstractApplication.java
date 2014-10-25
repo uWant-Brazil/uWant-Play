@@ -147,6 +147,9 @@ public class AbstractApplication extends Controller {
             public static final String LOGOFF_SUCCESS = "authentication.logoff.success";
             public static final String AUTHORIZE_SUCCESS = "authentication.authorize.success";
         }
+        public static final class CDN {
+            public static final String RETRIEVE_SUCCESS = "cdn.retrieve.success";
+        }
     }
 
     /**

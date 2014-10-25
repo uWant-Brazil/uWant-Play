@@ -9,3 +9,5 @@ action.share.success=The sharing was successful.
 authentication.recoverypassword.success=Un correo electrónico fue enviado a usted para restablecer tu contraseña nueva.
 authentication.logoff.success=Usted ha entrado a cabo con éxito.
 authentication.authorize.success=El usuario ha sido autenticado con éxito.
+
+cdn.retrieve.success=El archivo multimedia ha sido guardado con éxito.
