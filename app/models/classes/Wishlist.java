@@ -43,7 +43,6 @@ public class WishList extends Model {
     private Status status;
 
     @Version
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     @OneToOne(fetch = FetchType.LAZY)

@@ -37,7 +37,6 @@ public class Product extends Model{
     private Multimedia multimedia;
 
     @Version
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     public String getName() {

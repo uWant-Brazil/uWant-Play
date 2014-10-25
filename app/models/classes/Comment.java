@@ -35,6 +35,7 @@ public class Comment extends Model {
     private User user;
 
     @Column(nullable = false, updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_HOUR_PATTERN)
     private Date since;
 
     public long getId() {

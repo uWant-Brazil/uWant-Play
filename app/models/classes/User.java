@@ -1,8 +1,10 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.data.format.Formats;
 import play.db.ebean.Model;
+import utils.DateUtil;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -36,9 +38,11 @@ public class User extends Model implements IMobileUser {
     private String name;
 
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_PATTERN)
     private Date birthday;
 
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_HOUR_PATTERN)
     private Date since;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)

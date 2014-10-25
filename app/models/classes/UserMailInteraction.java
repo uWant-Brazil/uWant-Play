@@ -1,7 +1,9 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import play.data.format.Formats;
 import play.db.ebean.Model;
+import utils.DateUtil;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -50,12 +52,11 @@ public class UserMailInteraction extends Model {
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     @Column(nullable = false, updatable = false, columnDefinition = "timestamp without time zone default now()")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_HOUR_PATTERN)
     private Date createdAt;
 
     @Version
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     public UserMailInteraction() {

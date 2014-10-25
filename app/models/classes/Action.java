@@ -1,9 +1,11 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.data.format.Formats;
 import play.db.ebean.Model;
 import utils.ActionUtil;
+import utils.DateUtil;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -50,12 +52,11 @@ public class Action extends Model {
     @Column(nullable = true)
     private String extra;
 
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     @Column(nullable = false, updatable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_HOUR_PATTERN)
     private Date createdAt;
 
     @Version
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     @OneToMany(mappedBy = "action", fetch = FetchType.LAZY)

@@ -41,7 +41,6 @@ public class Mobile extends Model {
     private OS os;
 
     @Version
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     @JsonIgnore
