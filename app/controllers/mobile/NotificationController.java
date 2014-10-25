@@ -1,7 +1,5 @@
 package controllers.mobile;
 
-import be.objectify.deadbolt.java.actions.Group;
-import be.objectify.deadbolt.java.actions.Restrict;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
@@ -12,11 +10,12 @@ import models.exceptions.AuthenticationException;
 import models.exceptions.IndexOutOfBoundException;
 import models.exceptions.JSONBodyException;
 import models.exceptions.UWException;
+import play.i18n.Messages;
+import play.libs.F;
 import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
-import utils.AdminUtil;
 import utils.DateUtil;
 import utils.UserUtil;
 
@@ -36,58 +35,62 @@ public class NotificationController extends AbstractApplication {
      * do Google/Microsoft/Apple para envio de notificações para os usuários.
      * @return JSON
      */
-    public static Result register() {
-        ObjectNode jsonResponse = Json.newObject();
-        try {
-            User user = authenticateToken();
-            if (UserUtil.isAvailable(user)) {
-                JsonNode body = request().body().asJson();
-                if (body != null && body.hasNonNull(ParameterKey.MOBILE_IDENTIFIER) && body.hasNonNull(ParameterKey.OS)) {
-                    String identifier = body.get(ParameterKey.MOBILE_IDENTIFIER).asText();
-                    int osId = body.get(ParameterKey.OS).asInt();
+    public static F.Promise<Result> register() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateToken();
+                if (UserUtil.isAvailable(user)) {
+                    JsonNode body = request().body().asJson();
+                    if (body != null
+                            && body.hasNonNull(ParameterKey.MOBILE_IDENTIFIER)
+                            && body.hasNonNull(ParameterKey.OS)) {
+                        String identifier = body.get(ParameterKey.MOBILE_IDENTIFIER).asText();
+                        int osId = body.get(ParameterKey.OS).asInt();
 
-                    Mobile.OS[] oses = Mobile.OS.values();
-                    if (!identifier.isEmpty() && osId >= 0 && osId < oses.length) {
-                        FinderFactory factory = FinderFactory.getInstance();
-                        IFinder<Mobile> finder = factory.get(Mobile.class);
-                        Mobile mobile = finder.selectUnique(new String[] { FinderKey.IDENTIFIER }, new Object[] { identifier });
+                        Mobile.OS[] oses = Mobile.OS.values();
+                        if (!identifier.isEmpty() && osId >= 0 && osId < oses.length) {
+                            FinderFactory factory = FinderFactory.getInstance();
+                            IFinder<Mobile> finder = factory.get(Mobile.class);
+                            Mobile mobile = finder.selectUnique(new String[]{FinderKey.IDENTIFIER}, new Object[]{identifier});
 
-                        String tokenContent = request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
-                        Token token = listToken(tokenContent);
-                        Mobile.OS os = oses[osId];
+                            String tokenContent = getTokenAtHeader();
+                            Token token = listToken(tokenContent);
+                            Mobile.OS os = oses[osId];
 
-                        if (mobile == null) {
-                            mobile = new Mobile();
-                            mobile.setIdentifier(identifier);
-                            mobile.setToken(token);
-                            mobile.setUser(user);
-                            mobile.setOS(os);
-                            mobile.save();
+                            if (mobile == null) {
+                                mobile = new Mobile();
+                                mobile.setIdentifier(identifier);
+                                mobile.setToken(token);
+                                mobile.setUser(user);
+                                mobile.setOS(os);
+                                mobile.save();
+                            } else {
+                                Mobile mobileUpdated = new Mobile();
+                                mobileUpdated.setToken(token);
+                                mobileUpdated.update(mobile.getId());
+                            }
+
+                            jsonResponse.put(ParameterKey.STATUS, true);
+                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Notification.REGISTER_SUCCESS ,user.getLogin()));
                         } else {
-                            Mobile mobileUpdated = new Mobile();
-                            mobileUpdated.setToken(token);
-                            mobileUpdated.update(mobile.getId());
+                            throw new JSONBodyException();
                         }
-
-                        jsonResponse.put(ParameterKey.STATUS, true);
-                        jsonResponse.put(ParameterKey.MESSAGE, "O dispositivo móvel foi registrado para " + user.getLogin());
                     } else {
                         throw new JSONBodyException();
                     }
                 } else {
-                    throw new JSONBodyException();
+                    throw new AuthenticationException();
                 }
-            } else {
-                throw new AuthenticationException();
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
             }
-        } catch (UWException e) {
-            e.printStackTrace();
-            jsonResponse.put(ParameterKey.STATUS, false);
-            jsonResponse.put(ParameterKey.ERROR, e.getCode());
-            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
-        }
 
-        return ok(jsonResponse);
+            return ok(jsonResponse);
+        });
     }
 
     /**
@@ -96,67 +99,69 @@ public class NotificationController extends AbstractApplication {
      * que o usuário possa tomar suas devidas medidas.
      * @return JSON
      */
-    public static Result listActions() {
-        ObjectNode jsonResponse = Json.newObject();
-        try {
-            User user = authenticateToken();
-            if (UserUtil.isAvailable(user)) {
-                JsonNode body = request().body().asJson();
-                if (body != null && body.has(ParameterKey.START_INDEX)
-                        && body.has(ParameterKey.END_INDEX)) {
-                    int startIndex = body.get(ParameterKey.START_INDEX).asInt(0);
-                    int endIndex = body.get(ParameterKey.END_INDEX).asInt(Integer.MAX_VALUE);
+    public static F.Promise<Result> listActions() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateToken();
+                if (UserUtil.isAvailable(user)) {
+                    JsonNode body = request().body().asJson();
+                    if (body != null && body.has(ParameterKey.START_INDEX)
+                            && body.has(ParameterKey.END_INDEX)) {
+                        int startIndex = body.get(ParameterKey.START_INDEX).asInt(0);
+                        int endIndex = body.get(ParameterKey.END_INDEX).asInt(Integer.MAX_VALUE);
 
-                    if (startIndex < endIndex) {
-                        FinderFactory factory = FinderFactory.getInstance();
-                        IFinder<Notification> finder = factory.get(Notification.class);
+                        if (startIndex < endIndex) {
+                            FinderFactory factory = FinderFactory.getInstance();
+                            IFinder<Notification> finder = factory.get(Notification.class);
 
-                        List<Notification> notifications = finder.getFinder()
-                                .where()
-                                .eq(FinderKey.USER_ID, user.getId())
-                                .setFirstRow(startIndex)
-                                .setMaxRows(endIndex - startIndex)
-                                .findList();
+                            List<Notification> notifications = finder.getFinder()
+                                    .where()
+                                    .eq(FinderKey.USER_ID, user.getId())
+                                    .setFirstRow(startIndex)
+                                    .setMaxRows(endIndex - startIndex)
+                                    .findList();
 
-                        List<ObjectNode> arrayActions = new ArrayList<ObjectNode>(notifications.size() + 5);
-                        for (Notification notification : notifications) {
-                            Action action = notification.getAction();
-                            String message = action.toString();
-                            if (message != null) {
-                                int typeOrdinal = action.getType().ordinal();
-                                String extra = action.getExtra();
-                                Date when = action.getCreatedAt();
+                            List<ObjectNode> arrayActions = new ArrayList<>(notifications.size() + 5);
+                            for (Notification notification : notifications) {
+                                Action action = notification.getAction();
+                                String message = action.toString();
+                                if (message != null) {
+                                    int typeOrdinal = action.getType().ordinal();
+                                    String extra = action.getExtra();
+                                    Date when = action.getCreatedAt();
 
-                                User from = action.getFrom();
-                                JsonNode jsonFrom = Json.toJson(from);
+                                    User from = action.getFrom();
+                                    JsonNode jsonFrom = Json.toJson(from);
 
-                                ObjectNode json = Json.newObject();
-                                json.put(ParameterKey.TYPE, typeOrdinal);
-                                json.put(ParameterKey.MESSAGE, message);
-                                json.put(ParameterKey.WHEN, DateUtil.format(when, DateUtil.DATE_HOUR_PATTERN));
-                                json.put(ParameterKey.EXTRA, extra);
-                                json.put(ParameterKey.USER_FROM, jsonFrom);
+                                    ObjectNode json = Json.newObject();
+                                    json.put(ParameterKey.TYPE, typeOrdinal);
+                                    json.put(ParameterKey.MESSAGE, message);
+                                    json.put(ParameterKey.WHEN, DateUtil.format(when, DateUtil.DATE_HOUR_PATTERN));
+                                    json.put(ParameterKey.EXTRA, extra);
+                                    json.put(ParameterKey.USER_FROM, jsonFrom);
 
-                                arrayActions.add(json);
+                                    arrayActions.add(json);
+                                }
                             }
-                        }
 
-                        jsonResponse.put(ParameterKey.STATUS, true);
-                        jsonResponse.put(ParameterKey.MESSAGE, "A lista de ações foram recuperadas com sucesso.");
-                        jsonResponse.put(ParameterKey.ACTIONS, Json.toJson(arrayActions));
-                    } else {
-                        throw new IndexOutOfBoundException();
+                            jsonResponse.put(ParameterKey.STATUS, true);
+                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Notification.LIST_ACTIONS_SUCCESS));
+                            jsonResponse.put(ParameterKey.ACTIONS, Json.toJson(arrayActions));
+                        } else {
+                            throw new IndexOutOfBoundException();
+                        }
                     }
                 }
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
             }
-        } catch (UWException e) {
-            e.printStackTrace();
-            jsonResponse.put(ParameterKey.STATUS, false);
-            jsonResponse.put(ParameterKey.ERROR, e.getCode());
-            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
-        }
 
-        return ok(jsonResponse);
+            return ok(jsonResponse);
+        });
     }
 
 }

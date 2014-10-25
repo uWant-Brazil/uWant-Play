@@ -14,7 +14,6 @@ import play.data.Form;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Http;
 import play.mvc.Result;
 import views.html.uwant_sobre;
 
@@ -150,6 +149,10 @@ public class AbstractApplication extends Controller {
         public static final class CDN {
             public static final String RETRIEVE_SUCCESS = "cdn.retrieve.success";
         }
+        public static final class Notification {
+            public static final String LIST_ACTIONS_SUCCESS = "notification.listactions.success";
+            public static final String REGISTER_SUCCESS = "notification.register.success";
+        }
     }
 
     /**
@@ -158,7 +161,7 @@ public class AbstractApplication extends Controller {
      * @throws TokenException
      */
     public static User authenticateToken() throws TokenException {
-        String tokenContent = getToken(request());
+        String tokenContent = getTokenAtHeader();
         Token token = listToken(tokenContent);
 
         if (token == null)
@@ -231,11 +234,10 @@ public class AbstractApplication extends Controller {
 
     /**
      * Obtém o token que foi enviado no cabeçalho do body no HTTP.
-     * @param request
      * @return token
      */
-    public static String getToken(Http.Request request) {
-        return request.getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+    public static String getTokenAtHeader() {
+        return request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
     }
 
     /**

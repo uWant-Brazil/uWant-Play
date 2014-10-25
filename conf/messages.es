@@ -6,8 +6,11 @@ action.report.success=La denuncia se registró con éxito.
 action.toogleblock.success=El usuario {0} fue de (des) bloqueó correctamente!
 action.share.success=El reparto se ha realizado correctamente.
 
-authentication.recoverypassword.success=An email was sent to you to reset your new password.
-authentication.logoff.success=You logged out successfully.
-authentication.authorize.success=The user has been successfully authenticated.
+authentication.recoverypassword.success=Un correo electrónico fue enviado a usted para restablecer tu contraseña nueva.
+authentication.logoff.success=Usted ha entrado a cabo con éxito.
+authentication.authorize.success=El usuario ha sido autenticado con éxito.
 
-cdn.retrieve.success=The multimedia file has been saved successfully.
+cdn.retrieve.success=El archivo multimedia ha sido guardado con éxito.
+
+notification.listactions.success=La lista de acciones se recuperaron con éxito.
+notification.register.success=El dispositivo móvil se registró a {0}.

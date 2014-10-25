@@ -15,7 +15,7 @@ public class MobileAuthenticator extends Security.Authenticator {
 
     @Override
     public String getUsername(Http.Context ctx) {
-        return AbstractApplication.getToken(ctx.request());
+        return AbstractApplication.getTokenAtHeader(ctx.request());
     }
 
     @Override

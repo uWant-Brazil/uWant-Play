@@ -11,3 +11,6 @@ authentication.logoff.success=O usuário saiu do sistema com sucesso.
 authentication.authorize.success=O usuário foi autenticado com sucesso.
 
 cdn.retrieve.success=O arquivo multimídia foi salvo com sucesso.
+
+notification.listactions.success=A lista de ações foram recuperadas com sucesso.
+notification.register.success=O dispositivo móvel foi registrado para {0}.
