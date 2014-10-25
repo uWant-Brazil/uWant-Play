@@ -11,6 +11,7 @@ import org.joda.time.Hours;
 import play.cache.Cache;
 import play.cache.Cached;
 import play.data.Form;
+import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -28,8 +29,12 @@ public class AbstractApplication extends Controller {
     /**
      * Mensagem default para sessões inválidas na web.
      */
-    private static final String DEFAULT_INVALID_WEB_SESSION_MESSAGE = "Você tem certeza que está no lugar certo? :-)";
-    private static final String DEFAULT_INVALID_MOBILE_SESSION = "Você não está autorizado a realizar este tipo de ação.";
+    private static final String DEFAULT_INVALID_WEB_SESSION_MESSAGE = Messages.get(MessageKey.Abstract.WEB_SESSION_INVALID);
+
+    /**
+     * Mensagem default para sessões inválidas no app mobile.
+     */
+    private static final String DEFAULT_INVALID_MOBILE_SESSION = Messages.get(MessageKey.Abstract.MOBILE_SESSION_INVALID);
 
     /**
      * Classe estática responsável por manter todas as chaves de acesso à cabeçalhos HTTP.
@@ -133,6 +138,10 @@ public class AbstractApplication extends Controller {
     }
 
     public static class MessageKey {
+        public static final class Abstract {
+            public static final String WEB_SESSION_INVALID = "abstract.websession.invalid";
+            public static final String MOBILE_SESSION_INVALID = "abstract.mobilesession.invalid";
+        }
         public static final class Action {
             public static final String FEEDS_SUCCESS = "action.feeds.success";
             public static final String COMMENT_SUCCESS = "action.comment.success";
@@ -178,6 +187,46 @@ public class AbstractApplication extends Controller {
             public static final String UPDATE_SUCCESS = "wishlist.update.success";
             public static final String CREATE_SUCCESS = "wishlist.create.success";
         }
+        public static final class Global {
+            public static final String MOBILE_SESSION_ERROR = "global.mobilesession.error";
+        }
+        public static final class Deadbolt {
+            public static final String WEB_SESSION_INVALID = "deadbolt.websession.invalid";
+        }
+        public static final class Exception {
+            public static final String AUTHENTICATION = "exception.authentication";
+            public static final String INDEX_OUT_OF_BOUNDS = "exception.indexoutofbounds";
+            public static final String INVALID_DATE = "exception.invaliddate";
+            public static final String INVALID_MAIL = "exception.invalidmail";
+            public static final String JSON_BODY = "exception.jsonbody";
+            public static final String MULTIPART_BODY = "exception.multipartbody";
+            public static final String SOCIAL_PROFILE = "exception.socialprofile";
+            public static final String TOKEN = "exception.token";
+            public static final String UNAUTHORIZED_OPERATION = "exception.unauthorizedoperation";
+            public static final String UNAVAILABLE_BLOCK_FRIEND = "exception.unavailableblockfriend";
+            public static final String UNCONFIRMED_MAIL_1 = "exception.unconfirmedmail_1";
+            public static final String UNCONFIRMED_MAIL_2 = "exception.unconfirmedmail_2";
+            public static final String UNKNOWN = "exception.unknown";
+            public static final String USER_EXIST = "exception.userexist";
+            public static final String USER_DONT_EXIST = "exception.userdontexist";
+            public static final String USER_WITHOUT_MOBILE = "exception.userwithoutmobile";
+            public static final String WISHLIST_DONT_EXIST = "exception.wishlistdontexist";
+        }
+
+        public static final String ADDED = "message.notification.added";
+        public static final String WISH = "message.notification.wish";
+        public static final String WISHES = "message.notification.wishes";
+        public static final String IN_YOUR_LIST = "message.notification.inyourlist";
+        public static final String SHARE_YOUR_ACTION = "message.notification.shareyouraction";
+        public static final String MENTION_YOU = "message.notification.mentionyou";
+        public static final String COMMENT = "message.notification.comment";
+        public static final String ADD_CIRCLE = "message.notification.addcircle";
+        public static final String ACCEPT_CIRCLE = "message.notification.acceptcircle";
+        public static final String REPORT_1 = "message.notification.report_1";
+        public static final String REPORT_2 = "message.notification.report_2";
+        public static final String WANT = "message.notification.want";
+        public static final String MAIL_CONFIRMATION_SUBJECT = "message.mail.confirmation";
+        public static final String MAIL_RECOVERY_PASSWORD_SUBJECT = "message.mail.recoverypassword";
     }
 
     /**

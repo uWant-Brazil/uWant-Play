@@ -10,6 +10,7 @@ import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.UserDoesntExistException;
 import models.exceptions.WishListDontExistException;
+import play.i18n.Messages;
 import play.libs.Json;
 
 import java.util.ArrayList;
@@ -24,6 +25,9 @@ public abstract class ActionUtil {
     private static final String CONST_LIST_FRIENDS_FEEDS_SQL = "SELECT id AS target_id FROM users WHERE id IN (SELECT fc1.target_id FROM friends_circle fc1 INNER JOIN friends_circle fc2 ON fc2.target_id = fc1.requester_id AND fc2.requester_id = fc1.target_id INNER JOIN users u ON u.id = fc1.target_id WHERE fc1.requester_id = :user_id AND fc1.is_blocked = false) AND status = 0";
 
     private static final char CHAR_SPACE = ' ';
+    private static final char CHAR_DOT = '.';
+    private static final char CHAR_OPEN = '(';
+    private static final char CHAR_CLOSE = ')';
 
     /** Método responsável por gerar a mensagem baseado no tipo da Action.class
      *
@@ -80,16 +84,16 @@ public abstract class ActionUtil {
 
         builder.append(user.getName());
         builder.append(CHAR_SPACE);
-        builder.append("adicionou");
+        builder.append(Messages.get(AbstractApplication.MessageKey.ADDED));
         builder.append(CHAR_SPACE);
         builder.append(size);
         builder.append(CHAR_SPACE);
-        builder.append(size > 1 ? ("desejos") : "desejo");
+        builder.append(size > 1 ? Messages.get(AbstractApplication.MessageKey.WISHES) : Messages.get(AbstractApplication.MessageKey.WISH));
         builder.append(CHAR_SPACE);
-        builder.append("na sua lista");
+        builder.append(Messages.get(AbstractApplication.MessageKey.IN_YOUR_LIST));
         builder.append(CHAR_SPACE);
         builder.append(wishList.getTitle());
-        builder.append(".");
+        builder.append(CHAR_DOT);
 
         return builder.toString();
     }
@@ -113,8 +117,8 @@ public abstract class ActionUtil {
 
         User from = action.getFrom();
         builder.append(from.getName());
-        builder.append(" ");
-        builder.append("compartilhou a sua ação.");
+        builder.append(CHAR_SPACE);
+        builder.append(Messages.get(AbstractApplication.MessageKey.SHARE_YOUR_ACTION));
 
         return builder.toString();
     }
@@ -129,10 +133,9 @@ public abstract class ActionUtil {
 
         User from = action.getFrom();
         builder.append(from.getName());
-        builder.append(" ");
-        builder.append("mencionou você no post ");
-        builder.append("POST_NAME"); // TODO Entidade do post...
-        builder.append(".");
+        builder.append(CHAR_SPACE);
+        builder.append(Messages.get(AbstractApplication.MessageKey.MENTION_YOU));
+        builder.append(CHAR_DOT);
 
         return builder.toString();
     }
@@ -147,10 +150,9 @@ public abstract class ActionUtil {
 
         User from = action.getFrom();
         builder.append(from.getName());
-        builder.append(" ");
-        builder.append("acaba de comentar no post ");
-        builder.append("POST_NAME"); // TODO Entidade do post...
-        builder.append(".");
+        builder.append(CHAR_SPACE);
+        builder.append(Messages.get(AbstractApplication.MessageKey.COMMENT));
+        builder.append(CHAR_DOT);
 
         return builder.toString();
     }
@@ -165,8 +167,8 @@ public abstract class ActionUtil {
 
         User from = action.getFrom();
         builder.append(from.getName());
-        builder.append(" ");
-        builder.append("deseja adicionar você a seu círculo de amigos.");
+        builder.append(CHAR_SPACE);
+        builder.append(Messages.get(AbstractApplication.MessageKey.ADD_CIRCLE));
 
         return builder.toString();
     }
@@ -181,8 +183,8 @@ public abstract class ActionUtil {
 
         User from = action.getFrom();
         builder.append(from.getName());
-        builder.append(" ");
-        builder.append("acaba de aceitar que você participe do seu círculo de amigos.");
+        builder.append(CHAR_SPACE);
+        builder.append(Messages.get(AbstractApplication.MessageKey.ACCEPT_CIRCLE));
 
         return builder.toString();
     }
@@ -198,15 +200,17 @@ public abstract class ActionUtil {
         User user = action.getUser();
         User from = action.getFrom();
         builder.append(from.getName());
-        builder.append(" ");
-        builder.append("acaba de reportar a ação");
-        builder.append(" ");
-        builder.append("(");
+        builder.append(CHAR_SPACE);
+        builder.append(Messages.get(AbstractApplication.MessageKey.REPORT_1));
+        builder.append(CHAR_SPACE);
+        builder.append(CHAR_OPEN);
         builder.append(action.getId());
-        builder.append(")");
-        builder.append(" realizada pelo usuário ");
+        builder.append(CHAR_CLOSE);
+        builder.append(CHAR_SPACE);
+        builder.append(Messages.get(AbstractApplication.MessageKey.REPORT_2));
+        builder.append(CHAR_SPACE);
         builder.append(user.getName());
-        builder.append(".");
+        builder.append(CHAR_DOT);
 
         return builder.toString();
     }
@@ -221,8 +225,8 @@ public abstract class ActionUtil {
 
         User from = action.getFrom();
         builder.append(from.getName());
-        builder.append(" ");
-        builder.append("acaba de 'wantar' sua ação!");
+        builder.append(CHAR_SPACE);
+        builder.append(Messages.get(AbstractApplication.MessageKey.WANT));
 
         return builder.toString();
     }
@@ -306,7 +310,7 @@ public abstract class ActionUtil {
                 .eq(AbstractApplication.FinderKey.TYPE, Action.Type.ACTIVITY.ordinal())
                 .setFirstRow(startIndex)
                 .setMaxRows(endIndex - startIndex)
-                .orderBy(AbstractApplication.FinderKey.CREATED_AT + " desc")
+                .orderBy(String.format("%s desc", AbstractApplication.FinderKey.CREATED_AT))
                 .findList();
 
         for (Action action : actions) {

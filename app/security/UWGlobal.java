@@ -1,11 +1,13 @@
 package security;
 
+import com.typesafe.config.ConfigFactory;
 import controllers.AbstractApplication;
 import play.Application;
 import play.GlobalSettings;
 import play.api.mvc.EssentialFilter;
 import play.api.mvc.Handler;
 import play.filters.csrf.CSRFFilter;
+import play.i18n.Messages;
 import play.libs.F;
 import play.mvc.Action;
 import play.mvc.Http;
@@ -17,7 +19,7 @@ public class UWGlobal extends GlobalSettings {
 
     private static final String CONST_HEADER_CONTENT_TYPE = "Content-Type";
     private static final String CONST_APPLICATION_JSON = "application/json";
-    private static final String DEFAULT_ERROR_MESSAGE = "Aconteceu um erro inesperado com o servidor. Caso o erro persista, favor entrar em contato com o suporte através do e-mail support@uwant.com.br";
+    private static final String DEFAULT_ERROR_MESSAGE = Messages.get(AbstractApplication.MessageKey.Global.MOBILE_SESSION_ERROR);
 
     @Override
     public void onStart(Application app) {

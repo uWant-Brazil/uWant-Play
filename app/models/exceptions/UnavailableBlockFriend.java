@@ -1,5 +1,8 @@
 package models.exceptions;
 
+import controllers.AbstractApplication;
+import play.i18n.Messages;
+
 /**
  * Exception - Exceção caso você tente bloquear um usuário que não está no seu
  * círculo de amigos.
@@ -7,7 +10,7 @@ package models.exceptions;
 public class UnavailableBlockFriend extends UWException {
 
     private static final int CODE = 75;
-    private static final String MESSAGE = "Você não pode bloquear um usuário que não é nem seu amigo ainda.";
+    private static final String MESSAGE = Messages.get(AbstractApplication.MessageKey.Exception.UNAVAILABLE_BLOCK_FRIEND);
 
     public UnavailableBlockFriend() {
         super(CODE, MESSAGE);

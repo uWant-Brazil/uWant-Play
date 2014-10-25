@@ -1,5 +1,6 @@
 package utils;
 
+import com.typesafe.config.ConfigFactory;
 import models.exceptions.InvalidMailException;
 
 import javax.mail.*;
@@ -27,6 +28,9 @@ public abstract class MailUtil {
      */
     private static final String CONTENT_TYPE = "text/html";
 
+    private static final String DIGEST_MODE = "MD5";
+    private static final String HASH_SECRET = "%1$032X";
+
     // Variáveis responsáveis pela configuração do envio de e-mail.
     private static final String MAIL_SMTP_HOST = "mail.smtp.host";
     private static final String MAIL_USER = "mail.user";
@@ -43,12 +47,12 @@ public abstract class MailUtil {
     /**
      * E-mail remetente dos e-mails.
      */
-    private static final String USERNAME = "no-reply@uwant.com.br";
+    private static final String USERNAME = ConfigFactory.load().getString(MAIL_USER);
 
     /**
      * Senha do e-mail remetende dos e-mails.
      */
-    private static final String PASSWORD = "n0-r3plY@uw4NT";
+    private static final String PASSWORD = ConfigFactory.load().getString(MAIL_PASSWORD);
 
     /**
      * Classe que guardará as propriedades do envio do e-mail.
@@ -113,10 +117,10 @@ public abstract class MailUtil {
     public static String generateHash() throws NoSuchAlgorithmException, UnsupportedEncodingException {
         String hash = UUID.randomUUID().toString();
         try {
-            MessageDigest m = MessageDigest.getInstance("MD5");
+            MessageDigest m = MessageDigest.getInstance(DIGEST_MODE);
             m.update(hash.getBytes(), 0, hash.length());
             BigInteger i = new BigInteger(1, m.digest());
-            hash = String.format("%1$032X", i);
+            hash = String.format(HASH_SECRET, i);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
