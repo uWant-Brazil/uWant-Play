@@ -20,7 +20,9 @@ public abstract class WishListUtil {
      * @return true se sim, false se não
      */
     public static boolean isOwner(WishList wishList, User user) {
-        return wishList != null && user != null && wishList.getUser().getId() == user.getId();
+        return wishList != null
+                && user != null
+                && wishList.getUser().getId() == user.getId();
     }
 
     public static Map<Integer, Long> fillProducts(JsonNode body, WishList wishList) {
@@ -30,11 +32,14 @@ public abstract class WishListUtil {
             if (products.isArray()) {
                 for(int i = 0; i < products.size(); i++) {
                     JsonNode jsonProduct = products.get(i);
-                    if (jsonProduct.hasNonNull(AbstractApplication.ParameterKey.NAME) && jsonProduct.has(AbstractApplication.ParameterKey.NICK_NAME) && jsonProduct.has(AbstractApplication.ParameterKey.MANUFACTURER)) {
+                    if (jsonProduct.hasNonNull(AbstractApplication.ParameterKey.NAME)
+                            && jsonProduct.has(AbstractApplication.ParameterKey.NICK_NAME)
+                            && jsonProduct.has(AbstractApplication.ParameterKey.MANUFACTURER)) {
                         Manufacturer manufacturer = null;
 
                         JsonNode jsonManufacturer = jsonProduct.get(AbstractApplication.ParameterKey.MANUFACTURER);
-                        if (jsonManufacturer != null && jsonManufacturer.hasNonNull(AbstractApplication.ParameterKey.NAME)) {
+                        if (jsonManufacturer != null
+                                && jsonManufacturer.hasNonNull(AbstractApplication.ParameterKey.NAME)) {
                             String name = jsonManufacturer.get(AbstractApplication.ParameterKey.NAME).asText();
 
                             manufacturer = new Manufacturer();

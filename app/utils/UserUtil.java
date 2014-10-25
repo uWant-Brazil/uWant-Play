@@ -7,6 +7,7 @@ import models.database.IFinder;
 import models.exceptions.InvalidMailException;
 import models.exceptions.UWException;
 import models.exceptions.UserAlreadyExistException;
+import play.i18n.Messages;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -20,43 +21,12 @@ public abstract  class UserUtil {
     /**
      * Assunto do e-mail para confirmação do e-mail.
      */
-    private static final String CONFIRM_MAIL_SUBJECT = "uWant @ Confirmação de email";
+    private static final String CONFIRM_MAIL_SUBJECT = Messages.get(AbstractApplication.MessageKey.MAIL_CONFIRMATION_SUBJECT);
 
     /**
      * Assunto do e-mail para confirmação do e-mail.
      */
-    private static final String RECOVERY_PASSWORD_MAIL_SUBJECT = "uWant @ Recuperação de senha";
-
-    /**
-     * Efetua a separação do nome completo em um array com três posições - Primeiro nome, nome do meio e último nome.
-     * @param fullName
-     * @return String[]
-     */
-    public static String[] partsOfName(String fullName) {
-        String firstName, middleName, lastName;
-
-        int firstIndex = fullName.indexOf(" ");
-        int lastIndex = fullName.indexOf(" ");
-
-        if (firstIndex != -1) {
-            firstName = fullName.substring(0, firstIndex).trim();
-            if (lastIndex != -1 && firstIndex != lastIndex) {
-                lastName = fullName.substring(lastIndex + 1).trim();
-                middleName = fullName.substring(firstIndex + 1, lastIndex).trim();
-                if (middleName.equals(lastName))
-                    middleName = null;
-            } else {
-                lastName = fullName.substring(firstIndex + 1).trim();
-                middleName = null;
-            }
-        } else {
-            firstName = fullName.trim();
-            middleName = null;
-            lastName = null;
-        }
-
-        return new String[] { firstName, middleName, lastName };
-    }
+    private static final String RECOVERY_PASSWORD_MAIL_SUBJECT = Messages.get(AbstractApplication.MessageKey.MAIL_RECOVERY_PASSWORD_SUBJECT);
 
     /**
      * Envia a solicitação de confirmação do e-mail do usuário de forma assíncrona.
@@ -89,7 +59,6 @@ public abstract  class UserUtil {
                     userMailInteraction.setUser(user);
                     userMailInteraction.setCreatedAt(new Date());
                     userMailInteraction.save();
-
             }
         }
 
@@ -135,18 +104,27 @@ public abstract  class UserUtil {
         IFinder<User> finder = factory.get(User.class);
 
         User user;
-        user = finder.selectUnique(new String[] { AbstractApplication.FinderKey.LOGIN }, new Object[] { login });
+        user = finder.selectUnique(
+                new String[] { AbstractApplication.FinderKey.LOGIN },
+                new Object[] { login });
+
         if (user != null) {
             throw new UserAlreadyExistException();
         }
 
-        user = finder.selectUnique(new String[] { AbstractApplication.FinderKey.MAIL }, new Object[] { email });
+        user = finder.selectUnique(
+                new String[] { AbstractApplication.FinderKey.MAIL },
+                new Object[] { email });
+
         if (user != null) {
             throw new UserAlreadyExistException();
         }
 
         IFinder<SocialProfile.Login> finderSocial = factory.get(SocialProfile.Login.class);
-        SocialProfile.Login socialLogin = finderSocial.selectUnique(new String[] { AbstractApplication.FinderKey.LOGIN }, new Object[] { email });
+        SocialProfile.Login socialLogin = finderSocial.selectUnique(
+                new String[] { AbstractApplication.FinderKey.LOGIN },
+                new Object[] { email });
+
         if (socialLogin != null && socialLogin.getProfile().getStatus() == SocialProfile.Status.ACTIVE) {
             throw new UserAlreadyExistException();
         }
