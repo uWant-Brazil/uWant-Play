@@ -121,15 +121,6 @@ public abstract  class UserUtil {
             throw new UserAlreadyExistException();
         }
 
-        IFinder<SocialProfile.Login> finderSocial = factory.get(SocialProfile.Login.class);
-        SocialProfile.Login socialLogin = finderSocial.selectUnique(
-                new String[] { AbstractApplication.FinderKey.LOGIN },
-                new Object[] { email });
-
-        if (socialLogin != null && socialLogin.getProfile().getStatus() == SocialProfile.Status.ACTIVE) {
-            throw new UserAlreadyExistException();
-        }
-
         return false;
     }
 

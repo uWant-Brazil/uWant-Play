@@ -32,8 +32,6 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new TokenFinder();
         } else if (id == UserMailInteraction.class) {
             finder = new UserMailInteractionFinder();
-        } else if (id == SocialProfile.Login.class) {
-            finder = new SocialProfileLoginsFinder();
         } else if (id == WishList.class) {
             finder = new WishListFinder();
         } else if (id == SocialProfile.class) {

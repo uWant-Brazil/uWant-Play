@@ -1,7 +1,6 @@
 # --- !Ups
 insert into users (id,login,password,mail,name,birthday,since,gender,status,modified_at,picture_id) values (nextVal('user_id_seq'),'poseidon',md5('0cean0'),'poseidon@olimpo.god.com','Poseidon Cronos da Silva','1000-10-01 00:00:00.00',now(),0,0,now(),(select id from multimedia where file_name = 'poseidon.jpg'));
-insert into social_profile (id,provider,access_token,user_id,status,modified_at) values (nextVal('social_profile_id_seq'),1,'access_token_2',2,0,now());
-insert into social_profile_logins (id,login,profile_id) values (nextVal('social_profile_logins_id_seq'),'poseidon-band1da0@facebook.com',2);
+insert into social_profile (id,provider,access_token,user_id,status,modified_at,login) values (nextVal('social_profile_id_seq'),1,'access_token_2',2,0,now(),'poseidon-band1da0@facebook.com');
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),1,1,'HAHAHA','poseidon@olimpo.god.com',2,now());
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),0,0,'HAHAHA','poseidon@olimpo.god.com',2,now());
 
