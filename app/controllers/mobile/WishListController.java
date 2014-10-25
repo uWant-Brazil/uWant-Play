@@ -7,6 +7,7 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
+import play.db.ebean.Transactional;
 import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;
@@ -30,6 +31,7 @@ public class WishListController extends AbstractApplication {
      * Caso a lista já possua produtos vinculados, o mesmo serão salvos a partir de um relacionamento no BD.
      * @return JSON
      */
+    @Transactional
     public static F.Promise<Result> create() {
         return F.Promise.<Result>promise(() -> {
             ObjectNode jsonResponse = Json.newObject();
@@ -89,6 +91,7 @@ public class WishListController extends AbstractApplication {
      * Apenas os donos da lista de desejos podem efetuar tal ação.
      * @return JSON
      */
+    @Transactional
     public static F.Promise<Result> update() {
         return F.Promise.<Result>promise(() -> {
             ObjectNode jsonResponse = Json.newObject();
@@ -336,6 +339,7 @@ public class WishListController extends AbstractApplication {
      * Apenas os donos da lista de desejos podem efetuar tal ação.
      * @return JSON
      */
+    @Transactional
     public static F.Promise<Result> delete() {
         return F.Promise.<Result>promise(() -> {
             ObjectNode jsonResponse = Json.newObject();
