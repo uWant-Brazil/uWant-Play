@@ -36,7 +36,6 @@ public class CDNController extends AbstractApplication {
      * consultas futuras pelos usuários.
      * @return JSON
      */
-    @AddCSRFToken
     public static F.Promise<Result> retrieve() {
         return F.Promise.<Result>promise(() -> {
             final ObjectNode jsonResponse = Json.newObject();
