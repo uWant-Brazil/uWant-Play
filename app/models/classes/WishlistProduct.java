@@ -37,6 +37,10 @@ public class WishListProduct extends Model {
         return id;
     }
 
+    public void setId(long id) {
+        this.id = id;
+    }
+
     public void setWishList(WishList wishList) {
         this.wishList = wishList;
     }
