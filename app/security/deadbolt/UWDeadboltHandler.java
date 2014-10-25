@@ -4,6 +4,7 @@ import be.objectify.deadbolt.core.models.Subject;
 import be.objectify.deadbolt.java.AbstractDeadboltHandler;
 import controllers.AbstractApplication;
 import play.Logger;
+import play.i18n.Messages;
 import play.libs.F;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -11,8 +12,7 @@ import utils.AdminUtil;
 
 public class UWDeadboltHandler extends AbstractDeadboltHandler {
 
-    private static final java.lang.String ERROR_MESSAGE = "Estão tentando acessar controladores fora da sua alçada/permissão - %s";
-    private static final String WEB_ERROR_MESSAGE = "Você não tem permissão para acessar essa funcionalidade. Nossa equipe será notificada pela tentativa de acesso! :-)";
+    private static final String WEB_ERROR_MESSAGE = Messages.get(AbstractApplication.MessageKey.Deadbolt.WEB_SESSION_INVALID);
 
     @Override
     public F.Promise<Result> beforeAuthCheck(Http.Context context) {

@@ -50,7 +50,11 @@ public class UserMailInteraction extends Model {
     @OneToOne(fetch = FetchType.LAZY)
     private User user;
 
-//    @Version
+    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
+    @Column(nullable = false, updatable = false, columnDefinition = "timestamp without time zone default now()")
+    private Date createdAt;
+
+    @Version
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
@@ -112,5 +116,13 @@ public class UserMailInteraction extends Model {
 
     public void setType(Type type) {
         this.type = type;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
     }
 }

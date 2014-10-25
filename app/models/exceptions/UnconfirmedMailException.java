@@ -1,6 +1,8 @@
 package models.exceptions;
 
+import controllers.AbstractApplication;
 import models.classes.User;
+import play.i18n.Messages;
 import utils.UserUtil;
 
 /**
@@ -10,8 +12,8 @@ import utils.UserUtil;
 public class UnconfirmedMailException extends UWException {
 
     private static final int CODE = 31;
-    private static final String MESSAGE1 = "O e-mail do usuario ainda não foi confirmado.";
-    private static final String MESSAGE2 = MESSAGE1 + " Enviamos uma nova confirmação para o email informado!";
+    private static final String MESSAGE1 = Messages.get(AbstractApplication.MessageKey.Exception.UNCONFIRMED_MAIL_1);
+    private static final String MESSAGE2 = Messages.get(AbstractApplication.MessageKey.Exception.UNCONFIRMED_MAIL_2);
 
     public UnconfirmedMailException() {
         super(CODE, MESSAGE1);

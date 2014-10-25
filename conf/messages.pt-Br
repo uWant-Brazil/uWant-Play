@@ -1,0 +1,78 @@
+action.feeds.success=As ações foram listadas com sucesso.
+action.comment.success=O comentário foi adicionado com sucesso.
+action.comments.success=Foram listados {0} comentários com sucesso.
+action.want.success=O feed foi 'wantado ou não' com sucesso.
+action.report.success=A denúncia foi registrada com sucesso.
+action.toogleblock.success=O usuário {0} foi (des)bloqueado com sucesso!
+action.share.success=O compartilhamento foi efetuado com sucesso.
+
+authentication.recoverypassword.success=Foi enviado um e-mail para voce redefinir a sua nova senha.
+authentication.logoff.success=O usuário saiu do sistema com sucesso.
+authentication.authorize.success=O usuário foi autenticado com sucesso.
+
+cdn.retrieve.success=O arquivo multimídia foi salvo com sucesso.
+
+notification.listactions.success=A lista de ações foram recuperadas com sucesso.
+notification.register.success=O dispositivo móvel foi registrado para {0}.
+
+social.unlink.success=A conta virtual do usuário acaba de ser desvinculada.
+social.link.success=A conta virtual do usuário acaba de ser vinculada.
+social.signup.waitingregistration.success=Este usuário ainda não efetuou o cadastro no sistema, mas já possui a rede social vinculada.
+social.signup.authorize.success=Este usuário já existe no sistema. Ele está autenticado para acessar o sistema.
+social.signup.register.success=Este usuário é novo no sistema, efetue o registro do mesmo.
+
+user.listcircle.success=Os amigos foram listados com sucesso.
+user.analyzecontacts.success=Foram adicionados {0} pessoas e convidados a utilizar {1} pessoas.
+user.leavecircle.success=O usuário {0} foi removido como amigo.
+user.joincircle.success=O usuário {0} foi solicitado como amigo.
+user.list.success=A consulta do perfil foi realizada com sucesso.
+user.search.success=A consulta foi realizada com sucesso.
+user.exclude.success=O usuário foi excluido com sucesso.
+user.register.success=O usuário ({0}) foi registrado com sucesso.
+
+wishlist.delete.success=A lista de desejos ({0}) foi excluida com sucesso.
+wishlist.products.success=A consulta pelos produtos da lista de desejos foi realizada com sucesso.
+wishlist.list.success=A consulta pela lista de desejos foi realizada com sucesso.
+wishlist.update.success=A lista de desejos ({0}) foi editada com sucesso.
+wishlist.create.success=A lista de desejo ({0}) foi criada com sucesso.
+
+abstract.websession.invalid=Você tem certeza que está no lugar certo? :-)
+abstract.mobilesession.invalid=Você não está autorizado a realizar este tipo de ação.
+
+exception.authentication=O usuário ou senha informado é inválido.
+exception.indexoutofbounds=Os índices informados estão incorretos.
+exception.invaliddate=A data informada é inválida.
+exception.invalidmail=O e-mail informado é inválido.
+exception.jsonbody=Ocorreu um problema no body do seu cabeçalho HTTP -> application/json.
+exception.multipartbody=Ocorreu um problema no body do seu cabeçalho HTTP -> application/multipart.
+exception.socialprofile=Já existe uma conta vinculada a essa rede social.
+exception.token=O token é inválido ou inexistente.
+exception.unauthorizedoperation=Você não tem permissão para realizar essa operação.
+exception.unavailableblockfriend=Você não pode bloquear um usuário que não é nem seu amigo ainda.
+exception.unconfirmedmail_1=O e-mail do usuario ainda não foi confirmado.
+exception.unconfirmedmail_2=O e-mail do usuario ainda não foi confirmado. Enviamos uma nova confirmação para o email informado!
+exception.unknown=Ocorreu um problema inesperado, entre em contato com o suporte.
+exception.userexist=Já existe um usuário com o login ou email informado cadastrado em nosso sistema.
+exception.userdontexist=O usuario não consta em nossos registros.
+exception.userwithoutmobile=O usuário não possui nenhum dispositivo móvel vinculado ao seu usuário.
+exception.wishlistdontexist=A lista de desejos não consta em nossos registros.
+
+deadbolt.websession.invalid=Você não tem permissão para acessar essa funcionalidade. Nossa equipe será notificada pela tentativa de acesso! :-)
+
+global.mobilesession.error=Aconteceu um erro inesperado com o servidor. Caso o erro persista, favor entrar em contato com o suporte através do e-mail support@uwant.com.br
+
+message.notification.added=adicionou
+message.notification.wish=desejo
+message.notification.wishes=desejos
+message.notification.inyourlist=na sua lista
+message.notification.shareyouraction=compartilhou a sua ação.
+message.notification.mentionyou=mencionou você
+message.notification.comment=acaba de comentar
+message.notification.addcircle=deseja adicionar você a seu círculo de amigos.
+message.notification.acceptcircle=acaba de aceitar que você participe do seu círculo de amigos.
+message.notification.report_1=acaba de reportar a ação
+message.notification.report_2=realizada pelo usuário
+message.notification.want=acaba de 'wantar' sua ação!
+
+message.mail.confirmation=uWant @ Confirmação de email
+message.mail.recoverypassword=uWant @ Recuperação de senha

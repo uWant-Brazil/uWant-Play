@@ -1,0 +1,78 @@
+action.feeds.success=The shares were listed successfully.
+action.comment.success=The comment has successfully added.
+action.comments.success=Were listed {0} reviews successfully.
+action.want.success=The feed was 'wanted or not' successfully.
+action.report.success=The complaint was registered successfully.
+action.toogleblock.success=User {0} was (un) successfully blocked!
+action.share.success=The sharing was successful.
+
+authentication.recoverypassword.success=An email was sent to you to reset your new password.
+authentication.logoff.success=You logged out successfully.
+authentication.authorize.success=The user has been successfully authenticated.
+
+cdn.retrieve.success=The multimedia file has been saved successfully.
+
+notification.listactions.success=The list of actions were successfully retrieved.
+notification.register.success=The mobile device was registered to {0}.
+
+social.unlink.success=The virtual user account has just been untied.
+social.link.success=The virtual user account has just been bound.
+social.signup.waitingregistration.success=This user has not made ??the registration in the system, but already has a social network bound.
+social.signup.authorize.success=This user already exists in the system. It is authenticated to access the system.
+social.signup.register.success=This user is new to the system, make a record of it.
+
+user.listcircle.success=Friends were listed successfully.
+user.analyzecontacts.success=Were added {0} people and invited to use {1} people.
+user.leavecircle.success=User {0} has been removed as a friend.
+user.joincircle.success=User {0} has been requested as a friend.
+user.list.success=The query profile was successful.
+user.search.success=The query was successful.
+user.exclude.success=The user was successfully deleted.
+user.register.success=User ({0}) was registered successfully.
+
+wishlist.delete.success=The wishlist ({0}) was excluded successfully.
+wishlist.products.success=A consultation by the wish list product was successful.
+wishlist.list.success=Consultation by wishlist was successful.
+wishlist.update.success=The wishlist ({0}) has been successfully edited.
+wishlist.create.success=The wishlist ({0}) was successfully created.
+
+abstract.websession.invalid=You sure you're in the right place? :-)
+abstract.mobilesession.invalid=You are not authorized to perform this kind of action.
+
+exception.authentication=The username or password you entered is invalid.
+exception.indexoutofbounds=The indexes reported are incorrect.
+exception.invaliddate=The date entered is invalid.
+exception.invalidmail=The email you entered is invalid.
+exception.jsonbody=A problem occurred in the body of your HTTP header -> application/json.
+exception.multipartbody=A problem occurred in the body of your HTTP header -> application/multipart.
+exception.socialprofile=There is bound to this social network account already.
+exception.token=The token is invalid or nonexistent.
+exception.unauthorizedoperation=You do not have permission to perform this operation.
+exception.unavailableblockfriend=You can not block a user who is neither your friend yet.
+exception.unconfirmedmail_1=The user mail has not yet been confirmed.
+exception.unconfirmedmail_2=The user mail has not yet been confirmed. Send a new confirmation to the email address you entered!
+exception.unknown=An unexpected problem occurred, please contact support.
+exception.userexist=There is already a user with the login email entered or registered in our system.
+exception.userdontexist=The user does not appear in our records.
+exception.userwithoutmobile=The user has no mobile device linked to your user.
+exception.wishlistdontexist=The wishlist does not appear in our records.
+
+deadbolt.websession.invalid=You do not have permission to access this functionality. Our team will be notified by attempting to access! :-)
+
+global.mobilesession.error=An unexpected error occurred on the server. If the error persists, please contact support via e-mail support@uwant.com.br
+
+message.notification.added=added
+message.notification.wish=wish
+message.notification.wishes=wishes
+message.notification.inyourlist=in your list
+message.notification.shareyouraction=shared your action.
+message.notification.mentionyou=mentioned you
+message.notification.comment=just commented
+message.notification.addcircle=wants to add you to their circle of friends.
+message.notification.acceptcircle=just accept that you join your circle of friends.
+message.notification.report_1=just report the
+message.notification.report_2=action performed by the user
+message.notification.want=just want your action!
+
+message.mail.confirmation=uWant @ Confirmation email
+message.mail.recoverypassword=uWant @ Password Recovery

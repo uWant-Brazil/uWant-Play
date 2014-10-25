@@ -1,18 +1,18 @@
 package utils;
 
 import controllers.AbstractApplication;
-import models.classes.FriendsCircle;
-import models.classes.SocialProfile;
-import models.classes.User;
-import models.classes.UserMailInteraction;
+import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.InvalidMailException;
 import models.exceptions.UWException;
 import models.exceptions.UserAlreadyExistException;
+import play.i18n.Messages;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+import java.util.UUID;
 
 /**
  * Classe utilitária para ações relacionadas ao usuário.
@@ -22,43 +22,12 @@ public abstract  class UserUtil {
     /**
      * Assunto do e-mail para confirmação do e-mail.
      */
-    private static final String CONFIRM_MAIL_SUBJECT = "uWant @ Confirmação de email";
+    private static final String CONFIRM_MAIL_SUBJECT = Messages.get(AbstractApplication.MessageKey.MAIL_CONFIRMATION_SUBJECT);
 
     /**
      * Assunto do e-mail para confirmação do e-mail.
      */
-    private static final String RECOVERY_PASSWORD_MAIL_SUBJECT = "uWant @ Recuperação de senha";
-
-    /**
-     * Efetua a separação do nome completo em um array com três posições - Primeiro nome, nome do meio e último nome.
-     * @param fullName
-     * @return String[]
-     */
-    public static String[] partsOfName(String fullName) {
-        String firstName, middleName, lastName;
-
-        int firstIndex = fullName.indexOf(" ");
-        int lastIndex = fullName.indexOf(" ");
-
-        if (firstIndex != -1) {
-            firstName = fullName.substring(0, firstIndex).trim();
-            if (lastIndex != -1 && firstIndex != lastIndex) {
-                lastName = fullName.substring(lastIndex + 1).trim();
-                middleName = fullName.substring(firstIndex + 1, lastIndex).trim();
-                if (middleName.equals(lastName))
-                    middleName = null;
-            } else {
-                lastName = fullName.substring(firstIndex + 1).trim();
-                middleName = null;
-            }
-        } else {
-            firstName = fullName.trim();
-            middleName = null;
-            lastName = null;
-        }
-
-        return new String[] { firstName, middleName, lastName };
-    }
+    private static final String RECOVERY_PASSWORD_MAIL_SUBJECT = Messages.get(AbstractApplication.MessageKey.MAIL_RECOVERY_PASSWORD_SUBJECT);
 
     /**
      * Envia a solicitação de confirmação do e-mail do usuário de forma assíncrona.
@@ -71,13 +40,13 @@ public abstract  class UserUtil {
             FinderFactory factory = FinderFactory.getInstance();
             IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
             UserMailInteraction confirmation = finder.selectUnique(
-                    new String[] { AbstractApplication.FinderKey.USER_ID, AbstractApplication.FinderKey.TYPE },
-                    new Object[] { user.getId(), UserMailInteraction.Type.MAIL_CONFIRMATION.ordinal() });
+                    new String[] { AbstractApplication.FinderKey.USER_ID, AbstractApplication.FinderKey.TYPE, AbstractApplication.FinderKey.STATUS },
+                    new Object[] { user.getId(), UserMailInteraction.Type.MAIL_CONFIRMATION.ordinal(), UserMailInteraction.Status.WAITING.ordinal() });
 
             hash = confirmation.getHash();
         } else {
             try {
-                hash = MailUtil.generateHash();
+                hash = SecurityUtil.hash(UUID.randomUUID().toString());
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
@@ -89,13 +58,13 @@ public abstract  class UserUtil {
                     userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
                     userMailInteraction.setMail(mail);
                     userMailInteraction.setUser(user);
+                    userMailInteraction.setCreatedAt(new Date());
                     userMailInteraction.save();
-
             }
         }
 
         // TODO HTML para confirmação do e-mail do usuário.
-        final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
+        final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?h=" + hash + "&m=" + mail;
 
         try {
             MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
@@ -136,18 +105,27 @@ public abstract  class UserUtil {
         IFinder<User> finder = factory.get(User.class);
 
         User user;
-        user = finder.selectUnique(new String[] { AbstractApplication.FinderKey.LOGIN }, new Object[] { login });
+        user = finder.selectUnique(
+                new String[] { AbstractApplication.FinderKey.LOGIN },
+                new Object[] { login });
+
         if (user != null) {
             throw new UserAlreadyExistException();
         }
 
-        user = finder.selectUnique(new String[] { AbstractApplication.FinderKey.MAIL }, new Object[] { email });
+        user = finder.selectUnique(
+                new String[] { AbstractApplication.FinderKey.MAIL },
+                new Object[] { email });
+
         if (user != null) {
             throw new UserAlreadyExistException();
         }
 
         IFinder<SocialProfile.Login> finderSocial = factory.get(SocialProfile.Login.class);
-        SocialProfile.Login socialLogin = finderSocial.selectUnique(new String[] { AbstractApplication.FinderKey.LOGIN }, new Object[] { email });
+        SocialProfile.Login socialLogin = finderSocial.selectUnique(
+                new String[] { AbstractApplication.FinderKey.LOGIN },
+                new Object[] { email });
+
         if (socialLogin != null && socialLogin.getProfile().getStatus() == SocialProfile.Status.ACTIVE) {
             throw new UserAlreadyExistException();
         }
@@ -163,7 +141,7 @@ public abstract  class UserUtil {
         String hash = null;
         final String mail = user.getMail();
         try {
-            hash = MailUtil.generateHash();
+            hash = SecurityUtil.hash(UUID.randomUUID().toString());
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -175,6 +153,7 @@ public abstract  class UserUtil {
             userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
             userMailInteraction.setMail(mail);
             userMailInteraction.setUser(user);
+            userMailInteraction.setCreatedAt(new Date());
             userMailInteraction.save();
 
             // TODO HTML para confirmação do e-mail do usuário.
@@ -237,6 +216,58 @@ public abstract  class UserUtil {
         }
 
         return friendshipLevel;
+    }
+
+    /** Método responsável por realizar o CRUD para que os usuários
+     * possam ser adicionados aos seus círculos de amigos.
+     *
+     * @param user - Usuário adicionando/aceitando
+     * @param factory - Fábrica de Finder's (BD)
+     * @param userTarget - Usuário a ser adicionado/aceito.
+     * @return true ou false, se foram amigos mútuos após essa ação.
+     */
+    public static boolean joinCircle(User user, FinderFactory factory, User userTarget) {
+        IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
+        FriendsCircle friendsCircle = finderCircle.selectUnique(
+                new String[] { AbstractApplication.FinderKey.REQUESTER_ID, AbstractApplication.FinderKey.TARGET_ID},
+                new Object[] { user.getId(), userTarget.getId() });
+
+        boolean isFriends = false;
+        if (friendsCircle == null) {
+            FriendsCircle.Relation relation = new FriendsCircle.Relation();
+            relation.setRequesterId(user.getId());
+            relation.setTargetId(userTarget.getId());
+
+            friendsCircle = new FriendsCircle();
+            friendsCircle.setRelation(relation);
+            friendsCircle.save();
+
+            FriendsCircle inverseFriendsCircle = finderCircle.selectUnique(
+                    new String[] { AbstractApplication.FinderKey.REQUESTER_ID, AbstractApplication.FinderKey.TARGET_ID},
+                    new Object[] { userTarget.getId(), user.getId() });
+            isFriends = (inverseFriendsCircle != null);
+        }
+
+        IMobileUser mobileUser;
+        Action action = new Action();
+        action.setCreatedAt(new Date());
+        if (isFriends) {
+            action.setType(Action.Type.ACCEPT_FRIENDS_CIRCLE);
+            action.setFrom(user);
+            action.setUser(userTarget);
+
+            mobileUser = userTarget;
+        } else {
+            action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
+            action.setFrom(userTarget);
+            action.setUser(user);
+
+            mobileUser = user;
+        }
+        action.save();
+
+        NotificationUtil.send(action, mobileUser);
+        return isFriends;
     }
 
 }

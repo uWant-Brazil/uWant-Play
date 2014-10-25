@@ -17,6 +17,8 @@ libraryDependencies ++= Seq(
   "be.objectify" %% "deadbolt-java" % "2.3.1"
 )
 
+libraryDependencies += filters
+
 resolvers += Resolver.url("Objectify Play Repository", url("http://schaloner.github.com/releases/"))(Resolver.ivyStylePatterns)
 
 resolvers += Resolver.url("Objectify Play Snapshot Repository", url("http://schaloner.github.com/snapshots/"))(Resolver.ivyStylePatterns)

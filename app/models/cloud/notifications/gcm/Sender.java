@@ -82,10 +82,10 @@ public class Sender {
 		// Map of results by registration id, it will be updated after each
 		// attempt
 		// to send the messages
-		Map<String, Result> results = new HashMap<String, Result>();
-		List<String> unsentRegIds = new ArrayList<String>(regIds);
+		Map<String, Result> results = new HashMap<>();
+		List<String> unsentRegIds = new ArrayList<>(regIds);
 		boolean tryAgain;
-		List<Long> multicastIds = new ArrayList<Long>();
+		List<Long> multicastIds = new ArrayList<>();
 		do {
 			attempt++;
 			
@@ -150,7 +150,7 @@ public class Sender {
 					+ "currentResults: " + results + "; unsentRegIds: "
 					+ unsentRegIds);
 		}
-		List<String> newUnsentRegIds = new ArrayList<String>();
+		List<String> newUnsentRegIds = new ArrayList<>();
 		for (int i = 0; i < unsentRegIds.size(); i++) {
 			String regId = unsentRegIds.get(i);
 			Result result = results.get(i);
@@ -182,7 +182,7 @@ public class Sender {
 					"registrationIds cannot be empty");
 		}
 		
-		Map<Object, Object> jsonRequest = new HashMap<Object, Object>();
+		Map<Object, Object> jsonRequest = new HashMap<>();
 		setJsonField(jsonRequest, Constants.PARAM_TIME_TO_LIVE, message.getTimeToLive());
 		setJsonField(jsonRequest, Constants.PARAM_COLLAPSE_KEY, message.getCollapseKey());
 		setJsonField(jsonRequest, Constants.PARAM_DELAY_WHILE_IDLE,
@@ -216,7 +216,6 @@ public class Sender {
 					.longValue();
 			MulticastResult.Builder builder = new MulticastResult.Builder(
 					success, failure, canonicalIds, multicastId);
-			@SuppressWarnings("unchecked")
 			JsonNode results = jsonResponse
 					.get(Constants.JSON_RESULTS);
 			if (results != null && results.isArray()) {
@@ -269,15 +268,16 @@ public class Sender {
 	}
 
 	private Number getNumber(JsonNode json, String field) {
-		Object value = json.get(field).asInt(0);
-		if (value == null) {
+		if (json == null || !json.has(field)) {
 			throw new CustomParserException("Missing field: " + field);
 		}
-		if (!(value instanceof Number)) {
+
+        JsonNode value = json.get(field);
+		if (value == null || value.isNull() || !(value.isNumber())) {
 			throw new CustomParserException("Field " + field
 					+ " does not contain a number: " + value);
 		}
-		return (Number) value;
+		return value.asInt(0);
 	}
 
 	@SuppressWarnings("serial")
@@ -320,48 +320,10 @@ public class Sender {
 	}
 
 	/**
-	 * Creates a map with just one key-value pair.
-	 */
-	protected static final Map<String, String> newKeyValues(String key, String value) {
-		Map<String, String> keyValues = new HashMap<String, String>(1);
-		keyValues.put(nonNull(key), nonNull(value));
-		return keyValues;
-	}
-
-	/**
-	 * Creates a {@link StringBuilder} to be used as the body of an HTTP POST.
-	 * 
-	 * @param name
-	 *            initial parameter for the POST.
-	 * @param value
-	 *            initial value for that parameter.
-	 * @return StringBuilder to be used an HTTP POST body.
-	 */
-	protected static StringBuilder newBody(String name, String value) {
-		return new StringBuilder(nonNull(name)).append('=').append(nonNull(value));
-	}
-
-	/**
-	 * Adds a new parameter to the HTTP POST body.
-	 * 
-	 * @param body
-	 *            HTTP POST body
-	 * @param name
-	 *            parameter's name
-	 * @param value
-	 *            parameter's value
-	 */
-	protected static void addParameter(StringBuilder body, String name,
-			String value) {
-		nonNull(body).append('&').append(nonNull(name)).append('=').append(nonNull(value));
-	}
-
-	/**
 	 * Gets an {@link java.net.HttpURLConnection} given an URL.
 	 */
 	protected HttpURLConnection getConnection(String url) throws IOException {
-		HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-		return conn;
+		return (HttpURLConnection) new URL(url).openConnection();
 	}
 
 	/**

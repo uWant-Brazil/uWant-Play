@@ -1,6 +1,3 @@
-# --- Created by Ebean DDL
-# To stop Ebean DDL generation, remove this comment and start using Evolutions
-
 # --- !Ups
 insert into roles (id,name) values (nextVal('roles_id_seq'), 'role.god');
 insert into administrators (id, login, name, mail, status) values (nextVal('administrators_id_seq'), 'adm.zeus', 'Zeus', 'zeus@uwant.com.br', 0);
