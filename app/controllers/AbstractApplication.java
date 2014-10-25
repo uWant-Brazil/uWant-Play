@@ -14,6 +14,7 @@ import play.data.Form;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Controller;
+import play.mvc.Http;
 import play.mvc.Result;
 import views.html.uwant_sobre;
 
@@ -261,7 +262,15 @@ public class AbstractApplication extends Controller {
      * @return token
      */
     public static String getTokenAtHeader() {
-        return request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+        return getTokenAtHeader(request());
+    }
+
+    /**
+     * Obtém o token que foi enviado no cabeçalho do body no HTTP.
+     * @return token
+     */
+    public static String getTokenAtHeader(Http.Request request) {
+        return request.getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
     }
 
     /**
