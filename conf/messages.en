@@ -20,3 +20,12 @@ social.link.success=The virtual user account has just been bound.
 social.signup.waitingregistration.success=This user has not made ??the registration in the system, but already has a social network bound.
 social.signup.authorize.success=This user already exists in the system. It is authenticated to access the system.
 social.signup.register.success=This user is new to the system, make a record of it.
+
+user.listcircle.success=Friends were listed successfully.
+user.analyzecontacts.success=Were added {0} people and invited to use {1} people.
+user.leavecircle.success=User {0} has been removed as a friend.
+user.joincircle.success=User {0} has been requested as a friend.
+user.list.success=The query profile was successful.
+user.search.success=The query was successful.
+user.exclude.success=The user was successfully deleted.
+user.register.success=User ({0}) was registered successfully.

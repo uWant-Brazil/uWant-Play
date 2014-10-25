@@ -1,10 +1,7 @@
 package utils;
 
 import controllers.AbstractApplication;
-import models.classes.FriendsCircle;
-import models.classes.SocialProfile;
-import models.classes.User;
-import models.classes.UserMailInteraction;
+import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.InvalidMailException;
@@ -239,6 +236,58 @@ public abstract  class UserUtil {
         }
 
         return friendshipLevel;
+    }
+
+    /** Método responsável por realizar o CRUD para que os usuários
+     * possam ser adicionados aos seus círculos de amigos.
+     *
+     * @param user - Usuário adicionando/aceitando
+     * @param factory - Fábrica de Finder's (BD)
+     * @param userTarget - Usuário a ser adicionado/aceito.
+     * @return true ou false, se foram amigos mútuos após essa ação.
+     */
+    public static boolean joinCircle(User user, FinderFactory factory, User userTarget) {
+        IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
+        FriendsCircle friendsCircle = finderCircle.selectUnique(
+                new String[] { AbstractApplication.FinderKey.REQUESTER_ID, AbstractApplication.FinderKey.TARGET_ID},
+                new Object[] { user.getId(), userTarget.getId() });
+
+        boolean isFriends = false;
+        if (friendsCircle == null) {
+            FriendsCircle.Relation relation = new FriendsCircle.Relation();
+            relation.setRequesterId(user.getId());
+            relation.setTargetId(userTarget.getId());
+
+            friendsCircle = new FriendsCircle();
+            friendsCircle.setRelation(relation);
+            friendsCircle.save();
+
+            FriendsCircle inverseFriendsCircle = finderCircle.selectUnique(
+                    new String[] { AbstractApplication.FinderKey.REQUESTER_ID, AbstractApplication.FinderKey.TARGET_ID},
+                    new Object[] { userTarget.getId(), user.getId() });
+            isFriends = (inverseFriendsCircle != null);
+        }
+
+        IMobileUser mobileUser;
+        Action action = new Action();
+        action.setCreatedAt(new Date());
+        if (isFriends) {
+            action.setType(Action.Type.ACCEPT_FRIENDS_CIRCLE);
+            action.setFrom(user);
+            action.setUser(userTarget);
+
+            mobileUser = userTarget;
+        } else {
+            action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
+            action.setFrom(userTarget);
+            action.setUser(user);
+
+            mobileUser = user;
+        }
+        action.save();
+
+        NotificationUtil.send(action, mobileUser);
+        return isFriends;
     }
 
 }

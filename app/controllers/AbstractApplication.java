@@ -160,6 +160,16 @@ public class AbstractApplication extends Controller {
             public static final String SIGNUP_REGISTER_SUCCESS = "social.signup.register.success";
             public static final String SIGNUP_AUTHORIZE_SUCCESS = "social.signup.authorize.success";
         }
+        public static final class User {
+            public static final String LIST_CIRCLE_SUCCESS = "user.listcircle.success";
+            public static final String ANALYZE_CONTACTS_SUCCESS = "user.analyzecontacts.success";
+            public static final String LEAVE_CIRCLE_SUCCESS = "user.leavecircle.success";
+            public static final String JOIN_CIRCLE_SUCCESS = "user.joincircle.success";
+            public static final String LIST_SUCCESS = "user.list.success";
+            public static final String SEARCH_SUCCESS = "user.search.success";
+            public static final String EXCLUDE_SUCCESS = "user.exclude.success";
+            public static final String REGISTER_SUCCESS = "user.register.success";
+        }
     }
 
     /**

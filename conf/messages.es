@@ -20,3 +20,12 @@ social.link.success=La cuenta de usuario virtual acaba de ser obligado.
 social.signup.waitingregistration.success=Este usuario no ha realizado el registro en el sistema, pero ya tiene una red social determinada.
 social.signup.authorize.success=Este usuario ya existe en el sistema. Se autenticado para acceder al sistema.
 social.signup.register.success=Este usuario es nuevo en el sistema, hacer un registro de ello.
+
+user.listcircle.success=Amigos se enumeran con éxito.
+user.analyzecontacts.success=Se añadieron {0} personas e invitados a utilizar {1} personas.
+user.leavecircle.success=El usuario {0} ha sido eliminado como amigo.
+user.joincircle.success=El usuario {0} ha sido solicitado como un amigo.
+user.list.success=El perfil de consulta se ha realizado correctamente.
+user.search.success=La consulta se ha realizado correctamente.
+user.exclude.success=El usuario se ha eliminado correctamente.
+user.register.success=Usuario ({0}) se registró correctamente.
