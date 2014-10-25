@@ -278,11 +278,22 @@ public class AbstractApplication extends Controller {
      * @return JSON
      */
     public static F.Promise<Result> invalidMobileSession() {
-        F.Promise<Result> result = (F.Promise<Result>) Cache.get("mobile.session.invalid");
+        return invalidMobileSession(DEFAULT_INVALID_MOBILE_SESSION, -999);
+    }
+
+    /**
+     * Método default quando uma sessão for inválida no mobile.
+     * @param message
+     * @param error
+     * @return JSON
+     */
+    public static F.Promise<Result> invalidMobileSession(String message, int error) {
+        F.Promise<Result> result = (F.Promise<Result>) Cache.get(String.format("mobile.session.invalid.%s", message));
         if (result == null) {
             final ObjectNode jsonResponse = Json.newObject();
-            jsonResponse.put(ParameterKey.ERROR, -999);
-            jsonResponse.put(ParameterKey.MESSAGE, DEFAULT_INVALID_MOBILE_SESSION);
+            jsonResponse.put(ParameterKey.STATUS, false);
+            jsonResponse.put(ParameterKey.ERROR, error);
+            jsonResponse.put(ParameterKey.MESSAGE, message);
             result = F.Promise.<Result>pure(ok(jsonResponse));
 
             Cache.set("mobile.session.invalid", result, Days.ONE.toStandardSeconds().getSeconds()); // Cache diário.
