@@ -132,6 +132,18 @@ public class AbstractApplication extends Controller {
         public static final String UUID = "uuid";
     }
 
+    public static class MessageKey {
+        public static final class Action {
+            public static final String FEEDS_SUCCESS = "action.feeds.success";
+            public static final String COMMENT_SUCCESS = "action.comment.success";
+            public static final String COMMENTS_SUCCESS = "action.comments.success";
+            public static final String WANT_SUCCESS = "action.want.success";
+            public static final String REPORT_SUCCESS = "action.report.success";
+            public static final String TOGGLE_BLOCK_SUCCESS = "action.toogleblock.success";
+            public static final String SHARE_SUCCESS = "action.share.success";
+        }
+    }
+
     /**
      * Responsável por autenticar um token existente no cabeçalho HTTP/HTTPS.
      * @return

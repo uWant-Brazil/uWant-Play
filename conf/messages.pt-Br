@@ -1,0 +1,7 @@
+action.feeds.success=As ações foram listadas com sucesso.
+action.comment.success=O comentário foi adicionado com sucesso.
+action.comments.success=Foram listados {0} comentários com sucesso.
+action.want.success=O feed foi 'wantado ou não' com sucesso.
+action.report.success=A denúncia foi registrada com sucesso.
+action.toogleblock.success=O usuário {0} foi (des)bloqueado com sucesso!
+action.share.success=O compartilhamento foi efetuado com sucesso.

@@ -1,0 +1,7 @@
+action.feeds.success=The shares were listed successfully.
+action.comment.success=The comment has successfully added.
+action.comments.success=Were listed {0} reviews successfully.
+action.want.success=The feed was 'wanted or not' successfully.
+action.report.success=The complaint was registered successfully.
+action.toogleblock.success=User {0} was (un) successfully blocked!
+action.share.success=The sharing was successful.
