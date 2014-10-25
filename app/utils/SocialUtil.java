@@ -22,13 +22,14 @@ public abstract class SocialUtil {
         jsonResponse.put(AbstractApplication.ParameterKey.LINKED, false);
     }
 
-    public static void link(ObjectNode jsonResponse, User user, String accessToken, String email, SocialProfile.Provider provider) {
+    public static void link(ObjectNode jsonResponse, User user, String accessToken, String email, String facebookId, SocialProfile.Provider provider) {
         SocialProfile profile = new SocialProfile();
         profile.setAccessToken(accessToken);
         profile.setStatus(SocialProfile.Status.ACTIVE);
         profile.setUser(user);
         profile.setProvider(provider);
         profile.setLogin(email);
+        profile.setFacebookId(facebookId);
         profile.save();
 
         jsonResponse.put(AbstractApplication.ParameterKey.STATUS, true);

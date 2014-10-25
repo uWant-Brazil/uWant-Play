@@ -448,17 +448,34 @@ public class UserController extends AbstractApplication {
                 final User user = authenticateToken();
                 if (user != null && UserUtil.isAvailable(user)) {
                     JsonNode body = request().body().asJson();
-                    if (body != null && body.hasNonNull(ParameterKey.CONTACTS)) {
+                    if (body != null
+                            && body.hasNonNull(ParameterKey.CONTACTS)) {
                         final JsonNode jsonContacts = body.get(ParameterKey.CONTACTS);
                         if (jsonContacts.isArray()) {
                             FinderFactory factory = FinderFactory.getInstance();
                             IFinder<User> finder = factory.get(User.class);
+                            IFinder<SocialProfile> finderSP = factory.get(SocialProfile.class);
 
                             int toCircle = 0, toInvite = 0;
                             for (int i = 0; i < jsonContacts.size(); i++) {
+                                User userTarget = null;
+
                                 JsonNode jsonContact = jsonContacts.get(i);
-                                String email = jsonContact.asText();
-                                User userTarget = finder.selectUnique(new String[]{FinderKey.MAIL}, new Object[]{email});
+                                if (jsonContact.hasNonNull(ParameterKey.MAIL)) {
+                                    String email = jsonContact.get(ParameterKey.MAIL).asText();
+                                    userTarget = finder.selectUnique(new String[]{FinderKey.MAIL}, new Object[]{email});
+                                } else if (jsonContact.hasNonNull(ParameterKey.FACEBOOK_ID)) {
+                                    String facebookId = jsonContact.get(ParameterKey.FACEBOOK_ID).asText();
+                                    SocialProfile profile = finderSP.selectUnique(new String[]{FinderKey.FACEBOOK_ID}, new Object[]{facebookId});
+                                    if (profile != null) {
+                                        userTarget = profile.getUser();
+                                    } else {
+                                        continue;
+                                    }
+                                } else {
+                                    continue;
+                                }
+
                                 if (userTarget == null) {
                                     toInvite++;
                                     // TODO Convite através de envio de e-mail..

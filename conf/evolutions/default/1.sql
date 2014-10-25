@@ -122,6 +122,7 @@ create table social_profile (
   user_id                   bigint,
   status                    integer,
   login                     varchar(255),
+  facebook_id               varchar(255),
   modified_at               timestamp not null,
   constraint ck_social_profile_provider check (provider in (0,1,2)),
   constraint ck_social_profile_status check (status in (0,1,2)),

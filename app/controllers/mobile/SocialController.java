@@ -48,6 +48,11 @@ public class SocialController extends AbstractApplication {
                                 email = body.get(ParameterKey.LOGIN).asText();
                             }
 
+                            String facebookId = null;
+                            if (body.has(ParameterKey.FACEBOOK_ID)) {
+                                facebookId = body.get(ParameterKey.FACEBOOK_ID).asText();
+                            }
+
                             SocialProfile.Provider provider = providers[providerOrdinal];
 
                             FinderFactory factory = FinderFactory.getInstance();
@@ -88,6 +93,7 @@ public class SocialController extends AbstractApplication {
                                 profile.setStatus(SocialProfile.Status.WAITING_REGISTRATION);
                                 profile.setProvider(provider);
                                 profile.setLogin(email);
+                                profile.setFacebookId(facebookId);
                                 profile.save();
 
                                 jsonResponse.put(ParameterKey.STATUS, true);
@@ -134,6 +140,11 @@ public class SocialController extends AbstractApplication {
                                     email = body.get(ParameterKey.LOGIN).asText();
                                 }
 
+                                String facebookId = null;
+                                if (body.has(ParameterKey.FACEBOOK_ID)) {
+                                    facebookId = body.get(ParameterKey.FACEBOOK_ID).asText();
+                                }
+
                                 SocialProfile.Provider provider = providers[providerOrdinal];
 
                                 FinderFactory factory = FinderFactory.getInstance();
@@ -154,7 +165,7 @@ public class SocialController extends AbstractApplication {
                                             break;
 
                                         case REMOVED:
-                                            SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+                                            SocialUtil.link(jsonResponse, user, accessToken, email, facebookId, provider);
                                             break;
 
                                         case WAITING_REGISTRATION:
@@ -163,11 +174,11 @@ public class SocialController extends AbstractApplication {
                                             profileUpdated.setStatus(SocialProfile.Status.REMOVED);
                                             profileUpdated.update(profile.getId());
 
-                                            SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+                                            SocialUtil.link(jsonResponse, user, accessToken, email, facebookId, provider);
                                             break;
                                     }
                                 } else {
-                                    SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+                                    SocialUtil.link(jsonResponse, user, accessToken, email, facebookId, provider);
                                 }
                             } else {
                                 throw new JSONBodyException();

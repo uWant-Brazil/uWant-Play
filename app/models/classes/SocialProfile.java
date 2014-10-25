@@ -51,6 +51,8 @@ public class SocialProfile extends Model {
 
     private String login;
 
+    private String facebookId;
+
     @Version
     private Date modifiedAt;
 
@@ -112,5 +114,13 @@ public class SocialProfile extends Model {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getFacebookId() {
+        return facebookId;
+    }
+
+    public void setFacebookId(String facebookId) {
+        this.facebookId = facebookId;
     }
 }

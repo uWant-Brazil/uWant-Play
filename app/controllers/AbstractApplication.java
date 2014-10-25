@@ -108,6 +108,7 @@ public class AbstractApplication extends Controller {
         public static final String WISHLIST_ID = "wishlistId";
         public static final String LINKED = "linked";
         public static final String PRODUCTS_REMOVED = "productsRemoved";
+        public static final String FACEBOOK_ID = "facebookId";
     }
 
     /**
@@ -135,6 +136,7 @@ public class AbstractApplication extends Controller {
         public static final String CREATED_AT = "created_at";
         public static final String IDENTIFIER = "identifier";
         public static final String UUID = "uuid";
+        public static final String FACEBOOK_ID = "facebook_id";
     }
 
     public static class MessageKey {
