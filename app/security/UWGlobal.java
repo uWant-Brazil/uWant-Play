@@ -27,11 +27,6 @@ public class UWGlobal extends GlobalSettings {
     }
 
     @Override
-    public <T extends EssentialFilter> Class<T>[] filters() {
-        return new Class[] { CSRFFilter.class }; // CROSS SITE REQUEST FORGERY
-    }
-
-    @Override
     public Handler onRouteRequest(Http.RequestHeader request) {
         return super.onRouteRequest(request);
     }
