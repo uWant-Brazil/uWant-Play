@@ -282,7 +282,7 @@ public abstract class ActionUtil {
 
     public static List<ObjectNode> listFriendsFeeds(final User user, final int startIndex, final int endIndex) {
         SqlQuery query = Ebean.createSqlQuery(CONST_LIST_FRIENDS_FEEDS_SQL);
-        query.setParameter(0, user.getId());
+        query.setParameter(AbstractApplication.FinderKey.USER_ID, user.getId());
 
         List<ObjectNode> actionsNode = null;
         List<SqlRow> rows = query.findList();
