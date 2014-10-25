@@ -19,7 +19,7 @@ POST    /v1/mobile/wishlist/create              controllers.mobile.WishListContr
 POST    /v1/mobile/wishlist/update              controllers.mobile.WishListController.update()
 POST    /v1/mobile/wishlist/list                controllers.mobile.WishListController.list()
 POST    /v1/mobile/wishlist/delete              controllers.mobile.WishListController.delete()
-POST    /v1/mobile/wishlist/product/list        controllers.mobile.WishListController.getProductsByWishList()
+POST    /v1/mobile/wishlist/product/list        controllers.mobile.WishListController.products()
 POST    /v1/mobile/cdn/retrieve                 controllers.mobile.CDNController.retrieve()
 POST    /v1/mobile/notification/register        controllers.mobile.NotificationController.register()
 POST    /v1/mobile/notification/list            controllers.mobile.NotificationController.listActions()

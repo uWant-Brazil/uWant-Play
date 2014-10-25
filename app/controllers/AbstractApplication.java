@@ -170,6 +170,13 @@ public class AbstractApplication extends Controller {
             public static final String EXCLUDE_SUCCESS = "user.exclude.success";
             public static final String REGISTER_SUCCESS = "user.register.success";
         }
+        public static final class WishList {
+            public static final String DELETE_SUCCESS = "wishlist.delete.success";
+            public static final String PRODUCTS_SUCCESS = "wishlist.products.success";
+            public static final String LIST_SUCCESS = "wishlist.list.success";
+            public static final String UPDATE_SUCCESS = "wishlist.update.success";
+            public static final String CREATE_SUCCESS = "wishlist.create.success";
+        }
     }
 
     /**

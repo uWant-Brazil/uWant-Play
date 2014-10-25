@@ -1,7 +1,5 @@
 package controllers.mobile;
 
-import com.amazonaws.util.json.JSONArray;
-import com.avaje.ebean.text.json.JsonElement;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
@@ -9,6 +7,7 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
+import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Result;
@@ -31,99 +30,58 @@ public class WishListController extends AbstractApplication {
      * Caso a lista já possua produtos vinculados, o mesmo serão salvos a partir de um relacionamento no BD.
      * @return JSON
      */
-    public static Result create() {
-        ObjectNode jsonResponse = Json.newObject();
-        try {
-            User user = authenticateToken();
-            if (user != null) {
-                if (UserUtil.isAvailable(user)) {
-                    JsonNode body = request().body().asJson();
-                    if (body != null) {
-                        if (body.hasNonNull(ParameterKey.TITLE) && body.hasNonNull(ParameterKey.DESCRIPTION)) {
-                            String title = body.get(ParameterKey.TITLE).asText();
-                            String description = body.get(ParameterKey.DESCRIPTION).asText();
+    public static F.Promise<Result> create() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+                        JsonNode body = request().body().asJson();
+                        if (body != null) {
+                            if (body.hasNonNull(ParameterKey.TITLE)
+                                    && body.hasNonNull(ParameterKey.DESCRIPTION)) {
+                                String title = body.get(ParameterKey.TITLE).asText();
+                                String description = body.get(ParameterKey.DESCRIPTION).asText();
 
-                            WishList wishList = new WishList();
-                            wishList.setTitle(title);
-                            wishList.setDescription(description);
-                            wishList.setUser(user);
-                            wishList.setStatus(WishList.Status.ACTIVE);
-                            wishList.setUUID(UUID.randomUUID().toString());
-                            wishList.save();
-                            wishList.refresh();
+                                WishList wishList = new WishList();
+                                wishList.setTitle(title);
+                                wishList.setDescription(description);
+                                wishList.setUser(user);
+                                wishList.setStatus(WishList.Status.ACTIVE);
+                                wishList.setUUID(UUID.randomUUID().toString());
+                                wishList.save();
+                                wishList.refresh();
 
-                            Map<Integer, Long> productIds = fillProducts(body, wishList);
+                                Map<Integer, Long> productIds = WishListUtil.fillProducts(body, wishList);
 
-                            wishList.refresh();
-                            ActionUtil.feed(wishList);
+                                wishList.refresh();
+                                ActionUtil.feed(wishList);
 
-                            jsonResponse.put(ParameterKey.STATUS, true);
-                            jsonResponse.put(ParameterKey.MESSAGE, "Lista de desejo (" + title + ") foi criada com sucesso.");
-                            jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.CREATE_SUCCESS));
+                                jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
+                            } else {
+                                throw new JSONBodyException();
+                            }
                         } else {
                             throw new JSONBodyException();
                         }
                     } else {
-                        throw new JSONBodyException();
+                        throw new AuthenticationException();
                     }
                 } else {
-                    throw new AuthenticationException();
+                    throw new TokenException();
                 }
-            } else {
-                throw new TokenException();
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
             }
-        } catch (UWException e) {
-            e.printStackTrace();
-            jsonResponse.put(ParameterKey.STATUS, false);
-            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
-            jsonResponse.put(ParameterKey.ERROR, e.getCode());
-        }
 
-        return ok(jsonResponse);
-    }
-
-    private static Map<Integer, Long> fillProducts(JsonNode body, WishList wishList) {
-        Map<Integer, Long> productIds = new HashMap<Integer, Long>(25);
-        if (body.hasNonNull(ParameterKey.PRODUCTS)) {
-            JsonNode products = body.get(ParameterKey.PRODUCTS);
-            if (products.isArray()) {
-                for(int i = 0; i < products.size(); i++) {
-                    JsonNode jsonProduct = products.get(i);
-                    if (jsonProduct.hasNonNull(ParameterKey.NAME) && jsonProduct.has(ParameterKey.NICK_NAME) && jsonProduct.has(ParameterKey.MANUFACTURER)) {
-                        Manufacturer manufacturer = null;
-
-                        JsonNode jsonManufacturer = jsonProduct.get(ParameterKey.MANUFACTURER);
-                        if (jsonManufacturer != null && jsonManufacturer.hasNonNull(ParameterKey.NAME)) {
-                            String name = jsonManufacturer.get(ParameterKey.NAME).asText();
-
-                            manufacturer = new Manufacturer();
-                            manufacturer.setName(name);
-                            manufacturer.save();
-                            manufacturer.refresh();
-                        }
-
-                        String name = jsonProduct.get(ParameterKey.NAME).asText();
-                        String nickName = jsonProduct.get(ParameterKey.NICK_NAME).asText();
-
-                        Product product = new Product();
-                        product.setName(name);
-                        product.setNickName(nickName);
-                        product.setManufacturer(manufacturer);
-                        product.save();
-                        product.refresh();
-
-                        productIds.put(i, product.getId());
-
-                        WishListProduct wishListProduct = new WishListProduct();
-                        wishListProduct.setProduct(product);
-                        wishListProduct.setWishList(wishList);
-                        wishListProduct.setStatus(WishListProduct.Status.ACTIVE);
-                        wishListProduct.save();
-                    }
-                }
-            }
-        }
-        return productIds;
+            return ok(jsonResponse);
+        });
     }
 
     /**
@@ -131,84 +89,86 @@ public class WishListController extends AbstractApplication {
      * Apenas os donos da lista de desejos podem efetuar tal ação.
      * @return JSON
      */
-    public static Result update() {
-        ObjectNode jsonResponse = Json.newObject();
-        try {
-            User user = authenticateToken();
-            if (user != null) {
-                if (UserUtil.isAvailable(user)) {
-                    JsonNode body = request().body().asJson();
-                    if (body != null) {
-                        if (body.hasNonNull(ParameterKey.ID)
-                                && body.hasNonNull(ParameterKey.TITLE)
-                                && body.hasNonNull(ParameterKey.DESCRIPTION)) {
-                            Long id = body.get(ParameterKey.ID).asLong();
-                            String title = body.get(ParameterKey.TITLE).asText();
-                            String description = body.get(ParameterKey.DESCRIPTION).asText();
+    public static F.Promise<Result> update() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+                        JsonNode body = request().body().asJson();
+                        if (body != null) {
+                            if (body.hasNonNull(ParameterKey.ID)
+                                    && body.hasNonNull(ParameterKey.TITLE)
+                                    && body.hasNonNull(ParameterKey.DESCRIPTION)) {
+                                Long id = body.get(ParameterKey.ID).asLong();
+                                String title = body.get(ParameterKey.TITLE).asText();
+                                String description = body.get(ParameterKey.DESCRIPTION).asText();
 
-                            FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<WishList> finder = factory.get(WishList.class);
-                            WishList wishList = finder.selectUnique(
-                                    new String[] { FinderKey.ID },
-                                    new Object[] { id });
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<WishList> finder = factory.get(WishList.class);
+                                WishList wishList = finder.selectUnique(
+                                        new String[]{FinderKey.ID},
+                                        new Object[]{id});
 
-                            if (wishList != null && WishListUtil.isOwner(wishList, user)) {
-                                WishList wishListUpdated = new WishList();
-                                wishListUpdated.setTitle(title);
-                                wishListUpdated.setDescription(description);
-                                wishListUpdated.update(wishList.getId());
-                                wishList.refresh();
+                                if (wishList != null && WishListUtil.isOwner(wishList, user)) {
+                                    WishList wishListUpdated = new WishList();
+                                    wishListUpdated.setTitle(title);
+                                    wishListUpdated.setDescription(description);
+                                    wishListUpdated.update(wishList.getId());
+                                    wishList.refresh();
 
-                                // Remove os produtos selecionados!
-                                if (body.hasNonNull(ParameterKey.PRODUCTS_REMOVED)) {
-                                    JsonNode jsonElement = body.get(ParameterKey.PRODUCTS_REMOVED);
-                                    if (jsonElement.isArray()) {
-                                        IFinder<Product> finderProduct = factory.get(Product.class);
-                                        for (int i = 0;i < jsonElement.size();i++) {
-                                            JsonNode node = jsonElement.get(i);
-                                            if (node.hasNonNull(ParameterKey.ID)) {
-                                                long productId = node.get(ParameterKey.ID).asLong(0);
-                                                Product product = finderProduct.selectUnique(productId);
-                                                if (product != null) {
-                                                    WishListProduct wp = product.getWishListProducts().get(0);
-                                                    WishListProduct wpUpdated = new WishListProduct();
-                                                    wpUpdated.setStatus(WishListProduct.Status.REMOVED);
-                                                    wpUpdated.update(wp.getId());
+                                    // Remove os produtos selecionados!
+                                    if (body.hasNonNull(ParameterKey.PRODUCTS_REMOVED)) {
+                                        JsonNode jsonElement = body.get(ParameterKey.PRODUCTS_REMOVED);
+                                        if (jsonElement.isArray()) {
+                                            IFinder<Product> finderProduct = factory.get(Product.class);
+                                            for (int i = 0; i < jsonElement.size(); i++) {
+                                                JsonNode node = jsonElement.get(i);
+                                                if (node.hasNonNull(ParameterKey.ID)) {
+                                                    long productId = node.get(ParameterKey.ID).asLong(0);
+                                                    Product product = finderProduct.selectUnique(productId);
+                                                    if (product != null) {
+                                                        WishListProduct wp = product.getWishListProducts().get(0);
+                                                        WishListProduct wpUpdated = new WishListProduct();
+                                                        wpUpdated.setStatus(WishListProduct.Status.REMOVED);
+                                                        wpUpdated.update(wp.getId());
+                                                    }
                                                 }
                                             }
                                         }
                                     }
+
+                                    // Adiciona os produtos novos!
+                                    Map<Integer, Long> productIds = WishListUtil.fillProducts(body, wishList);
+
+                                    jsonResponse.put(ParameterKey.STATUS, true);
+                                    jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.UPDATE_SUCCESS, title));
+                                    jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
+                                } else {
+                                    throw new WishListDontExistException();
                                 }
-
-                                // Adiciona os produtos novos!
-                                Map<Integer, Long> productIds = fillProducts(body, wishList);
-
-                                jsonResponse.put(ParameterKey.STATUS, true);
-                                jsonResponse.put(ParameterKey.MESSAGE, "A lista de desejos (" + title + ") foi editada com sucesso.");
-                                jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
                             } else {
-                                throw new WishListDontExistException();
+                                throw new JSONBodyException();
                             }
                         } else {
                             throw new JSONBodyException();
                         }
                     } else {
-                        throw new JSONBodyException();
+                        throw new AuthenticationException();
                     }
                 } else {
-                    throw new AuthenticationException();
+                    throw new TokenException();
                 }
-            } else {
-                throw new TokenException();
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
             }
-        } catch (UWException e) {
-            e.printStackTrace();
-            jsonResponse.put(ParameterKey.STATUS, false);
-            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
-            jsonResponse.put(ParameterKey.ERROR, e.getCode());
-        }
 
-        return ok(jsonResponse);
+            return ok(jsonResponse);
+        });
     }
 
     /**
@@ -216,155 +176,159 @@ public class WishListController extends AbstractApplication {
      * Os produtos deverão ser buscado em outra requsição - <link>getProductByWishList()</link>
      * @return JSON
      */
-    public static Result list() {
-        ObjectNode jsonResponse = Json.newObject();
-        try {
-            User user = authenticateToken();
-            if (user != null) {
-                if (UserUtil.isAvailable(user)) {
-                    JsonNode body = request().body().asJson();
-                    FinderFactory factory = FinderFactory.getInstance();
+    public static F.Promise<Result> list() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+                        JsonNode body = request().body().asJson();
+                        FinderFactory factory = FinderFactory.getInstance();
 
-                    long userId;
-                    if (body != null && body.has(ParameterKey.ID)) {
-                        userId = body.get(ParameterKey.ID).asLong();
+                        long userId;
+                        if (body != null && body.has(ParameterKey.ID)) {
+                            userId = body.get(ParameterKey.ID).asLong();
 
-                        FriendsCircle.FriendshipLevel fsl = UserUtil.getFriendshipLevel(user.getId(), userId);
-                        if ((userId != user.getId())
-                                && fsl != FriendsCircle.FriendshipLevel.MUTUAL) {
-                            throw new UnauthorizedOperationException();
+                            FriendsCircle.FriendshipLevel fsl = UserUtil.getFriendshipLevel(user.getId(), userId);
+                            if ((userId != user.getId())
+                                    && fsl != FriendsCircle.FriendshipLevel.MUTUAL) {
+                                throw new UnauthorizedOperationException();
+                            }
+
+                            jsonResponse.put(ParameterKey.FRIENDSHIP_LEVEL, fsl.ordinal());
+                        } else {
+                            userId = user.getId();
                         }
 
-                        jsonResponse.put(ParameterKey.FRIENDSHIP_LEVEL, fsl.ordinal());
-                    } else {
-                        userId = user.getId();
-                    }
+                        IFinder<WishList> finder = factory.get(WishList.class);
+                        List<WishList> wishLists = finder.selectAll(
+                                new String[]{FinderKey.USER_ID, FinderKey.STATUS},
+                                new Object[]{userId, WishList.Status.ACTIVE.ordinal()});
 
-                    IFinder<WishList> finder = factory.get(WishList.class);
-                    List<WishList> wishLists = finder.selectAll(
-                            new String[] { FinderKey.USER_ID , FinderKey.STATUS },
-                            new Object[] { userId, WishList.Status.ACTIVE.ordinal() });
-
-                    if (wishLists != null) {
-                        jsonResponse.put(ParameterKey.STATUS, true);
-                        jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
-                        jsonResponse.put(ParameterKey.WISHLIST, Json.toJson(wishLists));
+                        if (wishLists != null) {
+                            jsonResponse.put(ParameterKey.STATUS, true);
+                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.LIST_SUCCESS));
+                            jsonResponse.put(ParameterKey.WISHLIST, Json.toJson(wishLists));
+                        } else {
+                            throw new WishListDontExistException();
+                        }
                     } else {
-                        throw new WishListDontExistException();
+                        throw new AuthenticationException();
                     }
                 } else {
-                    throw new AuthenticationException();
+                    throw new TokenException();
                 }
-            } else {
-                throw new TokenException();
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
             }
-        } catch (UWException e) {
-            e.printStackTrace();
-            jsonResponse.put(ParameterKey.STATUS, false);
-            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
-            jsonResponse.put(ParameterKey.ERROR, e.getCode());
-        }
 
-        return ok(jsonResponse);
+            return ok(jsonResponse);
+        });
     }
 
     /**
      * Método responsável por retornar os produtos de uma lista de desejos.
      * @return JSON
      */
-    public static Result getProductsByWishList() {
-        ObjectNode jsonResponse = Json.newObject();
-        try {
-            User user = authenticateToken();
-            if (user != null) {
-                if (UserUtil.isAvailable(user)) {
-                    JsonNode body = request().body().asJson();
-                    if (body != null) {
+    public static F.Promise<Result> products() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+                        JsonNode body = request().body().asJson();
+                        if (body != null) {
+                            if (body.hasNonNull(ParameterKey.ID)) {
+                                Long id = body.get(ParameterKey.ID).asLong();
 
-                        if (body.hasNonNull(ParameterKey.ID)) {
-                            Long id = body.get(ParameterKey.ID).asLong();
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<WishList> finder = factory.get(WishList.class);
+                                WishList wishList = finder.selectUnique(
+                                        new String[]{FinderKey.ID},
+                                        new Object[]{id});
 
-                            FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<WishList> finder = factory.get(WishList.class);
-                            WishList wishList = finder.selectUnique(
-                                    new String[] { FinderKey.ID },
-                                    new Object[] { id });
+                                if (wishList != null) {
+                                    IFinder<WishListProduct> wlFinder = factory.get(WishListProduct.class);
+                                    List<WishListProduct> products = wlFinder.selectAll(
+                                            new String[]{FinderKey.WISHLIST_ID, FinderKey.STATUS},
+                                            new Object[]{wishList.getId(), WishListProduct.Status.ACTIVE.ordinal()});
 
-                            if (wishList != null) {
-                                IFinder<WishListProduct> wishlistProductIFinder = factory.get(WishListProduct.class);
-                                List<WishListProduct> products = wishlistProductIFinder.selectAll(
-                                        new String[] { FinderKey.WISHLIST_ID, FinderKey.STATUS },
-                                        new Object[] { wishList.getId(), WishListProduct.Status.ACTIVE.ordinal() });
+                                    List<ObjectNode> arrayProducts = null;
+                                    if (products != null) {
+                                        arrayProducts = new ArrayList<>(products.size() + 5);
 
-                                List<ObjectNode> arrayProducts = null;
-                                if (products != null) {
-                                    arrayProducts = new ArrayList<ObjectNode>(products.size() + 5);
+                                        for (WishListProduct wProduct : products) {
+                                            Product product = wProduct.getProduct();
 
-                                    for (WishListProduct wProduct : products) {
-                                        Product product = wProduct.getProduct();
+                                            long pId = product.getId();
+                                            String pName = product.getName();
+                                            String pNickName = product.getNickName();
 
-                                        long pId = product.getId();
-                                        String pName = product.getName();
-                                        String pNickName = product.getNickName();
+                                            ObjectNode jsonManufacturer = null;
+                                            Manufacturer manufacturer = product.getManufacturer();
+                                            if (manufacturer != null) {
+                                                long mId = manufacturer.getId();
+                                                String mName = manufacturer.getName();
 
-                                        ObjectNode jsonManufacturer = null;
-                                        Manufacturer manufacturer = product.getManufacturer();
-                                        if (manufacturer != null) {
-                                            long mId = manufacturer.getId();
-                                            String mName = manufacturer.getName();
+                                                jsonManufacturer = Json.newObject();
+                                                jsonManufacturer.put(ParameterKey.ID, mId);
+                                                jsonManufacturer.put(ParameterKey.NAME, mName);
+                                            }
 
-                                            jsonManufacturer = Json.newObject();
-                                            jsonManufacturer.put(ParameterKey.ID, mId);
-                                            jsonManufacturer.put(ParameterKey.NAME, mName);
+                                            ObjectNode jsonMultimedia = null;
+                                            Multimedia multimedia = product.getMultimedia();
+                                            if (multimedia != null) {
+                                                String fileName = multimedia.getFileName();
+                                                String url = multimedia.getUrl();
+
+                                                jsonMultimedia = Json.newObject();
+                                                jsonMultimedia.put(ParameterKey.FILENAME, fileName);
+                                                jsonMultimedia.put(ParameterKey.URL, url);
+                                            }
+
+                                            ObjectNode jsonProduct = Json.newObject();
+                                            jsonProduct.put(ParameterKey.ID, pId);
+                                            jsonProduct.put(ParameterKey.NAME, pName);
+                                            jsonProduct.put(ParameterKey.NICK_NAME, pNickName);
+                                            jsonProduct.put(ParameterKey.PICTURE, jsonMultimedia);
+                                            jsonProduct.put(ParameterKey.MANUFACTURER, jsonManufacturer);
+
+                                            arrayProducts.add(jsonProduct);
                                         }
-
-                                        ObjectNode jsonMultimedia = null;
-                                        Multimedia multimedia = product.getMultimedia();
-                                        if (multimedia != null) {
-                                            String fileName = multimedia.getFileName();
-                                            String url = multimedia.getUrl();
-
-                                            jsonMultimedia = Json.newObject();
-                                            jsonMultimedia.put(ParameterKey.FILENAME, fileName);
-                                            jsonMultimedia.put(ParameterKey.URL, url);
-                                        }
-
-                                        ObjectNode jsonProduct = Json.newObject();
-                                        jsonProduct.put(ParameterKey.ID, pId);
-                                        jsonProduct.put(ParameterKey.NAME, pName);
-                                        jsonProduct.put(ParameterKey.NICK_NAME, pNickName);
-                                        jsonProduct.put(ParameterKey.PICTURE, jsonMultimedia);
-                                        jsonProduct.put(ParameterKey.MANUFACTURER, jsonManufacturer);
-
-                                        arrayProducts.add(jsonProduct);
                                     }
-                                }
 
-                                jsonResponse.put(ParameterKey.STATUS, true);
-                                jsonResponse.put(ParameterKey.MESSAGE, "A consulta foi realizada com sucesso.");
-                                jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(arrayProducts));
+                                    jsonResponse.put(ParameterKey.STATUS, true);
+                                    jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.PRODUCTS_SUCCESS));
+                                    jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(arrayProducts));
+                                } else {
+                                    throw new WishListDontExistException();
+                                }
                             } else {
-                                throw new WishListDontExistException();
+                                throw new JSONBodyException();
                             }
                         } else {
                             throw new JSONBodyException();
                         }
+                    } else {
+                        throw new AuthenticationException();
+                    }
                 } else {
-                    throw new JSONBodyException();
+                    throw new TokenException();
                 }
-            } else {
-                throw new AuthenticationException();
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
             }
-        } else {
-            throw new TokenException();
-        }
-        } catch (UWException e) {
-            e.printStackTrace();
-            jsonResponse.put(ParameterKey.STATUS, false);
-            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
-            jsonResponse.put(ParameterKey.ERROR, e.getCode());
-        }
-        return ok(jsonResponse);
+
+            return ok(jsonResponse);
+        });
     }
 
     /**
@@ -372,52 +336,57 @@ public class WishListController extends AbstractApplication {
      * Apenas os donos da lista de desejos podem efetuar tal ação.
      * @return JSON
      */
-    public static Result delete() {
-        ObjectNode jsonResponse = Json.newObject();
-        try {
-            User user = authenticateToken();
-            if (user != null) {
-                if (UserUtil.isAvailable(user)) {
-                    JsonNode body = request().body().asJson();
-                    if (body != null) {
-                        if (body.hasNonNull(ParameterKey.ID)) {
-                            Long id = body.get(ParameterKey.ID).asLong();
+    public static F.Promise<Result> delete() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+                        JsonNode body = request().body().asJson();
+                        if (body != null) {
+                            if (body.hasNonNull(ParameterKey.ID)) {
+                                Long id = body.get(ParameterKey.ID).asLong();
 
-                            FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<WishList> finder = factory.get(WishList.class);
-                            WishList wishList = finder.selectUnique(new String[] { FinderKey.ID }, new Object[] { id });
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<WishList> finder = factory.get(WishList.class);
+                                WishList wishList = finder.selectUnique(
+                                        new String[]{FinderKey.ID},
+                                        new Object[]{id});
 
-                            if (wishList != null && WishListUtil.isOwner(wishList, user)) {
-                                String title = wishList.getTitle();
+                                if (wishList != null && WishListUtil.isOwner(wishList, user)) {
+                                    String title = wishList.getTitle();
 
-                                WishList wishListUpdated = new WishList();
-                                wishListUpdated.setStatus(WishList.Status.REMOVED);
-                                wishListUpdated.update(wishList.getId());
+                                    WishList wishListUpdated = new WishList();
+                                    wishListUpdated.setStatus(WishList.Status.REMOVED);
+                                    wishListUpdated.update(wishList.getId());
 
-                                jsonResponse.put(ParameterKey.STATUS, true);
-                                jsonResponse.put(ParameterKey.MESSAGE, "A lista de desejos (" + title + ") foi excluida com sucesso.");
+                                    jsonResponse.put(ParameterKey.STATUS, true);
+                                    jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.DELETE_SUCCESS, title));
+                                } else {
+                                    throw new WishListDontExistException();
+                                }
                             } else {
-                                throw new WishListDontExistException();
+                                throw new JSONBodyException();
                             }
                         } else {
                             throw new JSONBodyException();
                         }
                     } else {
-                        throw new JSONBodyException();
+                        throw new AuthenticationException();
                     }
                 } else {
-                    throw new AuthenticationException();
+                    throw new TokenException();
                 }
-            } else {
-                throw new TokenException();
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
             }
-        } catch (UWException e) {
-            e.printStackTrace();
-            jsonResponse.put(ParameterKey.STATUS, false);
-            jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
-            jsonResponse.put(ParameterKey.ERROR, e.getCode());
-        }
-        return ok(jsonResponse);
+
+            return ok(jsonResponse);
+        });
     }
 
 }
