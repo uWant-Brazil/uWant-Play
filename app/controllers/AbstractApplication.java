@@ -142,6 +142,11 @@ public class AbstractApplication extends Controller {
             public static final String TOGGLE_BLOCK_SUCCESS = "action.toogleblock.success";
             public static final String SHARE_SUCCESS = "action.share.success";
         }
+        public static final class Authentication {
+            public static final String RECOVERY_PASSWORD_SUCCESS = "authentication.recoverypassword.success";
+            public static final String LOGOFF_SUCCESS = "authentication.logoff.success";
+            public static final String AUTHORIZE_SUCCESS = "authentication.authorize.success";
+        }
     }
 
     /**

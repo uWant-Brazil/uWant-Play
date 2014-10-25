@@ -5,3 +5,7 @@ action.want.success=O feed foi 'wantado ou não' com sucesso.
 action.report.success=A denúncia foi registrada com sucesso.
 action.toogleblock.success=O usuário {0} foi (des)bloqueado com sucesso!
 action.share.success=O compartilhamento foi efetuado com sucesso.
+
+authentication.recoverypassword.success=Foi enviado um e-mail para voce redefinir a sua nova senha.
+authentication.logoff.success=O usuário saiu do sistema com sucesso.
+authentication.authorize.success=O usuário foi autenticado com sucesso.
