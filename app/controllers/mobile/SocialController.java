@@ -81,62 +81,18 @@ public class SocialController extends AbstractApplication {
                                     throw new AuthenticationException();
                                 }
                             } else {
-                                IFinder<SocialProfile.Login> finderLogin = factory.get(SocialProfile.Login.class);
-                                SocialProfile.Login login = finderLogin.selectUnique(new String[]{FinderKey.LOGIN}, new String[]{email});
+                                // Este usuario esta acessando o sistema pela primeira vez!
+                                // Registrando a rede social dele enquanto ele se registra no sistema...
+                                profile = new SocialProfile();
+                                profile.setAccessToken(accessToken);
+                                profile.setStatus(SocialProfile.Status.WAITING_REGISTRATION);
+                                profile.setProvider(provider);
+                                profile.setLogin(email);
+                                profile.save();
 
-                                if (login != null) {
-                                    profile = login.getProfile();
-                                    if (profile != null) {
-                                        profile.setAccessToken(accessToken);
-                                        profile.update();
-
-                                        User user = profile.getUser();
-                                        if (user == null) {
-                                            // Este usuario esta em processo de registro, mas nao finalizou ainda...
-                                            jsonResponse.put(ParameterKey.STATUS, true);
-                                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_WAITING_REGISTRATION_SUCCESS));
-                                            jsonResponse.put(ParameterKey.REGISTERED, false);
-                                        } else {
-                                            // Este usuario ja esta registrado no sistema.
-                                            // Efetuando rotina de autenticacao!
-                                            generateToken(user, Token.Target.MOBILE);
-
-                                            if (profile.getStatus() == SocialProfile.Status.REMOVED) {
-                                                profile.setUser(null); // Remove o antigo usuário da rede social vinculada.
-                                                profile.setStatus(SocialProfile.Status.WAITING_REGISTRATION);
-                                                profile.update();
-
-                                                jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_WAITING_REGISTRATION_SUCCESS));
-                                                jsonResponse.put(ParameterKey.REGISTERED, false);
-                                            } else {
-                                                jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_AUTHORIZE_SUCCESS));
-                                                jsonResponse.put(ParameterKey.REGISTERED, true);
-                                                jsonResponse.put(ParameterKey.USER, Json.toJson(user));
-                                            }
-
-                                            jsonResponse.put(ParameterKey.STATUS, true);
-                                        }
-                                    } else {
-                                        throw new UnknownException();
-                                    }
-                                } else {
-                                    // Este usuario esta acessando o sistema pela primeira vez!
-                                    // Registrando a rede social dele enquanto ele se registra no sistema...
-                                    profile = new SocialProfile();
-                                    profile.setAccessToken(accessToken);
-                                    profile.setStatus(SocialProfile.Status.WAITING_REGISTRATION);
-                                    profile.setProvider(provider);
-                                    profile.save();
-
-                                    login = new SocialProfile.Login();
-                                    login.setLogin(email);
-                                    login.setProfile(profile);
-                                    login.save();
-
-                                    jsonResponse.put(ParameterKey.STATUS, true);
-                                    jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_REGISTER_SUCCESS));
-                                    jsonResponse.put(ParameterKey.REGISTERED, false);
-                                }
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_REGISTER_SUCCESS));
+                                jsonResponse.put(ParameterKey.REGISTERED, false);
                             }
                         } else {
                             throw new JSONBodyException();
@@ -187,43 +143,31 @@ public class SocialController extends AbstractApplication {
                                         new Object[]{accessToken, provider, SocialProfile.Status.ACTIVE.ordinal()});
 
                                 if (profile != null) {
-                                    SocialUtil.unlink(jsonResponse, user, profile);
-                                } else {
-                                    IFinder<SocialProfile.Login> finderLogin = factory.get(SocialProfile.Login.class);
-                                    SocialProfile.Login login = finderLogin.selectUnique(new String[]{FinderKey.LOGIN}, new String[]{email});
-
-                                    if (login != null) {
-                                        profile = login.getProfile();
-                                        if (profile != null) {
-                                            SocialProfile.Provider socialProvider = profile.getProvider();
-                                            if (socialProvider == provider) {
-                                                switch (profile.getStatus()) {
-                                                    case ACTIVE:
-                                                        SocialUtil.unlink(jsonResponse, user, profile);
-                                                        break;
-
-                                                    case REMOVED:
-                                                        SocialUtil.link(jsonResponse, user, accessToken, email, provider);
-                                                        break;
-
-                                                    case WAITING_REGISTRATION:
-                                                    default:
-                                                        SocialProfile profileUpdated = new SocialProfile();
-                                                        profileUpdated.setStatus(SocialProfile.Status.REMOVED);
-                                                        profileUpdated.update(profile.getId());
-
-                                                        SocialUtil.link(jsonResponse, user, accessToken, email, provider);
-                                                        break;
-                                                }
-                                            } else {
-                                                SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+                                    switch (profile.getStatus()) {
+                                        case ACTIVE:
+                                            User userProfile = profile.getUser();
+                                            if (userProfile.getId() != user.getId()) {
+                                                throw new SocialProfileAlreadyExistException();
                                             }
-                                        } else {
-                                            throw new UnknownException();
-                                        }
-                                    } else {
-                                        SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+
+                                            SocialUtil.unlink(jsonResponse, user, profile);
+                                            break;
+
+                                        case REMOVED:
+                                            SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+                                            break;
+
+                                        case WAITING_REGISTRATION:
+                                        default:
+                                            SocialProfile profileUpdated = new SocialProfile();
+                                            profileUpdated.setStatus(SocialProfile.Status.REMOVED);
+                                            profileUpdated.update(profile.getId());
+
+                                            SocialUtil.link(jsonResponse, user, accessToken, email, provider);
+                                            break;
                                     }
+                                } else {
+                                    SocialUtil.link(jsonResponse, user, accessToken, email, provider);
                                 }
                             } else {
                                 throw new JSONBodyException();

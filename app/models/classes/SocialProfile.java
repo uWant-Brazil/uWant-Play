@@ -49,12 +49,7 @@ public class SocialProfile extends Model {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
-    /**
-     * Lista de logins registrados para esse perfil social. Esta informação será fornecida no ato de autenticação.
-     * Note que em alguns casos, o login poderá ser o próprio e-mail do usuário.
-     */
-    @OneToMany(mappedBy = "profile")
-    private List<Login> logins;
+    private String login;
 
     @Version
     @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
@@ -92,14 +87,6 @@ public class SocialProfile extends Model {
         return user;
     }
 
-    public List<Login> getLogins() {
-        return logins;
-    }
-
-    public void setLogins(List<Login> logins) {
-        this.logins = logins;
-    }
-
     public void setUser(User user) {
         this.user = user;
     }
@@ -120,50 +107,11 @@ public class SocialProfile extends Model {
         this.modifiedAt = modifiedAt;
     }
 
-    @Entity
-    @Table(name = "social_profile_logins")
-    @SequenceGenerator(name = SocialProfile.Login.SEQUENCE_NAME, sequenceName = SocialProfile.Login.SEQUENCE_NAME, initialValue = 1, allocationSize = 53)
-    public static class Login extends Model {
-
-        public static final String SEQUENCE_NAME = "social_profile_logins_id_seq";
-
-        @Id
-        @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
-        private long id;
-
-        private String login;
-
-        @ManyToOne(cascade = CascadeType.ALL)
-        @Column(name = "social_profile_id")
-        private SocialProfile profile;
-
-        public Login() {
-            // Do nothing...
-        }
-
-        public long getId() {
-            return id;
-        }
-
-        public void setId(long id) {
-            this.id = id;
-        }
-
-        public String getLogin() {
-            return login;
-        }
-
-        public void setLogin(String login) {
-            this.login = login;
-        }
-
-        public SocialProfile getProfile() {
-            return profile;
-        }
-
-        public void setProfile(SocialProfile profile) {
-            this.profile = profile;
-        }
+    public String getLogin() {
+        return login;
     }
 
+    public void setLogin(String login) {
+        this.login = login;
+    }
 }
