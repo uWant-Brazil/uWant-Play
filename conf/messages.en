@@ -14,3 +14,9 @@ cdn.retrieve.success=The multimedia file has been saved successfully.
 
 notification.listactions.success=The list of actions were successfully retrieved.
 notification.register.success=The mobile device was registered to {0}.
+
+social.unlink.success=The virtual user account has just been untied.
+social.link.success=The virtual user account has just been bound.
+social.signup.waitingregistration.success=This user has not made ??the registration in the system, but already has a social network bound.
+social.signup.authorize.success=This user already exists in the system. It is authenticated to access the system.
+social.signup.register.success=This user is new to the system, make a record of it.

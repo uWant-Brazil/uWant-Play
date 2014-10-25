@@ -153,6 +153,13 @@ public class AbstractApplication extends Controller {
             public static final String LIST_ACTIONS_SUCCESS = "notification.listactions.success";
             public static final String REGISTER_SUCCESS = "notification.register.success";
         }
+        public static final class Social {
+            public static final String LINK_SUCCESS = "social.link.success";
+            public static final String UNLINK_SUCCESS = "social.unlink.success";
+            public static final String SIGNUP_WAITING_REGISTRATION_SUCCESS = "social.signup.waitingregistration.success";
+            public static final String SIGNUP_REGISTER_SUCCESS = "social.signup.register.success";
+            public static final String SIGNUP_AUTHORIZE_SUCCESS = "social.signup.authorize.success";
+        }
     }
 
     /**

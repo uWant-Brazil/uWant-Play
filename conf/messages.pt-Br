@@ -14,3 +14,9 @@ cdn.retrieve.success=O arquivo multimídia foi salvo com sucesso.
 
 notification.listactions.success=A lista de ações foram recuperadas com sucesso.
 notification.register.success=O dispositivo móvel foi registrado para {0}.
+
+social.unlink.success=A conta virtual do usuário acaba de ser desvinculada.
+social.link.success=A conta virtual do usuário acaba de ser vinculada.
+social.signup.waitingregistration.success=Este usuário ainda não efetuou o cadastro no sistema, mas já possui a rede social vinculada.
+social.signup.authorize.success=Este usuário já existe no sistema. Ele está autenticado para acessar o sistema.
+social.signup.register.success=Este usuário é novo no sistema, efetue o registro do mesmo.
