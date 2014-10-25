@@ -16,10 +16,7 @@ import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
-import utils.DateUtil;
-import utils.NotificationUtil;
-import utils.RegexUtil;
-import utils.UserUtil;
+import utils.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -80,7 +77,7 @@ public class UserController extends AbstractApplication {
                             if (!alreadyExists) {
                                 User user = new User();
                                 user.setLogin(login);
-                                user.setPassword(password);
+                                user.setPassword(SecurityUtil.md5(password));
                                 user.setName(fullName);
                                 user.setMail(mail);
                                 user.setBirthday(birthday);

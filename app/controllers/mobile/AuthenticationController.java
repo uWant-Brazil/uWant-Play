@@ -15,6 +15,7 @@ import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
 import utils.RegexUtil;
+import utils.SecurityUtil;
 import utils.UserUtil;
 
 /**
@@ -41,6 +42,8 @@ public class AuthenticationController extends AbstractApplication {
                         User user = null;
                         if ((!login.isEmpty() && !password.isEmpty()) || (user = authenticateToken()) != null) {
                             if (user == null) {
+                                password = SecurityUtil.md5(password);
+
                                 FinderFactory factory = FinderFactory.getInstance();
                                 IFinder<User> finder = factory.get(User.class);
                                 user = finder.selectUnique(new String[]{FinderKey.LOGIN, FinderKey.PASSWORD}, new String[]{login, password});

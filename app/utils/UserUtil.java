@@ -12,6 +12,7 @@ import play.i18n.Messages;
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Classe utilitária para ações relacionadas ao usuário.
@@ -45,7 +46,7 @@ public abstract  class UserUtil {
             hash = confirmation.getHash();
         } else {
             try {
-                hash = MailUtil.generateHash();
+                hash = SecurityUtil.hash(UUID.randomUUID().toString());
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
@@ -140,7 +141,7 @@ public abstract  class UserUtil {
         String hash = null;
         final String mail = user.getMail();
         try {
-            hash = MailUtil.generateHash();
+            hash = SecurityUtil.hash(UUID.randomUUID().toString());
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         } catch (UnsupportedEncodingException e) {
@@ -152,6 +153,7 @@ public abstract  class UserUtil {
             userMailInteraction.setHash(hash == null ? String.valueOf(System.currentTimeMillis()) : hash);
             userMailInteraction.setMail(mail);
             userMailInteraction.setUser(user);
+            userMailInteraction.setCreatedAt(new Date());
             userMailInteraction.save();
 
             // TODO HTML para confirmação do e-mail do usuário.

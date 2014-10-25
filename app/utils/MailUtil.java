@@ -6,12 +6,7 @@ import models.exceptions.InvalidMailException;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Properties;
-import java.util.UUID;
 
 /**
  * Classe utilitária para ações relacionadas ao envio de e-mail no sistema.
@@ -27,9 +22,6 @@ public abstract class MailUtil {
      * Identificador dos conteúdos dos e-mails - envio de HTML.
      */
     private static final String CONTENT_TYPE = "text/html";
-
-    private static final String DIGEST_MODE = "MD5";
-    private static final String HASH_SECRET = "%1$032X";
 
     // Variáveis responsáveis pela configuração do envio de e-mail.
     private static final String MAIL_SMTP_HOST = "mail.smtp.host";
@@ -106,26 +98,6 @@ public abstract class MailUtil {
             }
         };
         thread.start();
-    }
-
-    /**
-     * Geração de hash em criptografia MD5.
-     * @return
-     * @throws NoSuchAlgorithmException
-     * @throws UnsupportedEncodingException
-     */
-    public static String generateHash() throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        String hash = UUID.randomUUID().toString();
-        try {
-            MessageDigest m = MessageDigest.getInstance(DIGEST_MODE);
-            m.update(hash.getBytes(), 0, hash.length());
-            BigInteger i = new BigInteger(1, m.digest());
-            hash = String.format(HASH_SECRET, i);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return hash;
     }
 
 }
