@@ -320,7 +320,7 @@ public abstract class ActionUtil {
         return actionsNode;
     }
 
-    private static ObjectNode getFeed(FinderFactory factory, Action action, User user) {
+    public static ObjectNode getFeed(FinderFactory factory, Action action, User user) {
         long id = action.getId();
         String message = action.toString();
         WishList wishList = action.getWishList();

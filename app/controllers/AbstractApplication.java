@@ -109,6 +109,7 @@ public class AbstractApplication extends Controller {
         public static final String LINKED = "linked";
         public static final String PRODUCTS_REMOVED = "productsRemoved";
         public static final String FACEBOOK_ID = "facebookId";
+        public static final String ACTION = "action";
     }
 
     /**

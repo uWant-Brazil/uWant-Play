@@ -120,8 +120,12 @@ public class ActionController extends AbstractApplication {
 
                             NotificationUtil.send(actionComment, userAction);
 
+                            action.refresh();
+
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.COMMENT_SUCCESS));
+                            jsonResponse.put(ParameterKey.COMMENTS, Json.toJson(action.getComments()));
+                            jsonResponse.put(ParameterKey.ACTION, ActionUtil.getFeed(factory, action, user));
                         } else {
                             throw new JSONBodyException();
                         }
