@@ -1,25 +1,30 @@
 @(title: String)(content: Html)
 
-<!DOCTYPE html>
-
+<!doctype html>
 <html>
-    <head>
-        <title>@title</title>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width">
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("/images/favicon.png")" />
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
-        <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
-        <script src="@routes.Assets.at("/javascripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    </head>
-    <body class="main-body">
-        <div class="main-header">
-            <nav class="main-header-nav row" style="align-content: center">
-                <a href="@controllers.routes.AbstractApplication.index()" class="col-md-3 col-md-offset-3"><img src="@routes.Assets.at("images/img_logo.png")"></a>
+<head>
+    <meta charset="utf-8">
+    <title>@title</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="@routes.Assets.at("/stylesheets/style.css")" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+    <link rel="stylesheet" media="screen" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+</head>
 
+<body>
+<div id="all">
+
+    <header>
+        <div id="center_header">
+            <a href="@controllers.routes.AbstractApplication.index()">
+                <img src="@routes.Assets.at("/images/img_logo.png")" id="logo" title="uWant - Sua rede social de desejos">
+            </a>
+
+            <div id="extras_topo">
                 <form class="navbar-form col-md-3" role="search">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Pesquisar" name="srch-term" id="srch-term">
@@ -29,20 +34,36 @@
                     </div>
                 </form>
 
-                <a href="@controllers.web.routes.AuthenticationController.authorizeView()" class="col-md-1">Entrar</a>
-            </nav>
+                <a href="@controllers.web.routes.AuthenticationController.authorizeView()">Entrar</a>
+            </div>
         </div>
+    </header>
             @content
-        <div class="main-footer">
-            <nav class="main-footer-nav">
-                <ul>
-                    <li><a href="#about">Sobre nós</a></li>
-                    <li><a href="#download">Download</a></li>
-                    <li><a href="#jobs">Empregos</a></li>
-                    <li><a href="#privacity">Privacidade</a></li>
-                    <li><a href="#terms">Termos</a></li>
-                </ul>
-            </nav>
+    <footer>
+        <div id="center_footer">
+            <ul>
+                <li>
+                    <a href="#">Sobre Nós</a>
+                </li>
+                <li>
+                    <a href="#">Download</a>
+                </li>
+                <li>
+                    <a href="#">Empregos</a>
+                </li>
+                <li>
+                    <a href="#">Privacidade</a>
+                </li>
+                <li>
+                    <a href="#">Termos</a>
+                </li>
+            </ul>
+
+            <p id="uWant">
+                &copy; 2014 uWant
+            </p>
         </div>
-    </body>
+    </footer>
+</div>
+</body>
 </html>
