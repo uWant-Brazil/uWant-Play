@@ -76,3 +76,14 @@ message.notification.want=sólo want su acción!
 
 message.mail.confirmation=uWant @ Correo electrónico de confirmación
 message.mail.recoverypassword=uWant @ Restablecer contraseña
+
+site.index.title=uWant @ Su red social deseos
+site.index.slogan=Llegó la forma más fácil de ordenar regalos.
+
+site.main.search=Búsqueda
+site.main.join=Login
+site.main.footer.about=Sobre Nosotros
+site.main.footer.download=Download
+site.main.footer.jobs=Empleos
+site.main.footer.privacy=Privacidad
+site.main.footer.terms=Condiciones

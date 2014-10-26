@@ -1,11 +1,11 @@
-@main("uWant @ Sua rede social de desejos") {
+@main(Messages.apply("site.index.title")) {
 <div id="container">
     <div id="container_center" style="background: url(@routes.Assets.at("/images/img_app.png")) left center no-repeat;">
         <a href="#" id="download">
-            Donwload
+            Download
         </a>
         <div id="slogan">
-            Chegou a forma mais fácil de pedir presentes.
+            @Messages.apply("site.index.slogan")
         </div>
         <a href="#">
             <img src="@routes.Assets.at("/images/img_gplay.png")" id="gplay" title="Baixe agora!">

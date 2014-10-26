@@ -76,3 +76,14 @@ message.notification.want=acaba de 'wantar' sua ação!
 
 message.mail.confirmation=uWant @ Confirmação de email
 message.mail.recoverypassword=uWant @ Recuperação de senha
+
+site.index.title=uWant @ Sua rede social de desejos
+site.index.slogan=Chegou a forma mais fácil de pedir presentes.
+
+site.main.search=Pesquisar
+site.main.join=Entrar
+site.main.footer.about=Sobre Nós
+site.main.footer.download=Download
+site.main.footer.jobs=Empregos
+site.main.footer.privacy=Privacidade
+site.main.footer.terms=Termos
