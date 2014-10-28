@@ -29,6 +29,7 @@ user.list.success=A consulta do perfil foi realizada com sucesso.
 user.search.success=A consulta foi realizada com sucesso.
 user.exclude.success=O usuário foi excluido com sucesso.
 user.register.success=O usuário ({0}) foi registrado com sucesso.
+user.update.success=O usuário ({0}) foi atualizado com sucesso.
 
 wishlist.delete.success=A lista de desejos ({0}) foi excluida com sucesso.
 wishlist.products.success=A consulta pelos produtos da lista de desejos foi realizada com sucesso.

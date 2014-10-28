@@ -29,6 +29,7 @@ user.list.success=The query profile was successful.
 user.search.success=The query was successful.
 user.exclude.success=The user was successfully deleted.
 user.register.success=User ({0}) was registered successfully.
+user.update.success=User ({0}) was updated successfully.
 
 wishlist.delete.success=The wishlist ({0}) was excluded successfully.
 wishlist.products.success=A consultation by the wish list product was successful.

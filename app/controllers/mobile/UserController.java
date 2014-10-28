@@ -140,6 +140,63 @@ public class UserController extends AbstractApplication {
     }
 
     /**
+     * Método responsável por atualizar o registro do usuário no sistema.
+     * @return JSON
+     */
+    @Security.Authenticated(MobileAuthenticator.class)
+    public static F.Promise<Result> update() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user;
+                if ((user = authenticateToken()) != null) {
+                    JsonNode body = request().body().asJson();
+                    if (body != null) {
+                        if (body.hasNonNull(ParameterKey.MAIL)) {
+                            String mail = body.get(ParameterKey.MAIL).asText();
+
+                            if (mail.isEmpty())
+                                throw new JSONBodyException();
+
+                            if (!RegexUtil.isValidMail(mail))
+                                throw new InvalidMailException();
+
+                            if (!UserUtil.alreadyExists(mail)) {
+                                User userUpdated = new User();
+                                userUpdated.setMail(mail);
+                                userUpdated.setStatus(User.Status.PARTIAL_ACTIVE);
+                                userUpdated.update(user.getId());
+                                user.refresh();
+
+                                UserUtil.confirmEmail(user, false);
+
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.User.UPDATE_SUCCESS));
+                                jsonResponse.put(ParameterKey.USER, Json.toJson(user));
+                            } else {
+                                throw new UserAlreadyExistException();
+                            }
+                        } else {
+                            throw new JSONBodyException();
+                        }
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new AuthenticationException();
+                }
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            }
+
+            return ok(jsonResponse);
+        });
+    }
+
+    /**
      * Método responsável por 'excluir' a conta do usuário.
      * Na verdade, será adicionado uma flag de REMOVED no User.class
      * @return JSON

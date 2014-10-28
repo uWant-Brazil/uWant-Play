@@ -94,6 +94,16 @@ public abstract  class UserUtil {
     }
 
     /**
+     * Método responsável por verificar se já existe algum usuário com o e-mail informado.
+     * @param email - E-mail do usuário
+     * @return true or false
+     * @throws UserAlreadyExistException
+     */
+    public static boolean alreadyExists(String email) throws UserAlreadyExistException {
+        return alreadyExists(null, email);
+    }
+
+    /**
      * Método responsável por verificar se já existe algum usuário com o login ou e-mail informado.
      * @param login - Login do usuário
      * @param email - E-mail do usuário
@@ -103,22 +113,26 @@ public abstract  class UserUtil {
     public static boolean alreadyExists(String login, String email) throws UserAlreadyExistException {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<User> finder = factory.get(User.class);
-
         User user;
-        user = finder.selectUnique(
-                new String[] { AbstractApplication.FinderKey.LOGIN },
-                new Object[] { login });
 
-        if (user != null) {
-            throw new UserAlreadyExistException();
+        if (login != null) {
+            user = finder.selectUnique(
+                    new String[]{AbstractApplication.FinderKey.LOGIN},
+                    new Object[]{login});
+
+            if (user != null) {
+                throw new UserAlreadyExistException();
+            }
         }
 
-        user = finder.selectUnique(
-                new String[] { AbstractApplication.FinderKey.MAIL },
-                new Object[] { email });
+        if (email != null) {
+            user = finder.selectUnique(
+                    new String[]{AbstractApplication.FinderKey.MAIL},
+                    new Object[]{email});
 
-        if (user != null) {
-            throw new UserAlreadyExistException();
+            if (user != null) {
+                throw new UserAlreadyExistException();
+            }
         }
 
         return false;
