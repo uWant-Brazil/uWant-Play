@@ -37,11 +37,9 @@ public class User extends Model implements IMobileUser {
     private String mail;
     private String name;
 
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_PATTERN)
     private Date birthday;
 
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_HOUR_PATTERN)
     private Date since;
 
@@ -58,7 +56,6 @@ public class User extends Model implements IMobileUser {
     private Status status;
 
     @Version
-    @Formats.DateTime(pattern="yyyy-MM-dd HH:mm:ss")
     private Date modifiedAt;
 
     @OneToMany(mappedBy="user", fetch = FetchType.LAZY)
@@ -92,7 +89,6 @@ public class User extends Model implements IMobileUser {
         this.password = password;
     }
 
-    @JsonIgnore
     public String getMail() {
         return mail;
     }

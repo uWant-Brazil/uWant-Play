@@ -161,20 +161,26 @@ public class UserController extends AbstractApplication {
                             if (!RegexUtil.isValidMail(mail))
                                 throw new InvalidMailException();
 
-                            if (!UserUtil.alreadyExists(mail)) {
-                                User userUpdated = new User();
-                                userUpdated.setMail(mail);
-                                userUpdated.setStatus(User.Status.PARTIAL_ACTIVE);
-                                userUpdated.update(user.getId());
-                                user.refresh();
-
-                                UserUtil.confirmEmail(user, false);
-
+                            if (user.getMail().equals(mail)) {
                                 jsonResponse.put(ParameterKey.STATUS, true);
                                 jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.User.UPDATE_SUCCESS));
                                 jsonResponse.put(ParameterKey.USER, Json.toJson(user));
                             } else {
-                                throw new UserAlreadyExistException();
+                                if (!UserUtil.alreadyExists(mail)) {
+                                    User userUpdated = new User();
+                                    userUpdated.setMail(mail);
+                                    userUpdated.setStatus(User.Status.PARTIAL_ACTIVE);
+                                    userUpdated.update(user.getId());
+                                    user.refresh();
+
+                                    UserUtil.confirmEmail(user, false);
+
+                                    jsonResponse.put(ParameterKey.STATUS, true);
+                                    jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.User.UPDATE_SUCCESS));
+                                    jsonResponse.put(ParameterKey.USER, Json.toJson(user));
+                                } else {
+                                    throw new UserAlreadyExistException();
+                                }
                             }
                         } else {
                             throw new JSONBodyException();
