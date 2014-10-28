@@ -51,6 +51,7 @@ public class SocialProfile extends Model {
 
     private String login;
 
+    @Column(nullable = true, unique = true)
     private String facebookId;
 
     @Version

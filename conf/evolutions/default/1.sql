@@ -126,6 +126,7 @@ create table social_profile (
   modified_at               timestamp not null,
   constraint ck_social_profile_provider check (provider in (0,1,2)),
   constraint ck_social_profile_status check (status in (0,1,2)),
+  constraint uq_social_profile_facebook_id unique (facebook_id),
   constraint pk_social_profile primary key (id))
 ;
 

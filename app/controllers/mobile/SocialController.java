@@ -37,53 +37,79 @@ public class SocialController extends AbstractApplication {
             ObjectNode jsonResponse = Json.newObject();
             try {
                 if (body != null) {
-                    if (body.hasNonNull(ParameterKey.TOKEN) && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER)) {
+                    if (body.hasNonNull(ParameterKey.TOKEN)
+                            && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER)
+                            && body.has(ParameterKey.FACEBOOK_ID)) {
                         String accessToken = body.get(ParameterKey.TOKEN).asText();
                         int providerOrdinal = body.get(ParameterKey.SOCIAL_PROVIDER).asInt();
 
                         SocialProfile.Provider[] providers = SocialProfile.Provider.values();
-                        if (!accessToken.isEmpty() && providerOrdinal >= 0 && providerOrdinal < providers.length) {
+                        if (!accessToken.isEmpty()
+                                && providerOrdinal >= 0 && providerOrdinal < providers.length) {
+                            String facebookId = body.get(ParameterKey.FACEBOOK_ID).asText();
                             String email = null;
                             if (body.has(ParameterKey.LOGIN)) {
                                 email = body.get(ParameterKey.LOGIN).asText();
-                            }
-
-                            String facebookId = null;
-                            if (body.has(ParameterKey.FACEBOOK_ID)) {
-                                facebookId = body.get(ParameterKey.FACEBOOK_ID).asText();
                             }
 
                             SocialProfile.Provider provider = providers[providerOrdinal];
 
                             FinderFactory factory = FinderFactory.getInstance();
                             IFinder<SocialProfile> finder = factory.get(SocialProfile.class);
+
                             SocialProfile profile = finder.selectUnique(
-                                    new String[]{FinderKey.TOKEN, FinderKey.SOCIAL_PROVIDER, FinderKey.STATUS},
-                                    new Object[]{accessToken, provider, SocialProfile.Status.ACTIVE.ordinal()});
+                                        new String[] { FinderKey.FACEBOOK_ID, FinderKey.SOCIAL_PROVIDER },
+                                        new Object[] { facebookId, provider });
 
                             if (profile != null) {
                                 User user = profile.getUser();
-                                if (user == null) {
-                                    // Este usuario esta em processo de registro, mas nao finalizou ainda...
-                                    jsonResponse.put(ParameterKey.STATUS, true);
-                                    jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_WAITING_REGISTRATION_SUCCESS));
-                                    jsonResponse.put(ParameterKey.REGISTERED, false);
-                                } else if (UserUtil.isAvailable(user)) {
-                                    // Este usuario ja esta registrado no sistema.
-                                    // Efetuando rotina de autenticacao!
-                                    generateToken(user, Token.Target.MOBILE);
+                                switch (profile.getStatus()) {
+                                    case ACTIVE:
+                                        if (user != null
+                                                && UserUtil.isAvailable(user)) {
+                                            // Este usuario ja esta registrado no sistema.
+                                            // Efetuando rotina de autenticacao!
+                                            generateToken(user, Token.Target.MOBILE);
 
-                                    if (profile.getStatus() == SocialProfile.Status.REMOVED) {
-                                        profile.setStatus(SocialProfile.Status.ACTIVE);
-                                        profile.update();
-                                    }
+                                            jsonResponse.put(ParameterKey.STATUS, true);
+                                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_AUTHORIZE_SUCCESS));
+                                            jsonResponse.put(ParameterKey.REGISTERED, true);
+                                            jsonResponse.put(ParameterKey.USER, Json.toJson(user));
+                                        } else {
+                                            throw new AuthenticationException();
+                                        }
+                                        break;
 
-                                    jsonResponse.put(ParameterKey.STATUS, true);
-                                    jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_AUTHORIZE_SUCCESS));
-                                    jsonResponse.put(ParameterKey.REGISTERED, true);
-                                    jsonResponse.put(ParameterKey.USER, Json.toJson(user));
-                                } else {
-                                    throw new AuthenticationException();
+                                    case REMOVED:
+                                        if (user != null
+                                                && UserUtil.isAvailable(user)) {
+                                            SocialProfile profileUpdated = new SocialProfile();
+                                            profileUpdated.setStatus(SocialProfile.Status.ACTIVE);
+                                            profileUpdated.setAccessToken(accessToken);
+                                            profileUpdated.setLogin(email);
+                                            profileUpdated.setProvider(provider);
+                                            profileUpdated.setUser(user);
+                                            profileUpdated.update(profile.getId());
+
+                                            generateToken(user, Token.Target.MOBILE);
+
+                                            jsonResponse.put(ParameterKey.STATUS, true);
+                                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_AUTHORIZE_SUCCESS));
+                                            jsonResponse.put(ParameterKey.REGISTERED, true);
+                                            jsonResponse.put(ParameterKey.USER, Json.toJson(user));
+                                        } else {
+                                            throw new AuthenticationException();
+                                        }
+                                        break;
+
+                                    case WAITING_REGISTRATION:
+                                        jsonResponse.put(ParameterKey.STATUS, true);
+                                        jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Social.SIGNUP_WAITING_REGISTRATION_SUCCESS));
+                                        jsonResponse.put(ParameterKey.REGISTERED, false);
+                                        break;
+
+                                    default:
+                                        throw new AuthenticationException();
                                 }
                             } else {
                                 // Este usuario esta acessando o sistema pela primeira vez!
@@ -129,29 +155,29 @@ public class SocialController extends AbstractApplication {
                 if (user != null && UserUtil.isAvailable(user)) {
                     JsonNode body = request().body().asJson();
                     if (body != null) {
-                        if (body.hasNonNull(ParameterKey.TOKEN) && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER)) {
+                        if (body.hasNonNull(ParameterKey.TOKEN)
+                                && body.hasNonNull(ParameterKey.SOCIAL_PROVIDER)
+                                && body.has(ParameterKey.FACEBOOK_ID)) {
                             String accessToken = body.get(ParameterKey.TOKEN).asText();
                             int providerOrdinal = body.get(ParameterKey.SOCIAL_PROVIDER).asInt();
 
                             SocialProfile.Provider[] providers = SocialProfile.Provider.values();
-                            if (!accessToken.isEmpty() && providerOrdinal >= 0 && providerOrdinal < providers.length) {
+                            if (!accessToken.isEmpty()
+                                    && providerOrdinal >= 0 && providerOrdinal < providers.length) {
+                                String facebookId = body.get(ParameterKey.FACEBOOK_ID).asText();
                                 String email = null;
                                 if (body.has(ParameterKey.LOGIN)) {
                                     email = body.get(ParameterKey.LOGIN).asText();
-                                }
-
-                                String facebookId = null;
-                                if (body.has(ParameterKey.FACEBOOK_ID)) {
-                                    facebookId = body.get(ParameterKey.FACEBOOK_ID).asText();
                                 }
 
                                 SocialProfile.Provider provider = providers[providerOrdinal];
 
                                 FinderFactory factory = FinderFactory.getInstance();
                                 IFinder<SocialProfile> finder = factory.get(SocialProfile.class);
+
                                 SocialProfile profile = finder.selectUnique(
-                                        new String[]{FinderKey.TOKEN, FinderKey.SOCIAL_PROVIDER, FinderKey.STATUS},
-                                        new Object[]{accessToken, provider, SocialProfile.Status.ACTIVE.ordinal()});
+                                        new String[] { FinderKey.FACEBOOK_ID, FinderKey.SOCIAL_PROVIDER },
+                                        new Object[] { facebookId, provider });
 
                                 if (profile != null) {
                                     switch (profile.getStatus()) {
@@ -165,16 +191,19 @@ public class SocialController extends AbstractApplication {
                                             break;
 
                                         case REMOVED:
-                                            SocialUtil.link(jsonResponse, user, accessToken, email, facebookId, provider);
-                                            break;
-
                                         case WAITING_REGISTRATION:
                                         default:
                                             SocialProfile profileUpdated = new SocialProfile();
-                                            profileUpdated.setStatus(SocialProfile.Status.REMOVED);
+                                            profileUpdated.setStatus(SocialProfile.Status.ACTIVE);
+                                            profileUpdated.setAccessToken(accessToken);
+                                            profileUpdated.setLogin(email);
+                                            profileUpdated.setProvider(provider);
+                                            profileUpdated.setUser(user);
                                             profileUpdated.update(profile.getId());
 
-                                            SocialUtil.link(jsonResponse, user, accessToken, email, facebookId, provider);
+                                            jsonResponse.put(AbstractApplication.ParameterKey.STATUS, true);
+                                            jsonResponse.put(AbstractApplication.ParameterKey.MESSAGE, Messages.get(AbstractApplication.MessageKey.Social.LINK_SUCCESS));
+                                            jsonResponse.put(AbstractApplication.ParameterKey.LINKED, true);
                                             break;
                                     }
                                 } else {
