@@ -65,6 +65,7 @@ public class Multimedia extends Model {
         this.cdn = cdn;
     }
 
+    @JsonIgnore
     public Date getModifiedAt() {
         return modifiedAt;
     }

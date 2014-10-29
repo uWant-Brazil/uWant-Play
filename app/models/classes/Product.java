@@ -88,6 +88,7 @@ public class Product extends Model{
         this.multimedia = multimedia;
     }
 
+    @JsonIgnore
     public Date getModifiedAt() {
         return modifiedAt;
     }

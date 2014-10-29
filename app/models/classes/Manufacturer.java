@@ -1,5 +1,6 @@
 package models.classes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import play.data.format.Formats;
 import play.db.ebean.Model;
 
@@ -45,6 +46,7 @@ public class Manufacturer extends Model{
         this.name = name;
     }
 
+    @JsonIgnore
     public List<Product> getProducts() {
         return products;
     }
@@ -53,6 +55,7 @@ public class Manufacturer extends Model{
         this.products = products;
     }
 
+    @JsonIgnore
     public Date getModifiedAt() {
         return modifiedAt;
     }

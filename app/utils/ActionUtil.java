@@ -22,7 +22,7 @@ import java.util.List;
  */
 public abstract class ActionUtil {
 
-    private static final String CONST_LIST_FRIENDS_FEEDS_SQL = "SELECT id AS target_id FROM users WHERE id IN (SELECT fc1.target_id FROM friends_circle fc1 INNER JOIN friends_circle fc2 ON fc2.target_id = fc1.requester_id AND fc2.requester_id = fc1.target_id INNER JOIN users u ON u.id = fc1.target_id WHERE fc1.requester_id = :user_id AND fc1.is_blocked = false) AND status = 0";
+    private static final String CONST_LIST_FRIENDS_FEEDS_SQL = "SELECT id AS target_id FROM users WHERE id IN (SELECT fc1.target_id FROM friends_circle fc1 INNER JOIN friends_circle fc2 ON fc2.target_id = fc1.requester_id AND fc2.requester_id = fc1.target_id INNER JOIN users u ON u.id = fc1.target_id WHERE fc1.requester_id = :user_id AND fc1.is_blocked = false) AND status IN (:status_1,:status_2)";
 
     private static final char CHAR_SPACE = ' ';
     private static final char CHAR_DOT = '.';
@@ -283,6 +283,8 @@ public abstract class ActionUtil {
     public static List<ObjectNode> listFriendsFeeds(final User user, final int startIndex, final int endIndex) {
         SqlQuery query = Ebean.createSqlQuery(CONST_LIST_FRIENDS_FEEDS_SQL);
         query.setParameter(AbstractApplication.FinderKey.USER_ID, user.getId());
+        query.setParameter(AbstractApplication.FinderKey.STATUS_1, User.Status.ACTIVE.ordinal());
+        query.setParameter(AbstractApplication.FinderKey.STATUS_2, User.Status.PARTIAL_ACTIVE.ordinal());
 
         List<ObjectNode> actionsNode = null;
         List<SqlRow> rows = query.findList();
@@ -352,13 +354,13 @@ public abstract class ActionUtil {
                 new Object[] { action.getId(), user.getId() })
                 != null;
 
-        List<Multimedia> nodesProducts = new ArrayList<>();
+        List<Product> nodesProducts = new ArrayList<>();
         if (wishListProducts != null) {
             for (WishListProduct product : wishListProducts) {
                 if (product.getStatus() == WishListProduct.Status.ACTIVE) {
                     Multimedia multimedia = product.getProduct().getMultimedia();
                     if (multimedia != null) {
-                        nodesProducts.add(multimedia);
+                        nodesProducts.add(product.getProduct());
                     }
                 }
             }
@@ -366,7 +368,7 @@ public abstract class ActionUtil {
 
         ObjectNode nodeWishList = Json.newObject();
         nodeWishList.put(AbstractApplication.ParameterKey.ID, wishList.getId());
-        nodeWishList.put(AbstractApplication.ParameterKey.MULTIMEDIAS, Json.toJson(nodesProducts));
+        nodeWishList.put(AbstractApplication.ParameterKey.PRODUCTS, Json.toJson(nodesProducts));
 
         User actionUser = action.getUser();
         ObjectNode nodeUser = Json.newObject();

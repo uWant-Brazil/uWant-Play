@@ -138,6 +138,8 @@ public class AbstractApplication extends Controller {
         public static final String IDENTIFIER = "identifier";
         public static final String UUID = "uuid";
         public static final String FACEBOOK_ID = "facebook_id";
+        public static final String STATUS_1 = "status_1";
+        public static final String STATUS_2 = "status_2";
     }
 
     public static class MessageKey {
