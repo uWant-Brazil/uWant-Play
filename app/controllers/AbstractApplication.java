@@ -160,6 +160,7 @@ public class AbstractApplication extends Controller {
             public static final String RECOVERY_PASSWORD_SUCCESS = "authentication.recoverypassword.success";
             public static final String LOGOFF_SUCCESS = "authentication.logoff.success";
             public static final String AUTHORIZE_SUCCESS = "authentication.authorize.success";
+            public static final String AUTHORIZE_FAIL = "authentication.authorize.fail";
         }
         public static final class CDN {
             public static final String RETRIEVE_SUCCESS = "cdn.retrieve.success";
@@ -260,7 +261,11 @@ public class AbstractApplication extends Controller {
 
         saveToken(token, user, target);
 
-        response().setHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN, token);
+        if (target == Token.Target.MOBILE) {
+            response().setHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN, token);
+        } else {
+            session(HeaderKey.HEADER_AUTHENTICATION_TOKEN, token);
+        }
     }
 
     /**
@@ -306,6 +311,7 @@ public class AbstractApplication extends Controller {
 
         if (token != null) {
             Cache.remove(tokenContent);
+            session().remove(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
             token.refresh();
             token.delete();
             user.refresh();

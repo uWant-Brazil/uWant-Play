@@ -47,3 +47,4 @@ POST    /v1/web/admin/notification/:id          controllers.web.NotificationCont
 GET     /v1/web/wishlist                        controllers.web.WishListController.view()
 GET     /v1/web/authorize                       controllers.web.AuthenticationController.authorizeView()
 POST    /v1/web/authorize                       controllers.web.AuthenticationController.authorize()
+POST    /v1/web/register                        controllers.web.UserController.register()

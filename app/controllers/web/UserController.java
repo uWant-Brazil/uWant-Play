@@ -9,6 +9,7 @@ import models.database.IFinder;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import play.filters.csrf.RequireCSRFCheck;
+import play.libs.F;
 import play.mvc.Result;
 import utils.UserUtil;
 import views.html.recoveryPassword;
@@ -164,6 +165,11 @@ public class UserController extends AbstractApplication {
         } else {
             return unauthorized(unauthorized.render("Ocorreu um erro inesperado. Entre em contato com o suporte!"));
         }
+    }
+
+    @RequireCSRFCheck
+    public static F.Promise<Result> register() {
+        return F.Promise.<Result>pure(ok());
     }
 
 }
