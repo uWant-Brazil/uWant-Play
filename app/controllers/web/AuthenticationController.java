@@ -3,7 +3,11 @@ package controllers.web;
 import controllers.AbstractApplication;
 import models.classes.Token;
 import models.classes.User;
-import models.cloud.models.AuthenticationViewModel;
+import models.classes.WishList;
+import models.cloud.forms.MultimediaViewModel;
+import models.cloud.forms.ProductViewModel;
+import models.cloud.forms.UserViewModel;
+import models.cloud.forms.WishListViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import play.data.Form;
@@ -13,6 +17,8 @@ import play.libs.F;
 import play.mvc.Result;
 import utils.SecurityUtil;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,14 +27,14 @@ import java.util.concurrent.TimeUnit;
 public class AuthenticationController extends AbstractApplication {
 
     public static F.Promise<Result> authorizeView() {
-        return F.Promise.<Result>pure(ok(views.html.authentication.render(Form.form(AuthenticationViewModel.class))));
+        return F.Promise.<Result>pure(ok(views.html.authentication.render(Form.form(UserViewModel.class))));
     }
 
     @RequireCSRFCheck
     public static F.Promise<Result> authorize() {
-        Form<AuthenticationViewModel> form = Form.<AuthenticationViewModel>form(AuthenticationViewModel.class).bindFromRequest();
+        Form<UserViewModel> form = Form.<UserViewModel>form(UserViewModel.class).bindFromRequest();
         if (isValidForm(form)) {
-            final AuthenticationViewModel model = form.get();
+            final UserViewModel model = form.get();
 
             return F.Promise.<Result>promise(() -> {
                 FinderFactory factory = FinderFactory.getInstance();
@@ -41,7 +47,28 @@ public class AuthenticationController extends AbstractApplication {
                     return invalidWebSession(Messages.get(MessageKey.Authentication.AUTHORIZE_FAIL)).get(5, TimeUnit.MINUTES);
                 } else {
                     generateToken(user, Token.Target.WEB);
-                    return ok(views.html.perfil.render(user));
+
+                    List<WishList> wishLists = user.getWishList();
+
+                    UserViewModel userVM = new UserViewModel(user);
+                    List<MultimediaViewModel> randomVM = new ArrayList<MultimediaViewModel>(10);
+                    List<WishListViewModel> wishlistsVM = new ArrayList<WishListViewModel>(10);
+
+                    for (WishList wishList : wishLists) {
+                        if (wishList.getStatus() == WishList.Status.ACTIVE) {
+                            wishlistsVM.add(new WishListViewModel(wishList));
+                        }
+                    }
+
+                    int range = wishlistsVM.size() > 8 ? 8 : 1;
+                    for (WishListViewModel wlvm : wishlistsVM) {
+                        List<ProductViewModel> psvm = wlvm.getProducts();
+                        for (ProductViewModel pvm : psvm) {
+
+                        }
+                    }
+
+                    return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM));
                 }
             });
         } else {

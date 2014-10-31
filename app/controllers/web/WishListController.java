@@ -2,7 +2,7 @@ package controllers.web;
 
 import controllers.AbstractApplication;
 import models.classes.WishList;
-import models.cloud.models.WishListViewModel;
+import models.cloud.forms.WishListViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import play.data.Form;
