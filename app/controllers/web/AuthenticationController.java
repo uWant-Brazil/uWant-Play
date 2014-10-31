@@ -10,6 +10,7 @@ import models.cloud.forms.UserViewModel;
 import models.cloud.forms.WishListViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
+import play.api.mvc.Call;
 import play.data.Form;
 import play.filters.csrf.RequireCSRFCheck;
 import play.i18n.Messages;
@@ -48,27 +49,7 @@ public class AuthenticationController extends AbstractApplication {
                 } else {
                     generateToken(user, Token.Target.WEB);
 
-                    List<WishList> wishLists = user.getWishList();
-
-                    UserViewModel userVM = new UserViewModel(user);
-                    List<MultimediaViewModel> randomVM = new ArrayList<MultimediaViewModel>(10);
-                    List<WishListViewModel> wishlistsVM = new ArrayList<WishListViewModel>(10);
-
-                    for (WishList wishList : wishLists) {
-                        if (wishList.getStatus() == WishList.Status.ACTIVE) {
-                            wishlistsVM.add(new WishListViewModel(wishList));
-                        }
-                    }
-
-                    int range = wishlistsVM.size() > 8 ? 8 : 1;
-                    for (WishListViewModel wlvm : wishlistsVM) {
-                        List<ProductViewModel> psvm = wlvm.getProducts();
-                        for (ProductViewModel pvm : psvm) {
-
-                        }
-                    }
-
-                    return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM));
+                    return redirect(controllers.web.routes.UserController.perfil(user.getLogin()));
                 }
             });
         } else {

@@ -4,21 +4,27 @@ import controllers.AbstractApplication;
 import models.classes.Token;
 import models.classes.User;
 import models.classes.UserMailInteraction;
+import models.classes.WishList;
+import models.cloud.forms.MultimediaViewModel;
+import models.cloud.forms.ProductViewModel;
+import models.cloud.forms.UserViewModel;
+import models.cloud.forms.WishListViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
+import models.exceptions.UWException;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
 import play.filters.csrf.RequireCSRFCheck;
 import play.libs.F;
 import play.mvc.Result;
 import utils.UserUtil;
+import utils.WishListUtil;
 import views.html.recoveryPassword;
 import views.html.unauthorized;
 import views.html.confirmMail;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Controlador responsável pelo tratamento de requisições web referentes a interações com o usuário.
@@ -170,6 +176,42 @@ public class UserController extends AbstractApplication {
     @RequireCSRFCheck
     public static F.Promise<Result> register() {
         return F.Promise.<Result>pure(ok());
+    }
+
+    public static F.Promise<Result> perfil(String login) {
+        return F.Promise.<Result>promise(() -> {
+            try {
+                User user = authenticateSession();
+                boolean isMe = user.getLogin().equalsIgnoreCase(login);
+
+                UserViewModel userVM = UserUtil.getPerfilUser(user, login, isMe);
+                List<WishListViewModel> wishlistsVM = WishListUtil.getPerfilWishList(user, login, isMe);
+
+                List<MultimediaViewModel> randomAuxVM = new ArrayList<MultimediaViewModel>(10);
+                for (WishListViewModel wlvm : wishlistsVM) {
+                    List<ProductViewModel> psvm = wlvm.getProducts();
+                    for (ProductViewModel pvm : psvm) {
+                        randomAuxVM.add(pvm.getMultimedia());
+                    }
+                }
+
+                Random random = new Random();
+                int range = randomAuxVM.size() >= 8 ? 8 : randomAuxVM.size();
+                List<MultimediaViewModel> randomVM = new ArrayList<MultimediaViewModel>(10);
+                while (range > 0 && randomAuxVM.size() > 0) {
+                    int randomIndex = random.nextInt(randomAuxVM.size() + 1);
+                    MultimediaViewModel mvm = randomAuxVM.get(randomIndex);
+                    randomAuxVM.remove(randomIndex);
+                    randomVM.add(mvm);
+                    range--;
+                }
+
+                return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM));
+            } catch (UWException e) {
+                e.printStackTrace();
+                return invalidWebSession().get(5, TimeUnit.MINUTES);
+            }
+        });
     }
 
 }

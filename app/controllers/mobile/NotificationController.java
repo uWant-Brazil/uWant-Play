@@ -55,7 +55,7 @@ public class NotificationController extends AbstractApplication {
                             Mobile mobile = finder.selectUnique(new String[]{FinderKey.IDENTIFIER}, new Object[]{identifier});
 
                             String tokenContent = getTokenAtHeader();
-                            Token token = listToken(tokenContent);
+                            Token token = listToken(tokenContent, Token.Target.MOBILE);
                             Mobile.OS os = oses[osId];
 
                             if (mobile == null) {

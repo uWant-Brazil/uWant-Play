@@ -2,6 +2,7 @@ package utils;
 
 import controllers.AbstractApplication;
 import models.classes.*;
+import models.cloud.forms.UserViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.InvalidMailException;
@@ -275,4 +276,12 @@ public abstract  class UserUtil {
         return isFriends;
     }
 
+    public static UserViewModel getPerfilUser(User user, String login, boolean isMe) {
+        if (!isMe) {
+            FinderFactory factory = FinderFactory.getInstance();
+            IFinder<User> finder = factory.get(User.class);
+            user = finder.selectUnique(new String[] {AbstractApplication.FinderKey.LOGIN}, new Object[] {login});
+        }
+        return new UserViewModel(user);
+    }
 }
