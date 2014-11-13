@@ -12,6 +12,7 @@ import models.database.FinderFactory;
 import models.database.IFinder;
 import play.api.mvc.Call;
 import play.data.Form;
+import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
 import play.i18n.Messages;
 import play.libs.F;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class AuthenticationController extends AbstractApplication {
 
+    @AddCSRFToken
     public static F.Promise<Result> authorizeView() {
         return F.Promise.<Result>pure(ok(views.html.authentication.render(Form.form(UserViewModel.class))));
     }

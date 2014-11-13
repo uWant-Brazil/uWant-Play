@@ -6,7 +6,7 @@
 <div id="container">
     <div id="cadastro">
         @form(action = controllers.web.routes.UserController.register(), 'id -> "form_registro") {
-            <!--@CSRF.formField-->
+            @CSRF.formField
             <h1>@Messages.apply("authentication.register.title")</h1>
 
             <img src="@routes.Assets.at("/images/ic_semfoto.png")">
@@ -15,8 +15,8 @@
 
     <div id="login">
         @form(action = controllers.web.routes.AuthenticationController.authorize(), 'id -> "form_login") {
+            @CSRF.formField
             <h1>@Messages.apply("authentication.login.title")</h1>
-            <!--@CSRF.formField-->
         }
     </div>
 </div>
