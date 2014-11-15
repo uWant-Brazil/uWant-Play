@@ -52,6 +52,9 @@ public class ActionController extends AbstractApplication {
                         List<ObjectNode> actions;
                         if (body.hasNonNull(ParameterKey.USER_ID)) {
                             long userId = body.get(ParameterKey.USER_ID).asLong(Long.MIN_VALUE);
+                            if (userId == 0)
+                                userId = user.getId();
+
                             actions = ActionUtil.listUserFeeds(user, userId, startIndex, endIndex);
                         } else if (body.hasNonNull(ParameterKey.WISHLIST_ID)) {
                             long wishListId = body.get(ParameterKey.WISHLIST_ID).asLong(Long.MIN_VALUE);

@@ -195,6 +195,9 @@ public abstract  class UserUtil {
      * @return level - FriendCircle.Level
      */
     public static FriendsCircle.FriendshipLevel getFriendshipLevel(long meId, long youId) {
+        if (meId == youId)
+            return FriendsCircle.FriendshipLevel.MUTUAL;
+
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
         FriendsCircle friendsCircleMe = finderCircle.selectUnique(
