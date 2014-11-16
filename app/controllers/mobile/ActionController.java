@@ -1,9 +1,5 @@
 package controllers.mobile;
 
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.Expr;
-import com.avaje.ebean.SqlQuery;
-import com.avaje.ebean.SqlRow;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
@@ -17,7 +13,9 @@ import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
-import utils.*;
+import utils.ActionUtil;
+import utils.NotificationUtil;
+import utils.UserUtil;
 
 import java.util.ArrayList;
 import java.util.Date;

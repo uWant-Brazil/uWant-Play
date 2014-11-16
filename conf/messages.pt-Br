@@ -32,6 +32,13 @@ user.search.success=A consulta foi realizada com sucesso.
 user.exclude.success=O usuário foi excluido com sucesso.
 user.register.success=O usuário ({0}) foi registrado com sucesso.
 user.update.success=O usuário ({0}) foi atualizado com sucesso.
+user.confirm.mail.success=Olá {0}, o seu endereço de e-mail ({1}) foi confirmado com sucesso!
+user.confirm.mail.expire=Esta ação expirou! Estaremos encaminhando uma nova confirmação para o e-mail cadastrado.
+user.confirm.mail.invalid=Não existe nenhuma solicitação para confirmação de e-mail...
+user.recovery.password.warning=Não se esqueça da sua senha!
+user.recovery.password.expire=A sua solicitação de alteração de senha expirou!
+user.recovery.password.invalid=Não existe nenhuma solicitação para alteração de senha...
+user.recovery.password.success=A sua senha foi redefinida com sucesso!
 
 wishlist.delete.success=A lista de desejos ({0}) foi excluida com sucesso.
 wishlist.products.success=A consulta pelos produtos da lista de desejos foi realizada com sucesso.
@@ -90,3 +97,4 @@ site.main.footer.download=Download
 site.main.footer.jobs=Empregos
 site.main.footer.privacy=Privacidade
 site.main.footer.terms=Termos
+

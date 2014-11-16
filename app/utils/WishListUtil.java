@@ -30,6 +30,12 @@ public abstract class WishListUtil {
                 && wishList.getUser().getId() == user.getId();
     }
 
+    /**
+     * Método responsável por adicionar produtos que vieram no cabeçalho do body para um HashMap.
+     * @param body
+     * @param wishList
+     * @return hashmap
+     */
     public static Map<Integer, Long> fillProducts(JsonNode body, WishList wishList) {
         Map<Integer, Long> productIds = new HashMap<Integer, Long>(25);
         if (body.hasNonNull(AbstractApplication.ParameterKey.PRODUCTS)) {
@@ -77,10 +83,16 @@ public abstract class WishListUtil {
         return productIds;
     }
 
-    public static List<WishListViewModel> getPerfilWishList(User user, String login, boolean isMe) {
+    /**
+     * Método responsável por obter os dados de perfil de uma determinada lista de desejos.
+     * @param user - Usuário logado
+     * @param login - Usuário referencia
+     * @return
+     */
+    public static List<WishListViewModel> getPerfilWishList(User user, String login) {
         List<WishListViewModel> wishlistsVM = new ArrayList<WishListViewModel>(10);
         List<WishList> wishLists;
-        if (!isMe) {
+        if (!user.getLogin().equalsIgnoreCase(login)) {
             FinderFactory factory = FinderFactory.getInstance();
             IFinder<User> finder = factory.get(User.class);
             IFinder<WishList> finderW = factory.get(WishList.class);

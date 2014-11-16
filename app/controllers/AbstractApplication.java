@@ -192,6 +192,13 @@ public class AbstractApplication extends Controller {
             public static final String EXCLUDE_SUCCESS = "user.exclude.success";
             public static final String REGISTER_SUCCESS = "user.register.success";
             public static final String UPDATE_SUCCESS = "user.update.success";
+            public static final String CONFIRM_MAIL_SUCCESS = "user.confirm.mail.success";
+            public static final String CONFIRM_MAIL_EXPIRE = "user.confirm.mail.expire";
+            public static final String CONFIRM_MAIL_INVALID = "user.confirm.mail.invalid";
+            public static final String RECOVERY_PASSWORD_WARNING = "user.recovery.password.warning";
+            public static final String RECOVERY_PASSWORD_EXPIRE = "user.recovery.password.expire";
+            public static final String RECOVERY_PASSWORD_INVALID = "user.recovery.password.invalid";
+            public static final String RECOVERY_PASSWORD_SUCCESS = "user.recovery.password.success";
         }
         public static final class WishList {
             public static final String DELETE_SUCCESS = "wishlist.delete.success";
@@ -263,7 +270,7 @@ public class AbstractApplication extends Controller {
      * @throws TokenException
      */
     public static User authenticateSession() throws TokenException {
-        String tokenContent = session(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+        String tokenContent = getTokenAtSession();
         Token token = listToken(tokenContent, Token.Target.WEB);
 
         if (token == null)
@@ -353,6 +360,23 @@ public class AbstractApplication extends Controller {
      */
     public static String getTokenAtHeader(Http.Request request) {
         return request.getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+    }
+
+    /**
+     * Obtém o token que foi enviado junto com a sessão da requisição HTTP.
+     * @return token
+     */
+    public static String getTokenAtSession() {
+        return getTokenAtSession(session());
+    }
+
+    /**
+     * Obtém o token que foi enviado junto com a sessão da requisição HTTP.
+     * @param session
+     * @return token
+     */
+    public static String getTokenAtSession(Http.Session session) {
+        return session.get(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
     }
 
     /**

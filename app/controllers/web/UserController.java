@@ -4,7 +4,6 @@ import controllers.AbstractApplication;
 import models.classes.Token;
 import models.classes.User;
 import models.classes.UserMailInteraction;
-import models.classes.WishList;
 import models.cloud.forms.MultimediaViewModel;
 import models.cloud.forms.ProductViewModel;
 import models.cloud.forms.UserViewModel;
@@ -14,16 +13,23 @@ import models.database.IFinder;
 import models.exceptions.UWException;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
+import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
+import play.i18n.Messages;
 import play.libs.F;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.WebAuthenticator;
 import utils.UserUtil;
 import utils.WishListUtil;
+import views.html.confirmMail;
 import views.html.recoveryPassword;
 import views.html.unauthorized;
-import views.html.confirmMail;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,21 +38,11 @@ import java.util.concurrent.TimeUnit;
 public class UserController extends AbstractApplication {
 
     /**
-     * Mensagem default para aviso na alteração da senha.
-     */
-    private static final String DEFAULT_RECOVERY_PASSWORD_MESSAGE = "Não se esqueça da sua senha!";
-
-    /**
      * Tempo máximo para resposta de uma interação com o e-mail do usuário.
      * Caso o tempo seja excedido, o sistema deverá enviar uma nova interação
      * para o e-mail do usuário, em horas.
      */
     private static final long MAX_TIME_AVERAGE = 24;
-
-    /**
-     * Mensagem default para aviso na confirmação do e-mail.
-     */
-    private static final String DEFAULT_CONFIRM_MAIL_MESSAGE = "Olá %s, o seu endereço de e-mail (%s) foi confirmado com sucesso!";
 
     /**
      * Método responsável por exibir a View que irá informar se
@@ -76,7 +72,7 @@ public class UserController extends AbstractApplication {
                 }
 
                 User user = umi.getUser();
-                return ok(confirmMail.render(String.format(DEFAULT_CONFIRM_MAIL_MESSAGE, user.getName(), user.getMail())));
+                return ok(confirmMail.render(Messages.get(MessageKey.User.CONFIRM_MAIL_SUCCESS, user.getName(), user.getMail())));
             } else {
                 UserMailInteraction userMailInteraction = new UserMailInteraction();
                 userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
@@ -84,11 +80,11 @@ public class UserController extends AbstractApplication {
 
                 UserUtil.confirmEmail(umi.getUser(), false);
 
-                return unauthorized(unauthorized.render("Esta ação expirou! Estaremos encaminhando uma nova confirmação para o e-mail cadastrado."));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE)));
             }
         }
 
-        return unauthorized(unauthorized.render("Não existe nenhuma solicitação para confirmação de e-mail..."));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_INVALID)));
     }
 
     /**
@@ -99,6 +95,7 @@ public class UserController extends AbstractApplication {
      * @param m - Email
      * @return View
      */
+    @AddCSRFToken
     public static Result showRecoveryPassword(Long ts, String h, String m) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
@@ -114,7 +111,7 @@ public class UserController extends AbstractApplication {
                     userMailInteraction.update(umi.getId());
                 }
 
-                return unauthorized(unauthorized.render("A sua solicitação de alteração de senha expirou!"));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
             } else {
                 if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
                     UserMailInteraction userMailInteraction = new UserMailInteraction();
@@ -123,11 +120,11 @@ public class UserController extends AbstractApplication {
                 }
 
                 User user = umi.getUser();
-                return ok(recoveryPassword.render(DEFAULT_RECOVERY_PASSWORD_MESSAGE, user.getId(), umi.getId()));
+                return ok(recoveryPassword.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_WARNING), user.getId(), umi.getId()));
             }
         }
 
-        return unauthorized(unauthorized.render("Não existe nenhuma solicitação para alteração de senha..."));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID)));
     }
 
     /**
@@ -164,28 +161,37 @@ public class UserController extends AbstractApplication {
                 userChanged.setPassword(password);
                 userChanged.update(user.getId());
 
-                return ok(recoveryPassword.render("A sua senha foi redefinida com sucesso!", (long) -1, (long) -1));
+                return ok(recoveryPassword.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_SUCCESS), (long) -1, (long) -1));
             } else {
-                return unauthorized(unauthorized.render("Esta sessão para alteração de senha expirou..."));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
             }
         } else {
-            return unauthorized(unauthorized.render("Ocorreu um erro inesperado. Entre em contato com o suporte!"));
+            return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID)));
         }
     }
 
+    /**
+     * Método responsável por realizar o cadastro de novos usuários a partir do formulário
+     * enviado pela página de autenticação/registro do sistema.
+     * @return View
+     */
     @RequireCSRFCheck
     public static F.Promise<Result> register() {
         return F.Promise.<Result>pure(ok());
     }
 
+    /**
+     * Método responsável por exibir todos os dados do perfil do usuário logado.
+     * @param login
+     * @return
+     */
+    @Security.Authenticated(WebAuthenticator.class)
     public static F.Promise<Result> perfil(String login) {
         return F.Promise.<Result>promise(() -> {
             try {
                 User user = authenticateSession();
-                boolean isMe = user.getLogin().equalsIgnoreCase(login);
-
-                UserViewModel userVM = UserUtil.getPerfilUser(user, login, isMe);
-                List<WishListViewModel> wishlistsVM = WishListUtil.getPerfilWishList(user, login, isMe);
+                UserViewModel userVM = UserUtil.getPerfilUser(user, login);
+                List<WishListViewModel> wishlistsVM = WishListUtil.getPerfilWishList(user, login);
 
                 List<MultimediaViewModel> randomAuxVM = new ArrayList<MultimediaViewModel>(10);
                 for (WishListViewModel wlvm : wishlistsVM) {

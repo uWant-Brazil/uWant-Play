@@ -1,7 +1,6 @@
 package models.database;
 
 import com.avaje.ebean.ExpressionList;
-import models.classes.User;
 import models.classes.admin.Administrator;
 
 import java.util.List;

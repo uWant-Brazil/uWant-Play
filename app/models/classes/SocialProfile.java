@@ -1,11 +1,9 @@
 package models.classes;
 
-import play.data.format.Formats;
 import play.db.ebean.Model;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Classe Ebean responsável por persistir informações de autenticação do perfil na rede social do usuário.

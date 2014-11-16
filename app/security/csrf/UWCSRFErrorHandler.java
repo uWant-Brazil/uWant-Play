@@ -6,6 +6,9 @@ import play.mvc.Result;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Filtro responsável por verificar se os formulários possuem o CSRFToken, caso esteja configurado.
+ */
 public class UWCSRFErrorHandler implements CSRFErrorHandler {
 
     @Override

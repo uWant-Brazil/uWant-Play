@@ -1,9 +1,7 @@
 package models.cloud.forms;
 
-import models.classes.Product;
 import models.classes.WishList;
 import models.classes.WishListProduct;
-import play.data.validation.Constraints;
 
 import java.util.ArrayList;
 import java.util.Date;

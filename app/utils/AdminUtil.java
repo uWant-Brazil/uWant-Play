@@ -5,8 +5,16 @@ import models.classes.admin.Administrator;
 import models.database.FinderFactory;
 import models.database.IFinder;
 
+/**
+ * Classe utilitária para ações relacionadas aos administradores do sistema.
+ */
 public abstract class AdminUtil {
 
+    /**
+     * Método responsável por retornar um administrador a partir de um token de acesso.
+     * @param token
+     * @return admin
+     */
     public static Administrator get(String token) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<Administrator> finder = factory.get(Administrator.class);

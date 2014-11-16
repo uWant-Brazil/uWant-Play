@@ -6,7 +6,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * Created by Felipe Bonezi on 25/10/2014.
+ * Classe utilitária para ações relacionadas a segurança do sistema (e.g. criptografias, etc, etc).
  */
 public abstract class SecurityUtil {
 
@@ -53,12 +53,17 @@ public abstract class SecurityUtil {
         return hash;
     }
 
-    private static String padding(String hash) {
+    /**
+     * Padding para hash do md5 não ficar incompleto.
+     * @param md5
+     * @return
+     */
+    private static String padding(String md5) {
         StringBuilder builder = new StringBuilder();
-        while(hash.length() < 32){
+        while(md5.length() < 32){
             builder.append("0");
         }
-        builder.append(hash);
+        builder.append(md5);
         
         return builder.toString();
     }

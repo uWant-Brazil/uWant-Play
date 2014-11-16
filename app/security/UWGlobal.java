@@ -1,12 +1,9 @@
 package security;
 
-import com.typesafe.config.ConfigFactory;
 import controllers.AbstractApplication;
 import play.Application;
 import play.GlobalSettings;
-import play.api.mvc.EssentialFilter;
 import play.api.mvc.Handler;
-import play.filters.csrf.CSRFFilter;
 import play.i18n.Messages;
 import play.libs.F;
 import play.mvc.Action;
@@ -15,6 +12,9 @@ import play.mvc.Result;
 
 import java.lang.reflect.Method;
 
+/**
+ * Filtro para verificar estados pré-acesso aos controladores e a própria inicialização do Play! Framework.
+ */
 public class UWGlobal extends GlobalSettings {
 
     private static final String CONST_HEADER_CONTENT_TYPE = "Content-Type";

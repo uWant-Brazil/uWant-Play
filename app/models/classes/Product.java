@@ -1,7 +1,6 @@
 package models.classes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import play.data.format.Formats;
 import play.db.ebean.Model;
 
 import javax.persistence.*;

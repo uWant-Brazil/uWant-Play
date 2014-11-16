@@ -10,13 +10,17 @@ import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
 import play.db.ebean.Model;
+import play.db.ebean.Transactional;
 import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.MobileAuthenticator;
-import utils.*;
+import utils.DateUtil;
+import utils.RegexUtil;
+import utils.SecurityUtil;
+import utils.UserUtil;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -32,6 +36,7 @@ public class UserController extends AbstractApplication {
      * Método responsável por realizar o registro do usuário no sistema.
      * @return JSON
      */
+    @Transactional
     public static F.Promise<Result> register() {
         return F.Promise.<Result>promise(() -> {
             ObjectNode jsonResponse = Json.newObject();
@@ -143,6 +148,7 @@ public class UserController extends AbstractApplication {
      * Método responsável por atualizar o registro do usuário no sistema.
      * @return JSON
      */
+    @Transactional
     @Security.Authenticated(MobileAuthenticator.class)
     public static F.Promise<Result> update() {
         return F.Promise.<Result>promise(() -> {
@@ -207,6 +213,7 @@ public class UserController extends AbstractApplication {
      * Na verdade, será adicionado uma flag de REMOVED no User.class
      * @return JSON
      */
+    @Transactional
     @Security.Authenticated(MobileAuthenticator.class)
     public static F.Promise<Result> exclude() {
         return F.Promise.<Result>promise(() -> {
@@ -439,6 +446,7 @@ public class UserController extends AbstractApplication {
      *
      * @return JSON
      */
+    @Transactional
     @Security.Authenticated(MobileAuthenticator.class)
     public static F.Promise<Result> leaveCircle() {
         return F.Promise.<Result>promise(() -> {

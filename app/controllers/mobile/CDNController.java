@@ -10,7 +10,6 @@ import models.database.IFinder;
 import models.exceptions.AuthenticationException;
 import models.exceptions.MultipartBodyException;
 import models.exceptions.UWException;
-import play.filters.csrf.AddCSRFToken;
 import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;

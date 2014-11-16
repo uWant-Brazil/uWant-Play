@@ -8,6 +8,7 @@ import models.database.IFinder;
 import models.exceptions.InvalidMailException;
 import models.exceptions.UWException;
 import models.exceptions.UserAlreadyExistException;
+import play.db.ebean.Transactional;
 import play.i18n.Messages;
 
 import java.io.UnsupportedEncodingException;
@@ -235,6 +236,7 @@ public abstract  class UserUtil {
      * @param userTarget - Usuário a ser adicionado/aceito.
      * @return true ou false, se foram amigos mútuos após essa ação.
      */
+    @Transactional
     public static boolean joinCircle(User user, FinderFactory factory, User userTarget) {
         IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
         FriendsCircle friendsCircle = finderCircle.selectUnique(
@@ -279,12 +281,19 @@ public abstract  class UserUtil {
         return isFriends;
     }
 
-    public static UserViewModel getPerfilUser(User user, String login, boolean isMe) {
-        if (!isMe) {
+    /**
+     * Método responsável por retornar o perfil de um usuário a partir do login.
+     * @param user - Usuário logado
+     * @param login - Usuário referencia
+     * @return
+     */
+    public static UserViewModel getPerfilUser(User user, String login) {
+        if (!user.getLogin().equalsIgnoreCase(login)) {
             FinderFactory factory = FinderFactory.getInstance();
             IFinder<User> finder = factory.get(User.class);
             user = finder.selectUnique(new String[] {AbstractApplication.FinderKey.LOGIN}, new Object[] {login});
         }
+
         return new UserViewModel(user);
     }
 }

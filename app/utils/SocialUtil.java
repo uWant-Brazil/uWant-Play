@@ -8,11 +8,17 @@ import models.exceptions.SocialProfileAlreadyExistException;
 import play.i18n.Messages;
 
 /**
- * Created by Felipe Bonezi on 25/10/2014.
+ * Classe utilitária para ações relacionadas as redes sociais que o sistema suporta.
  */
 public abstract class SocialUtil {
 
-    public static void unlink(ObjectNode jsonResponse, User user, SocialProfile profile) throws SocialProfileAlreadyExistException {
+    /**
+     * Método responsável por 'remover' uma determinada rede social que está associada a um usuário.
+     * @param jsonResponse
+     * @param profile
+     * @throws SocialProfileAlreadyExistException
+     */
+    public static void unlink(ObjectNode jsonResponse, SocialProfile profile) throws SocialProfileAlreadyExistException {
         SocialProfile profileUpdated = new SocialProfile();
         profileUpdated.setStatus(SocialProfile.Status.REMOVED);
         profileUpdated.update(profile.getId());
@@ -22,6 +28,16 @@ public abstract class SocialUtil {
         jsonResponse.put(AbstractApplication.ParameterKey.LINKED, false);
     }
 
+    /**
+     * Método responsável por 'adicionar' uma determinada rede social a um usuário.
+     * @param jsonResponse
+     * @param user
+     * @param accessToken
+     * @param email
+     * @param facebookId
+     * @param provider
+     * @throws SocialProfileAlreadyExistException
+     */
     public static void link(ObjectNode jsonResponse, User user, String accessToken, String email, String facebookId, SocialProfile.Provider provider) {
         SocialProfile profile = new SocialProfile();
         profile.setAccessToken(accessToken);

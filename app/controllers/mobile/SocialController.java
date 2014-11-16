@@ -8,7 +8,10 @@ import models.classes.Token;
 import models.classes.User;
 import models.database.FinderFactory;
 import models.database.IFinder;
-import models.exceptions.*;
+import models.exceptions.AuthenticationException;
+import models.exceptions.JSONBodyException;
+import models.exceptions.SocialProfileAlreadyExistException;
+import models.exceptions.UWException;
 import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;
@@ -187,7 +190,7 @@ public class SocialController extends AbstractApplication {
                                                 throw new SocialProfileAlreadyExistException();
                                             }
 
-                                            SocialUtil.unlink(jsonResponse, user, profile);
+                                            SocialUtil.unlink(jsonResponse, profile);
                                             break;
 
                                         case REMOVED:

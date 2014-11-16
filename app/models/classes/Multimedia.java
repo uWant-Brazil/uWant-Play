@@ -2,7 +2,6 @@ package models.classes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import models.cdn.CDNType;
-import play.data.format.Formats;
 import play.db.ebean.Model;
 
 import javax.persistence.*;

@@ -3,14 +3,9 @@ package controllers.web;
 import controllers.AbstractApplication;
 import models.classes.Token;
 import models.classes.User;
-import models.classes.WishList;
-import models.cloud.forms.MultimediaViewModel;
-import models.cloud.forms.ProductViewModel;
 import models.cloud.forms.UserViewModel;
-import models.cloud.forms.WishListViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
-import play.api.mvc.Call;
 import play.data.Form;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
@@ -19,8 +14,6 @@ import play.libs.F;
 import play.mvc.Result;
 import utils.SecurityUtil;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -28,11 +21,21 @@ import java.util.concurrent.TimeUnit;
  */
 public class AuthenticationController extends AbstractApplication {
 
+    /**
+     * Método responsável por exibir a tela de autenticação ou registro do usuário.
+     * P.S.: Note que como essa tela terá form's no formato x-formurl-encoded, então precisamos adicionar os CSRFToken's.
+     * @return View
+     */
     @AddCSRFToken
     public static F.Promise<Result> authorizeView() {
         return F.Promise.<Result>pure(ok(views.html.authentication.render(Form.form(UserViewModel.class))));
     }
 
+    /**
+     * Método responsável por autenticar um usuário no sistema.
+     * P.S.: Note que para entrar nesse método é necessário que o form encaminhe o CSRFToken gerado anteriormente.
+     * @return View
+     */
     @RequireCSRFCheck
     public static F.Promise<Result> authorize() {
         Form<UserViewModel> form = Form.<UserViewModel>form(UserViewModel.class).bindFromRequest();

@@ -9,7 +9,7 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.UserDoesntExistException;
-import models.exceptions.WishListDontExistException;
+import models.exceptions.WishListDoesntExistException;
 import play.i18n.Messages;
 import play.libs.Json;
 
@@ -22,6 +22,9 @@ import java.util.List;
  */
 public abstract class ActionUtil {
 
+    /**
+     * SQL para obter os amigos do usuário logado para que seja listado o feed de notícias.
+     */
     private static final String CONST_LIST_FRIENDS_FEEDS_SQL = "SELECT id AS target_id FROM users WHERE id IN (SELECT fc1.target_id FROM friends_circle fc1 INNER JOIN friends_circle fc2 ON fc2.target_id = fc1.requester_id AND fc2.requester_id = fc1.target_id INNER JOIN users u ON u.id = fc1.target_id WHERE fc1.requester_id = :user_id AND fc1.is_blocked = false) AND status IN (:status_1,:status_2)";
 
     private static final char CHAR_SPACE = ' ';
@@ -231,6 +234,10 @@ public abstract class ActionUtil {
         return builder.toString();
     }
 
+    /**
+     * Método responsável por gerar adicionar um novo feed para a lista de desejos.
+     * @param wishList
+     */
     public static void feed(WishList wishList) {
         Action action = new Action();
         action.setCreatedAt(new Date());
@@ -246,6 +253,15 @@ public abstract class ActionUtil {
         wishListUpdated.update(wishList.getId());
     }
 
+    /**
+     * Método responsável por listar o feed de notícias de um determinado usuário.
+     * @param user - Usuário logado
+     * @param userId - Usuário a listar feed
+     * @param startIndex
+     * @param endIndex
+     * @return feed em formato JSON.
+     * @throws UserDoesntExistException
+     */
     public static List<ObjectNode> listUserFeeds(final User user, final long userId,
                                                   final int startIndex, final int endIndex) throws UserDoesntExistException {
         if (UserUtil.getFriendshipLevel(user.getId(), userId) == FriendsCircle.FriendshipLevel.MUTUAL) {
@@ -258,8 +274,17 @@ public abstract class ActionUtil {
         }
     }
 
+    /**
+     * Método responsável por listar o feed de notícias de uma determinada lista de desejos.
+     * @param user - Usuário logado
+     * @param wishListId - Lista de desejos a listar feed
+     * @param startIndex
+     * @param endIndex
+     * @return feed em formato JSON.
+     * @throws UserDoesntExistException
+     */
     public static List<ObjectNode> listWishListFeeds(final User user, final long wishListId,
-                                                      final int startIndex, final int endIndex) throws WishListDontExistException {
+                                                      final int startIndex, final int endIndex) throws WishListDoesntExistException {
         final FinderFactory factory = FinderFactory.getInstance();
         final IFinder<WishList> finder = factory.get(WishList.class);
         final WishList wishList = finder.selectUnique(wishListId);
@@ -276,10 +301,18 @@ public abstract class ActionUtil {
             }
             return nodes;
         } else {
-            throw new WishListDontExistException();
+            throw new WishListDoesntExistException();
         }
     }
 
+    /**
+     * Método responsável por listar o feed de notícias do usuário logado.
+     * @param user - Usuário logado
+     * @param startIndex
+     * @param endIndex
+     * @return feed em formato JSON.
+     * @throws UserDoesntExistException
+     */
     public static List<ObjectNode> listFriendsFeeds(final User user, final int startIndex, final int endIndex) {
         SqlQuery query = Ebean.createSqlQuery(CONST_LIST_FRIENDS_FEEDS_SQL);
         query.setParameter(AbstractApplication.FinderKey.USER_ID, user.getId());
@@ -302,6 +335,14 @@ public abstract class ActionUtil {
         return actionsNode;
     }
 
+    /**
+     * Método responsável por listar os feeds de uma lista de usuários pré-selecionados.
+     * @param targetIds - Usuários selecionados
+     * @param startIndex
+     * @param endIndex
+     * @param user - Usuário logado
+     * @return
+     */
     private static List<ObjectNode> getUserFeeds(Object[] targetIds, int startIndex, int endIndex, User user) {
         List<ObjectNode> actionsNode = new ArrayList<>((endIndex - startIndex) + 5);
         FinderFactory factory = FinderFactory.getInstance();
@@ -322,6 +363,13 @@ public abstract class ActionUtil {
         return actionsNode;
     }
 
+    /**
+     * Obtém o feed para o determinado usuário.
+     * @param factory
+     * @param action
+     * @param user
+     * @return
+     */
     public static ObjectNode getFeed(FinderFactory factory, Action action, User user) {
         long id = action.getId();
         String message = action.toString();
@@ -397,6 +445,15 @@ public abstract class ActionUtil {
         return node;
     }
 
+    /**
+     * Método responsável por obter a lista de comentários de uma determinada ação.
+     * @param user - Usuário logado
+     * @param actionId - Id da Ação
+     * @param startIndex
+     * @param endIndex
+     * @param factory
+     * @return
+     */
     public static List<ObjectNode> getActionComments(User user, long actionId, int startIndex, int endIndex, FinderFactory factory) {
         List<ObjectNode> nodeComments = new ArrayList<>();
         IFinder<Comment> finder = factory.get(Comment.class);

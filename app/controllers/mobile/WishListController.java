@@ -18,7 +18,10 @@ import utils.ActionUtil;
 import utils.UserUtil;
 import utils.WishListUtil;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Controlador responsável pelo tratamento em requisições mobile relacionados a lista de desejos.
@@ -149,7 +152,7 @@ public class WishListController extends AbstractApplication {
                                     jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.UPDATE_SUCCESS, title));
                                     jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
                                 } else {
-                                    throw new WishListDontExistException();
+                                    throw new WishListDoesntExistException();
                                 }
                             } else {
                                 throw new JSONBodyException();
@@ -214,7 +217,7 @@ public class WishListController extends AbstractApplication {
                             jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.LIST_SUCCESS));
                             jsonResponse.put(ParameterKey.WISHLIST, Json.toJson(wishLists));
                         } else {
-                            throw new WishListDontExistException();
+                            throw new WishListDoesntExistException();
                         }
                     } else {
                         throw new AuthenticationException();
@@ -309,7 +312,7 @@ public class WishListController extends AbstractApplication {
                                     jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.PRODUCTS_SUCCESS));
                                     jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(arrayProducts));
                                 } else {
-                                    throw new WishListDontExistException();
+                                    throw new WishListDoesntExistException();
                                 }
                             } else {
                                 throw new JSONBodyException();
@@ -368,7 +371,7 @@ public class WishListController extends AbstractApplication {
                                     jsonResponse.put(ParameterKey.STATUS, true);
                                     jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.DELETE_SUCCESS, title));
                                 } else {
-                                    throw new WishListDontExistException();
+                                    throw new WishListDoesntExistException();
                                 }
                             } else {
                                 throw new JSONBodyException();
