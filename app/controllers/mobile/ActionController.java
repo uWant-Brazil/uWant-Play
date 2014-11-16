@@ -1,6 +1,7 @@
 package controllers.mobile;
 
 import com.avaje.ebean.Ebean;
+import com.avaje.ebean.Expr;
 import com.avaje.ebean.SqlQuery;
 import com.avaje.ebean.SqlRow;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -163,12 +164,31 @@ public class ActionController extends AbstractApplication {
                     if (body != null && body.has(ParameterKey.ACTION_ID)) {
                         final long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
                         if (actionId > 0) {
+                            final int startIndex;
+                            final int endIndex;
+                            if (body.hasNonNull(ParameterKey.START_INDEX)) {
+                                startIndex = body.get(ParameterKey.START_INDEX).asInt(0);
+                                if (body.hasNonNull(ParameterKey.END_INDEX)) {
+                                    endIndex = body.get(ParameterKey.END_INDEX).asInt(startIndex + 10);
+                                } else {
+                                    endIndex = startIndex + 10;
+                                }
+                            } else {
+                                startIndex = 0;
+                                endIndex = startIndex + 10;
+                            }
+
                             FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<Action> finder = factory.get(Action.class);
+                            IFinder<Comment> finder = factory.get(Comment.class);
                             IFinder<Want> finderWants = factory.get(WantComment.class);
 
-                            Action action = finder.selectUnique(actionId);
-                            List<Comment> comments = action.getComments();
+                            List<Comment> comments = finder.getFinder()
+                                    .where()
+                                    .eq(FinderKey.ACTION_ID, actionId)
+                                    .setFirstRow(startIndex)
+                                    .setMaxRows(endIndex - startIndex)
+                                    .order(String.format("%s desc", AbstractApplication.FinderKey.SINCE))
+                                    .findList();
 
                             List<ObjectNode> nodeComments = new ArrayList<>();
                             for (Comment comment : comments) {
@@ -184,8 +204,14 @@ public class ActionController extends AbstractApplication {
                                         new Object[] { id, user.getId() })
                                         != null;
 
+                                ObjectNode nodeComment = Json.newObject();
+                                nodeComment.put(ParameterKey.ID, comment.getId());
+                                nodeComment.put(ParameterKey.TEXT, comment.getText());
+                                nodeComment.put(ParameterKey.SINCE, DateUtil.format(comment.getSince(), DateUtil.DATE_HOUR_PATTERN));
+                                nodeComment.put(ParameterKey.USER, Json.toJson(comment.getUser()));
+
                                 ObjectNode node = Json.newObject();
-                                node.put(ParameterKey.COMMENT, Json.toJson(comment));
+                                node.put(ParameterKey.COMMENT, nodeComment);
                                 node.put(ParameterKey.UWANT, uWant);
                                 node.put(ParameterKey.COUNT, wantsCount);
 

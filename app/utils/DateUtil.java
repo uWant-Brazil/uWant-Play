@@ -25,6 +25,11 @@ public abstract class DateUtil {
     public static final String DATE_HOUR_PATTERN = "dd/MM/yyyy HH:mm:ss";
 
     /**
+     * Padrão de data/hora brasileira.
+     */
+    public static final String DATE_HOUR_TIME_ZONE_PATTERN = "dd/MM/yyyy'T'HH:mm:ssZ";
+
+    /**
      * Padrão de data/hora brasileira, sem os segundos.
      */
     public static final String DATE_HOUR_WITHOUT_SECONDS_PATTERN = "dd/MM/yyyy HH:mm";

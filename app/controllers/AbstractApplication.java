@@ -111,6 +111,8 @@ public class AbstractApplication extends Controller {
         public static final String FACEBOOK_ID = "facebookId";
         public static final String ACTION = "action";
         public static final String COMMENT_ID = "commentId";
+        public static final String TEXT = "text";
+        public static final String SINCE = "since";
     }
 
     /**
@@ -142,6 +144,7 @@ public class AbstractApplication extends Controller {
         public static final String STATUS_1 = "status_1";
         public static final String STATUS_2 = "status_2";
         public static final String COMMENT_ID = "comment_id";
+        public static final String SINCE = "since";
     }
 
     public static class MessageKey {
