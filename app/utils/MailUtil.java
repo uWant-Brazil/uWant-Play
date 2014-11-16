@@ -24,17 +24,39 @@ public abstract class MailUtil {
     private static final String CONTENT_TYPE = "text/html";
 
     // Variáveis responsáveis pela configuração do envio de e-mail.
+    private static final String MAIL_PROTOCOL = "mail.transport.protocol";
     private static final String MAIL_SMTP_HOST = "mail.smtp.host";
+    private static final String MAIL_SMTP_USER = "mail.smtp.user";
+    private static final String MAIL_SMTP_PASSWORD = "mail.smtp.password";
     private static final String MAIL_USER = "mail.user";
     private static final String MAIL_PASSWORD = "mail.password";
-    private static final String HOST_SMTP = "smtp.gmail.com";
     private static final String MAIL_SMTP_AUTH = "mail.smtp.auth";
     private static final String MAIL_SMTP_PORT = "mail.smtp.port";
     private static final String MAIL_SMTP_SSL_PORT = "mail.smtp.socketFactory.port";
     private static final String MAIL_SMTP_SSL_CLASS = "mail.smtp.socketFactory.class";
     private static final String AUTH_TRUE = "true";
-    private static final String SMTP_PORT = "465";
+    private static final String SMTP = "smtp";
     private static final String SSL_CLASS = "javax.net.ssl.SSLSocketFactory";
+
+    /**
+     * Endereço para envio dos e-mails.
+     */
+    private static final String HOST_SMTP = ConfigFactory.load().getString(MAIL_SMTP_HOST);
+
+    /**
+     * Porta do SMTP Host.
+     */
+    private static final String SMTP_PORT = ConfigFactory.load().getString(MAIL_SMTP_PORT);
+
+    /**
+     * E-mail remetente dos e-mails.
+     */
+    private static final String SES_USERNAME = ConfigFactory.load().getString(MAIL_SMTP_USER);
+
+    /**
+     * E-mail remetente dos e-mails.
+     */
+    private static final String SES_PASSWORD = ConfigFactory.load().getString(MAIL_SMTP_PASSWORD);
 
     /**
      * E-mail remetente dos e-mails.
@@ -54,9 +76,10 @@ public abstract class MailUtil {
     static {
         // Instanciação estática das propriedades do e-mail.
         PROPERTIES = new Properties();
+        PROPERTIES.setProperty(MAIL_PROTOCOL, SMTP);
         PROPERTIES.setProperty(MAIL_SMTP_HOST, HOST_SMTP);
-        PROPERTIES.setProperty(MAIL_USER, USERNAME);
-        PROPERTIES.setProperty(MAIL_PASSWORD, PASSWORD);
+        PROPERTIES.setProperty(MAIL_USER, SES_USERNAME);
+        PROPERTIES.setProperty(MAIL_PASSWORD, SES_PASSWORD);
         PROPERTIES.setProperty(MAIL_SMTP_AUTH, AUTH_TRUE);
         PROPERTIES.setProperty(MAIL_SMTP_PORT, SMTP_PORT);
         PROPERTIES.setProperty(MAIL_SMTP_SSL_PORT, SMTP_PORT);
@@ -80,7 +103,7 @@ public abstract class MailUtil {
                 super.run();
                 Session session = Session.getInstance(PROPERTIES, new javax.mail.Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(USERNAME, PASSWORD);
+                            return new PasswordAuthentication(SES_USERNAME, ConfigFactory.load().getString(MAIL_SMTP_PASSWORD));
                         }
                     });
 
