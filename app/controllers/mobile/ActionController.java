@@ -165,13 +165,36 @@ public class ActionController extends AbstractApplication {
                         if (actionId > 0) {
                             FinderFactory factory = FinderFactory.getInstance();
                             IFinder<Action> finder = factory.get(Action.class);
+                            IFinder<Want> finderWants = factory.get(WantComment.class);
 
                             Action action = finder.selectUnique(actionId);
                             List<Comment> comments = action.getComments();
 
+                            List<ObjectNode> nodeComments = new ArrayList<>();
+                            for (Comment comment : comments) {
+                                long id = comment.getId();
+
+                                int wantsCount = finderWants.getFinder()
+                                        .where()
+                                        .eq(FinderKey.COMMENT_ID, id)
+                                        .findRowCount();
+
+                                boolean uWant = finderWants.selectUnique(
+                                        new String[] { FinderKey.COMMENT_ID, FinderKey.USER_ID },
+                                        new Object[] { id, user.getId() })
+                                        != null;
+
+                                ObjectNode node = Json.newObject();
+                                node.put(ParameterKey.COMMENT, Json.toJson(comment));
+                                node.put(ParameterKey.UWANT, uWant);
+                                node.put(ParameterKey.COUNT, wantsCount);
+
+                                nodeComments.add(node);
+                            }
+
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.COMMENTS_SUCCESS, (comments != null ? comments.size() : 0)));
-                            jsonResponse.put(ParameterKey.COMMENTS, Json.toJson(comments));
+                            jsonResponse.put(ParameterKey.COMMENTS, Json.toJson(nodeComments));
                         } else {
                             throw new JSONBodyException();
                         }
@@ -202,49 +225,89 @@ public class ActionController extends AbstractApplication {
                 User user = authenticateToken();
                 if (UserUtil.isAvailable(user)) {
                     JsonNode body = request().body().asJson();
-                    if (body != null && body.has(ParameterKey.ACTION_ID)) {
-                        long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
+                    if (body != null) {
+                        if (body.hasNonNull(ParameterKey.ACTION_ID)) {
+                            long actionId = body.get(ParameterKey.ACTION_ID).asLong(0);
 
-                        if (actionId > 0) {
-                            FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<Action> finder = factory.get(Action.class);
-                            IFinder<Want> finderWant = factory.get(Want.class);
+                            if (actionId > 0) {
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<Action> finder = factory.get(Action.class);
+                                IFinder<Want> finderWant = factory.get(Want.class);
 
-                            Action action = finder.selectUnique(actionId);
-                            User userAction = action.getUser();
+                                Action action = finder.selectUnique(actionId);
+                                User userAction = action.getUser();
 
-                            Want want = finderWant.selectUnique(
-                                    new String[] { FinderKey.ACTION_ID, FinderKey.USER_ID },
-                                    new Object[] { actionId, user.getId() });
+                                Want want = finderWant.selectUnique(
+                                        new String[]{FinderKey.ACTION_ID, FinderKey.USER_ID},
+                                        new Object[]{actionId, user.getId()});
 
-                            if (want == null) {
-                                want = new Want();
-                                want.setUser(user);
-                                want.setAction(action);
-                                want.save();
+                                if (want == null) {
+                                    want = new Want();
+                                    want.setUser(user);
+                                    want.setAction(action);
+                                    want.save();
 
-                                Action actionWant = new Action();
-                                actionWant.setCreatedAt(new Date());
-                                actionWant.setFrom(user);
-                                actionWant.setUser(userAction);
-                                actionWant.setType(Action.Type.WANT);
-                                actionWant.save();
+                                    Action actionWant = new Action();
+                                    actionWant.setCreatedAt(new Date());
+                                    actionWant.setFrom(user);
+                                    actionWant.setUser(userAction);
+                                    actionWant.setType(Action.Type.WANT);
+                                    actionWant.save();
 
-                                NotificationUtil.send(actionWant, userAction);
+                                    NotificationUtil.send(actionWant, userAction);
+                                } else {
+                                    want.delete();
+                                }
+
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.WANT_SUCCESS));
                             } else {
-                                want.delete();
+                                throw new JSONBodyException();
                             }
+                        } else if (body.hasNonNull(ParameterKey.COMMENT_ID)) {
+                            long commentId = body.get(ParameterKey.COMMENT_ID).asLong(0);
 
-                            jsonResponse.put(ParameterKey.STATUS, true);
-                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.WANT_SUCCESS));
+                            if (commentId > 0) {
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<Comment> finder = factory.get(Comment.class);
+                                IFinder<WantComment> finderWant = factory.get(WantComment.class);
+
+                                Comment comment = finder.selectUnique(commentId);
+                                User userAction = comment.getUser();
+
+                                WantComment want = finderWant.selectUnique(
+                                        new String[]{FinderKey.COMMENT_ID, FinderKey.USER_ID},
+                                        new Object[]{commentId, user.getId()});
+
+                                if (want == null) {
+                                    want = new WantComment();
+                                    want.setUser(user);
+                                    want.setComment(comment);
+                                    want.save();
+
+                                    Action actionWant = new Action();
+                                    actionWant.setCreatedAt(new Date());
+                                    actionWant.setFrom(user);
+                                    actionWant.setUser(userAction);
+                                    actionWant.setType(Action.Type.WANT);
+                                    actionWant.save();
+
+                                    NotificationUtil.send(actionWant, userAction);
+                                } else {
+                                    want.delete();
+                                }
+
+                                jsonResponse.put(ParameterKey.STATUS, true);
+                                jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.WANT_SUCCESS));
+                            } else {
+                                throw new JSONBodyException();
+                            }
                         } else {
                             throw new JSONBodyException();
                         }
                     } else {
-                        throw new JSONBodyException();
+                        throw new AuthenticationException();
                     }
-                } else {
-                    throw new AuthenticationException();
                 }
             } catch (UWException e) {
                 e.printStackTrace();

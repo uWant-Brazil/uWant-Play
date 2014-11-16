@@ -58,6 +58,8 @@ public class FinderFactory extends AbstractFactory<Class<?>, IFinder> {
             finder = new MobileFinder();
         } else if (id == WishListProduct.class) {
             finder = new WishListProductFinder();
+        } else if (id == WantComment.class) {
+            finder = new WantCommentFinder();
         }
 
         return finder;

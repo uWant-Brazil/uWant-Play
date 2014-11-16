@@ -179,6 +179,13 @@ create table action_wants (
   constraint pk_action_wants primary key (id))
 ;
 
+create table action_comments_wants (
+  id                        bigint not null,
+  comment_id                bigint,
+  user_id                   bigint,
+  constraint pk_action_comments_wants primary key (id))
+;
+
 create table wishlist (
   id                        bigint not null,
   uuid                      varchar(255) not null,
@@ -248,6 +255,8 @@ create sequence user_mail_interaction_id_seq;
 
 create sequence action_wants_id_seq;
 
+create sequence action_comments_wants_id_seq;
+
 create sequence wishlist_id_seq;
 
 create sequence wishlist_product_id_seq;
@@ -290,14 +299,18 @@ alter table action_wants add constraint fk_action_wants_action_18 foreign key (a
 create index ix_action_wants_action_18 on action_wants (action_id);
 alter table action_wants add constraint fk_action_wants_user_19 foreign key (user_id) references users (id);
 create index ix_action_wants_user_19 on action_wants (user_id);
-alter table wishlist add constraint fk_wishlist_user_20 foreign key (user_id) references users (id);
-create index ix_wishlist_user_20 on wishlist (user_id);
-alter table wishlist add constraint fk_wishlist_action_21 foreign key (action_id) references actions (id);
-create index ix_wishlist_action_21 on wishlist (action_id);
-alter table wishlist_product add constraint fk_wishlist_product_wishList_22 foreign key (wishlist_id) references wishlist (id);
-create index ix_wishlist_product_wishList_22 on wishlist_product (wishlist_id);
-alter table wishlist_product add constraint fk_wishlist_product_product_23 foreign key (product_id) references product (id);
-create index ix_wishlist_product_product_23 on wishlist_product (product_id);
+alter table action_comments_wants add constraint fk_action_comments_wants_comm_20 foreign key (comment_id) references action_comments (id);
+create index ix_action_comments_wants_comm_20 on action_comments_wants (comment_id);
+alter table action_comments_wants add constraint fk_action_comments_wants_user_21 foreign key (user_id) references users (id);
+create index ix_action_comments_wants_user_21 on action_comments_wants (user_id);
+alter table wishlist add constraint fk_wishlist_user_22 foreign key (user_id) references users (id);
+create index ix_wishlist_user_22 on wishlist (user_id);
+alter table wishlist add constraint fk_wishlist_action_23 foreign key (action_id) references actions (id);
+create index ix_wishlist_action_23 on wishlist (action_id);
+alter table wishlist_product add constraint fk_wishlist_product_wishList_24 foreign key (wishlist_id) references wishlist (id);
+create index ix_wishlist_product_wishList_24 on wishlist_product (wishlist_id);
+alter table wishlist_product add constraint fk_wishlist_product_product_25 foreign key (product_id) references product (id);
+create index ix_wishlist_product_product_25 on wishlist_product (product_id);
 
 
 
@@ -349,6 +362,8 @@ drop table if exists user_mail_interaction cascade;
 
 drop table if exists action_wants cascade;
 
+drop table if exists action_comments_wants cascade;
+
 drop table if exists wishlist cascade;
 
 drop table if exists wishlist_product cascade;
@@ -386,6 +401,8 @@ drop sequence if exists user_id_seq;
 drop sequence if exists user_mail_interaction_id_seq;
 
 drop sequence if exists action_wants_id_seq;
+
+drop sequence if exists action_comments_wants_id_seq;
 
 drop sequence if exists wishlist_id_seq;
 
