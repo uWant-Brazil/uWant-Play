@@ -397,5 +397,46 @@ public abstract class ActionUtil {
         return node;
     }
 
+    public static List<ObjectNode> getActionComments(User user, long actionId, int startIndex, int endIndex, FinderFactory factory) {
+        List<ObjectNode> nodeComments = new ArrayList<>();
+        IFinder<Comment> finder = factory.get(Comment.class);
+        IFinder<Want> finderWants = factory.get(WantComment.class);
+
+        List<Comment> comments = finder.getFinder()
+                .where()
+                .eq(AbstractApplication.FinderKey.ACTION_ID, actionId)
+                .setFirstRow(startIndex)
+                .setMaxRows(endIndex - startIndex)
+                .order(String.format("%s desc", AbstractApplication.FinderKey.SINCE))
+                .findList();
+
+        for (Comment comment : comments) {
+            long id = comment.getId();
+
+            int wantsCount = finderWants.getFinder()
+                    .where()
+                    .eq(AbstractApplication.FinderKey.COMMENT_ID, id)
+                    .findRowCount();
+
+            boolean uWant = finderWants.selectUnique(
+                    new String[] { AbstractApplication.FinderKey.COMMENT_ID, AbstractApplication.FinderKey.USER_ID },
+                    new Object[] { id, user.getId() })
+                    != null;
+
+            ObjectNode nodeComment = Json.newObject();
+            nodeComment.put(AbstractApplication.ParameterKey.ID, comment.getId());
+            nodeComment.put(AbstractApplication.ParameterKey.TEXT, comment.getText());
+            nodeComment.put(AbstractApplication.ParameterKey.SINCE, DateUtil.format(comment.getSince(), DateUtil.DATE_HOUR_PATTERN));
+            nodeComment.put(AbstractApplication.ParameterKey.USER, Json.toJson(comment.getUser()));
+
+            ObjectNode node = Json.newObject();
+            node.put(AbstractApplication.ParameterKey.COMMENT, nodeComment);
+            node.put(AbstractApplication.ParameterKey.UWANT, uWant);
+            node.put(AbstractApplication.ParameterKey.COUNT, wantsCount);
+
+            nodeComments.add(node);
+        }
+        return nodeComments;
+    }
 
 }

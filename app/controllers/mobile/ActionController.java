@@ -126,9 +126,11 @@ public class ActionController extends AbstractApplication {
 
                             action.refresh();
 
+                            List<ObjectNode> nodeComments = ActionUtil.getActionComments(user, actionId, 0, 10, factory);
+
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.COMMENT_SUCCESS));
-                            jsonResponse.put(ParameterKey.COMMENTS, Json.toJson(action.getComments()));
+                            jsonResponse.put(ParameterKey.COMMENTS, Json.toJson(nodeComments));
                             jsonResponse.put(ParameterKey.ACTION, ActionUtil.getFeed(factory, action, user));
                         } else {
                             throw new JSONBodyException();
@@ -179,47 +181,10 @@ public class ActionController extends AbstractApplication {
                             }
 
                             FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<Comment> finder = factory.get(Comment.class);
-                            IFinder<Want> finderWants = factory.get(WantComment.class);
-
-                            List<Comment> comments = finder.getFinder()
-                                    .where()
-                                    .eq(FinderKey.ACTION_ID, actionId)
-                                    .setFirstRow(startIndex)
-                                    .setMaxRows(endIndex - startIndex)
-                                    .order(String.format("%s desc", AbstractApplication.FinderKey.SINCE))
-                                    .findList();
-
-                            List<ObjectNode> nodeComments = new ArrayList<>();
-                            for (Comment comment : comments) {
-                                long id = comment.getId();
-
-                                int wantsCount = finderWants.getFinder()
-                                        .where()
-                                        .eq(FinderKey.COMMENT_ID, id)
-                                        .findRowCount();
-
-                                boolean uWant = finderWants.selectUnique(
-                                        new String[] { FinderKey.COMMENT_ID, FinderKey.USER_ID },
-                                        new Object[] { id, user.getId() })
-                                        != null;
-
-                                ObjectNode nodeComment = Json.newObject();
-                                nodeComment.put(ParameterKey.ID, comment.getId());
-                                nodeComment.put(ParameterKey.TEXT, comment.getText());
-                                nodeComment.put(ParameterKey.SINCE, DateUtil.format(comment.getSince(), DateUtil.DATE_HOUR_PATTERN));
-                                nodeComment.put(ParameterKey.USER, Json.toJson(comment.getUser()));
-
-                                ObjectNode node = Json.newObject();
-                                node.put(ParameterKey.COMMENT, nodeComment);
-                                node.put(ParameterKey.UWANT, uWant);
-                                node.put(ParameterKey.COUNT, wantsCount);
-
-                                nodeComments.add(node);
-                            }
+                            List<ObjectNode> nodeComments = ActionUtil.getActionComments(user, actionId, startIndex, endIndex, factory);
 
                             jsonResponse.put(ParameterKey.STATUS, true);
-                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.COMMENTS_SUCCESS, (comments != null ? comments.size() : 0)));
+                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.COMMENTS_SUCCESS, (nodeComments != null ? nodeComments.size() : 0)));
                             jsonResponse.put(ParameterKey.COMMENTS, Json.toJson(nodeComments));
                         } else {
                             throw new JSONBodyException();
