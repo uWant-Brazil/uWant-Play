@@ -143,6 +143,7 @@ public class AbstractApplication extends Controller {
         public static final String FACEBOOK_ID = "facebook_id";
         public static final String STATUS_1 = "status_1";
         public static final String STATUS_2 = "status_2";
+        public static final String TARGET = "target";
         public static final String COMMENT_ID = "comment_id";
         public static final String SINCE = "since";
     }
@@ -248,7 +249,22 @@ public class AbstractApplication extends Controller {
      */
     public static User authenticateToken() throws TokenException {
         String tokenContent = getTokenAtHeader();
-        Token token = listToken(tokenContent);
+        Token token = listToken(tokenContent, Token.Target.MOBILE);
+
+        if (token == null)
+            throw new TokenException();
+
+        return token.getUser();
+    }
+
+    /**
+     * Responsável por autenticar um token existente no cabeçalho HTTP/HTTPS.
+     * @return
+     * @throws TokenException
+     */
+    public static User authenticateSession() throws TokenException {
+        String tokenContent = session(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+        Token token = listToken(tokenContent, Token.Target.WEB);
 
         if (token == null)
             throw new TokenException();
@@ -296,12 +312,12 @@ public class AbstractApplication extends Controller {
      * @param token
      * @return
      */
-    public static Token listToken(String token) {
+    public static Token listToken(String token, Token.Target target) {
         Token tokenCached = (Token) Cache.get(token);
         if (tokenCached == null) {
             FinderFactory factory = FinderFactory.getInstance();
             IFinder<Token> finder = factory.get(Token.class);
-            tokenCached = finder.selectUnique(new String[]{FinderKey.CONTENT}, new String[]{token});
+            tokenCached = finder.selectUnique(new String[]{FinderKey.CONTENT, FinderKey.TARGET}, new Object[]{token, target.ordinal()});
         }
         return tokenCached;
     }
@@ -310,9 +326,9 @@ public class AbstractApplication extends Controller {
      * Remoção do token do usuário referenciado no HTTP Header.
      * @param user - Usuário logado
      */
-    public static void removeToken(User user) {
+    public static void removeToken(User user, Token.Target target) {
         String tokenContent = request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
-        Token token = listToken(tokenContent);
+        Token token = listToken(tokenContent, target);
 
         if (token != null) {
             Cache.remove(tokenContent);

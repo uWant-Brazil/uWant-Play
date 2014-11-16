@@ -3,8 +3,13 @@ package utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import controllers.AbstractApplication;
 import models.classes.*;
+import models.cloud.forms.WishListViewModel;
+import models.database.FinderFactory;
+import models.database.IFinder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,6 +75,32 @@ public abstract class WishListUtil {
             }
         }
         return productIds;
+    }
+
+    public static List<WishListViewModel> getPerfilWishList(User user, String login, boolean isMe) {
+        List<WishListViewModel> wishlistsVM = new ArrayList<WishListViewModel>(10);
+        List<WishList> wishLists;
+        if (!isMe) {
+            FinderFactory factory = FinderFactory.getInstance();
+            IFinder<User> finder = factory.get(User.class);
+            IFinder<WishList> finderW = factory.get(WishList.class);
+            user = finder.selectUnique(
+                    new String[] {AbstractApplication.FinderKey.LOGIN},
+                    new Object[] {login});
+
+            wishLists = finderW.selectAll(
+                    new String[]{AbstractApplication.FinderKey.USER_ID, AbstractApplication.FinderKey.STATUS},
+                    new Object[]{user.getId(), WishList.Status.ACTIVE.ordinal()});
+        } else {
+            wishLists = user.getWishList();
+        }
+
+        for (WishList wishList : wishLists) {
+            if (wishList.getStatus() == WishList.Status.ACTIVE) {
+                wishlistsVM.add(new WishListViewModel(wishList));
+            }
+        }
+        return wishlistsVM;
     }
 
 }

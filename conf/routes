@@ -48,3 +48,4 @@ GET     /v1/web/wishlist                        controllers.web.WishListControll
 GET     /v1/web/authorize                       controllers.web.AuthenticationController.authorizeView()
 POST    /v1/web/authorize                       controllers.web.AuthenticationController.authorize()
 POST    /v1/web/register                        controllers.web.UserController.register()
+GET     /v1/web/:login                                 controllers.web.UserController.perfil(login: String)

@@ -9,6 +9,8 @@ action.share.success=O compartilhamento foi efetuado com sucesso.
 authentication.recoverypassword.success=Foi enviado um e-mail para voce redefinir a sua nova senha.
 authentication.logoff.success=O usuário saiu do sistema com sucesso.
 authentication.authorize.success=O usuário foi autenticado com sucesso.
+authentication.register.title=Cadastro.
+authentication.login.title=Login.
 
 cdn.retrieve.success=O arquivo multimídia foi salvo com sucesso.
 

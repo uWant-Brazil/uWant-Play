@@ -55,6 +55,19 @@ img {
 	line-height: 56px;
 }
 
+.search {
+    padding: 10px 8px;
+    background: #FFFFFF;
+    border: 2px solid #fecc3f;
+}
+.button {
+    position:relative;
+    padding: 10px 25px;
+    left: -7px;
+    top: 5px;
+    border:2px solid #fecc3f;
+    background:#fecc3f url("../images/ic_search.png") center no-repeat;
+}
 #container {
 	height:1000px;
 	background: #fbc01e; /* Old browsers */
@@ -91,15 +104,22 @@ img {
 	font-size: 46px;
 	margin-top: 320px;
 }
-#gplay {
-	float:right;
+#link-apps {
+    list-style: none;
+	width:1024px;
+	height:100px;
+    float:left;
 	position: relative;
-	top: 875px;
-	right: -260px;
+	top: 290px;
+}
+#link-apps li{
+    display:inline;
+}
+#link-apps li:nth-child(2){
+    margin: 0 100px;
 }
 footer {
 	height:95px;
-	margin-top:150px;
 	background:#FEC31D;
 }
 #center_footer {
@@ -110,7 +130,7 @@ footer {
 #center_footer ul{
 	list-style:none;
 	float:left;
-	margin-top:30px;
+	margin-top:40px;
 }
 #center_footer ul li{
 	display:inline;
@@ -124,9 +144,44 @@ footer {
 #center_footer ul li a:hover{
 	text-decoration:none;
 }
-#uWant {
+#copyright-uWant {
 	float:right;
 	color:#FFF;
 	font-size:20px;
-	margin-top:30px;
+	margin-top:40px;
+}
+
+/**** TELA LOGIN E CADASTRO ****/
+#cadastro {
+    width: 480px;
+    height: 800px;
+    background:#FFFFFF;
+    float:left;
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+}
+#cadastro h1{
+    font-size:24px;
+    color:#fecc3f;
+    width:100%;
+    float:left;
+}
+#cadastro img{
+    margin:0 auto;
+}
+#login {
+    width: 480px;
+    height: 800px;
+    background:#FFFFFF;
+    float:right;
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+}
+#login h1{
+    font-size:24px;
+    color:#fecc3f;
+    width:100%;
+    float:left;
 }
