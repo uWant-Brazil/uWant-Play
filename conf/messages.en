@@ -9,8 +9,10 @@ action.share.success=The sharing was successful.
 authentication.recoverypassword.success=An email was sent to you to reset your new password.
 authentication.logoff.success=You logged out successfully.
 authentication.authorize.success=The user has been successfully authenticated.
-authentication.register.title=Cadastro.
-authentication.login.title=Login.
+authentication.register.title=Cadastro
+authentication.login.title=Login
+authentication.checkbox.female=Feminino
+authentication.checkbox.male=Masculino
 
 cdn.retrieve.success=The multimedia file has been saved successfully.
 

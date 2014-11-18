@@ -9,8 +9,10 @@ action.share.success=El reparto se ha realizado correctamente.
 authentication.recoverypassword.success=Un correo electr�nico fue enviado a usted para restablecer tu contrase�a nueva.
 authentication.logoff.success=Usted ha entrado a cabo con �xito.
 authentication.authorize.success=El usuario ha sido autenticado con �xito.
-authentication.register.title=Cadastro.
-authentication.login.title=Login.
+authentication.register.title=Cadastro
+authentication.login.title=Login
+authentication.checkbox.female=Feminino
+authentication.checkbox.male=Masculino
 
 cdn.retrieve.success=El archivo multimedia ha sido guardado con �xito.
 
