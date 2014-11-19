@@ -6,11 +6,13 @@ action.report.success=A denúncia foi registrada com sucesso.
 action.toogleblock.success=O usuário {0} foi (des)bloqueado com sucesso!
 action.share.success=O compartilhamento foi efetuado com sucesso.
 
-authentication.recoverypassword.success=Foi enviado um e-mail para voce redefinir a sua nova senha.
-authentication.logoff.success=O usuário saiu do sistema com sucesso.
-authentication.authorize.success=O usuário foi autenticado com sucesso.
-authentication.register.title=Cadastro.
-authentication.login.title=Login.
+authentication.recoverypassword.success=Un correo electr�nico fue enviado a usted para restablecer tu contrase�a nueva.
+authentication.logoff.success=Usted ha entrado a cabo con �xito.
+authentication.authorize.success=El usuario ha sido autenticado con �xito.
+authentication.register.title=Cadastro
+authentication.login.title=Login
+authentication.checkbox.female=Feminino
+authentication.checkbox.male=Masculino
 
 cdn.retrieve.success=O arquivo multimídia foi salvo com sucesso.
 

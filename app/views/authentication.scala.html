@@ -3,21 +3,88 @@
 @import helper._
 
 @main(Messages.apply("site.index.title")) {
+<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery.mask.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        //aplica máscara no campo Data Nascimento
+        $('.dateMask').mask('00/00/0000');
+
+        //não exibe o botão de 'Entrar' da main
+        $('#extras_topo a').css('display', 'none');
+        $('#extras_topo').css('width', '240px');
+
+    });
+</script>
 <div id="container">
-    <div id="cadastro">
-        @form(action = controllers.web.routes.UserController.register(), 'id -> "form_registro") {
-            @CSRF.formField
-            <h1>@Messages.apply("authentication.register.title")</h1>
+    <div id="container_center">
+        <div id="cadastro">
+            @form(action = controllers.web.routes.UserController.register(), 'id -> "form_registro") {
+                @CSRF.formField
+                <h1>@Messages.apply("authentication.register.title")</h1>
 
-            <img src="@routes.Assets.at("/images/ic_semfoto.png")">
-        }
-    </div>
+                <img src="@routes.Assets.at("/images/ic_semfoto.png")">
 
-    <div id="login">
-        @form(action = controllers.web.routes.AuthenticationController.authorize(), 'id -> "form_login") {
-            @CSRF.formField
-            <h1>@Messages.apply("authentication.login.title")</h1>
-        }
-    </div>
-</div>
+            <div class="form-group">
+                <input type="text" id="register-login" class="form-control" placeholder="Login">
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="register-name" class="form-control" placeholder="Nome + sobrenome">
+            </div>
+            <div class="checkleft">
+                <div class="registerCheckbox">
+                    <input type="checkbox" value="None" id="check-female" name="female" />
+                    <label for="check-female"></label>
+                </div>
+                Feminino
+            </div>
+            <div class="checkright">
+                <div class="registerCheckbox">
+                    <input type="checkbox" value="None" id="check-male" name="male" />
+                    <label for="check-male"></label>
+                </div>
+                Masculino
+            </div>
+
+
+
+            <div class="form-group">
+                <input type="email" id="register-email" class="form-control" placeholder="Email">
+            </div>
+
+            <div class="form-group">
+                <input type="password" id="register-password" class="form-control" placeholder="Senha">
+            </div>
+
+            <div class="form-group">
+                <input type="text" id="register-birthday" class="form-control dateMask" placeholder="Data Nascimento">
+            </div>
+
+            <input type="submit" class="btn buttonAuthentication" value="Cadastrar">
+            }
+        </div>
+
+        <div id="login">
+            @form(action = controllers.web.routes.AuthenticationController.authorize(), 'id -> "form_login") {
+                @CSRF.formField
+                <h1>@Messages.apply("authentication.login.title")</h1>
+
+            <div class="form-group">
+                <input type="text" id="username" class="form-control" placeholder="Login">
+            </div>
+
+            <div class="form-group">
+                <input type="password" id="password" class="form-control" placeholder="Senha">
+            </div>
+
+            <input type="submit" class="btn buttonAuthentication" value="Entrar">
+            }
+
+            <a href="#" id="forgotPassword">Esqueceu sua senha?</a>
+
+            <a href="#" id="sigInFacebook" class="btn">Entre com o Facebook</a>
+        </div>
+
+    </div><!--/container-center-->
+</div><!--/container-->
 }

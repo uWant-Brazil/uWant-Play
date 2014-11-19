@@ -153,35 +153,183 @@ footer {
 
 /**** TELA LOGIN E CADASTRO ****/
 #cadastro {
-    width: 480px;
-    height: 800px;
+    width: 450px;
+    height: 520px;
     background:#FFFFFF;
     float:left;
+    margin-left:20px;
+    margin-top: 150px;
+    padding:0 30px;
     border-radius:5px;
     -webkit-border-radius:5px;
     -moz-border-radius:5px;
 }
 #cadastro h1{
-    font-size:24px;
+    font-size:28px;
     color:#fecc3f;
     width:100%;
     float:left;
 }
 #cadastro img{
-    margin:0 auto;
+    margin-left:145px;
+    margin-bottom: 15px;
+}
+#cadastro input {
+    border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
 }
 #login {
-    width: 480px;
-    height: 800px;
+    width: 450px;
+    height: 520px;
     background:#FFFFFF;
     float:right;
+    margin-right: 20px;
+    margin-top: 150px;
+    padding:0 30px;
     border-radius:5px;
     -webkit-border-radius:5px;
     -moz-border-radius:5px;
 }
 #login h1{
-    font-size:24px;
+    font-size:28px;
     color:#fecc3f;
     width:100%;
     float:left;
+    margin-bottom: 100px;
+}
+#login input {
+    border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+}
+.buttonAuthentication {
+    width:100%;
+    margin-top: 20px !important;
+    font-size: 20px !important;
+    color:#FFF;
+    background-color:#fecc3f;
+    -webkit-box-shadow: -1px 1px 2px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    -1px 1px 2px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:         -1px 1px 2px 0px rgba(50, 50, 50, 0.75);
+}
+.buttonAuthentication:hover {
+    color:#FFF !important;
+}
+
+#forgotPassword{
+    color: gray;
+    font-size: 16px;
+    width: 100%;
+    float: left;
+    margin-left: 130px;
+    margin-top: 85px;
+    margin-bottom: 30px;
+ }
+ #forgotPassword:hover{
+    text-decoration:none;
+ }
+#sigInFacebook{
+    width:100%;
+    font-size: 20px !important;
+    color:#FFF;
+    background:#fecc3f url("../images/ic_facebook.png") left no-repeat;
+    background-position: 38px 4px;
+    border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    -webkit-box-shadow: -1px 1px 2px 0px rgba(50, 50, 50, 0.75);
+    -moz-box-shadow:    -1px 1px 2px 0px rgba(50, 50, 50, 0.75);
+    box-shadow:         -1px 1px 2px 0px rgba(50, 50, 50, 0.75);
+}
+#sigInFacebook:hover{
+    color:#FFF;
+}
+/* Checkbox - css3 */
+input[type=checkbox] {
+	visibility: hidden;
+}
+.registerCheckbox {
+	width: 20px;
+	height: 20px;
+	float: left;
+
+	-webkit-border-radius: 50px;
+	-moz-border-radius: 50px;
+	border-radius: 50px;
+
+	-webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+	box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+	position: relative;
+}
+
+.registerCheckbox label {
+	cursor: pointer;
+	position: absolute;
+	width: 18px;
+	height: 18px;
+
+	-webkit-border-radius: 50px;
+	-moz-border-radius: 50px;
+	border-radius: 50px;
+	left: 1px;
+	top: 1px;
+
+	-webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+	-moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+	box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222', endColorstr='#45484d',GradientType=0 );
+}
+
+.registerCheckbox label:after {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+	filter: alpha(opacity=0);
+	opacity: 0;
+	content: '';
+	position: absolute;
+	width: 16px;
+	height: 16px;
+	background: #fecc3f;
+
+	-webkit-border-radius: 50px;
+	-moz-border-radius: 50px;
+	border-radius: 50px;
+	top: 1px;
+	left: 1px;
+
+	-webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+	box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+}
+
+.registerCheckbox label:hover::after {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+	filter: alpha(opacity=30);
+	opacity: 0.3;
+}
+
+.registerCheckbox input[type=checkbox]:checked + label:after {
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+	filter: alpha(opacity=100);
+	opacity: 1;
+}
+.checkleft {
+    width: 105px;
+    height: 20px;
+    float: left;
+    font-size: 18px;
+    text-align: right;
+    color: rgb(169, 165, 165);
+    font-weight: normal;
+    margin-bottom: 15px;
+}
+.checkright{
+    width: 105px;
+    height: 20px;
+    float: right;
+    font-size: 18px;
+    text-align: right;
+    color: rgb(169, 165, 165);
+    font-weight: normal;
+    margin-bottom: 15px;
+    margin-right: 105px;
 }
