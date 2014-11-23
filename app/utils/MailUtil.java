@@ -64,11 +64,6 @@ public abstract class MailUtil {
     private static final String USERNAME = ConfigFactory.load().getString(MAIL_USER);
 
     /**
-     * Senha do e-mail remetende dos e-mails.
-     */
-    private static final String PASSWORD = ConfigFactory.load().getString(MAIL_PASSWORD);
-
-    /**
      * Classe que guardará as propriedades do envio do e-mail.
      */
     private static final Properties PROPERTIES;
@@ -103,7 +98,7 @@ public abstract class MailUtil {
                 super.run();
                 Session session = Session.getInstance(PROPERTIES, new javax.mail.Authenticator() {
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication(SES_USERNAME, ConfigFactory.load().getString(MAIL_SMTP_PASSWORD));
+                            return new PasswordAuthentication(SES_USERNAME, SES_PASSWORD);
                         }
                     });
 

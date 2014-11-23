@@ -4,8 +4,8 @@ insert into social_profile (id,provider,access_token,user_id,status,modified_at,
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),1,1,'HAHAHA','poseidon@olimpo.god.com',2,now());
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),0,0,'HAHAHA','poseidon@olimpo.god.com',2,now());
 
-insert into token (id,content,user_id,since) values (nextVal('token_id_seq'),'TOKEN_2',2,now());
-insert into user_mobiles (id,identifier,user_id,token_id,os,modified_at) values (nextVal('user_mobiles_id_seq'),'haaadouuk3n-deviceId',2,2,1,now());
+insert into token (id,content,user_id,since,modified_at) values (nextVal('token_id_seq'),'TOKEN_2',2,now(),now());
+insert into user_mobiles (id,identifier,user_id,token_id,os,since,modified_at) values (nextVal('user_mobiles_id_seq'),'haaadouuk3n-deviceId',2,2,1,now(),now());
 
 insert into friends_circle (requester_id, target_id) values ((select id from users where login = 'zeus'), (select id from users where login = 'poseidon'));
 insert into friends_circle (requester_id, target_id) values ((select id from users where login = 'poseidon'), (select id from users where login = 'zeus'));

@@ -7,8 +7,8 @@ insert into social_profile (id,provider,access_token,user_id,status,modified_at,
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),1,1,'HAHAHA','zeus@olimpo.god.com',1,now());
 insert into user_mail_interaction (id,status,type,hash,mail,user_id,modified_at) values (nextVal('user_mail_interaction_id_seq'),0,0,'HAHAHA','zeus@olimpo.god.com',1,now());
 
-insert into token (id,content,user_id,since) values (nextVal('token_id_seq'),'UNIQUE_CONTENT_TOKEN',1,now());
-insert into user_mobiles (id,identifier,user_id,token_id,os,modified_at) values (nextVal('user_mobiles_id_seq'),'adSKkkanem21j23ldjjdkdas-deviceId',1,1,0,now());
+insert into token (id,content,user_id,since,modified_at) values (nextVal('token_id_seq'),'UNIQUE_CONTENT_TOKEN',1,now(),now());
+insert into user_mobiles (id,identifier,user_id,token_id,os,since,modified_at) values (nextVal('user_mobiles_id_seq'),'adSKkkanem21j23ldjjdkdas-deviceId',1,1,0,now(),now());
 
 insert into actions (id,type,from_id,user_id,extra,created_at,modified_at) values (nextVal('actions_id_seq'),8,(select id from users where login = 'zeus'),(select id from users where login = 'zeus'),'#IMORAL #SENSACIONAL',now(),now());
 

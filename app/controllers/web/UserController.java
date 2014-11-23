@@ -13,6 +13,7 @@ import models.database.IFinder;
 import models.exceptions.UWException;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
+import play.cache.Cache;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
 import play.i18n.Messages;
@@ -20,12 +21,15 @@ import play.libs.F;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.WebAuthenticator;
+import utils.SecurityUtil;
 import utils.UserUtil;
 import utils.WishListUtil;
 import views.html.confirmMail;
 import views.html.recoveryPassword;
 import views.html.unauthorized;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -55,24 +59,32 @@ public class UserController extends AbstractApplication {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
         UserMailInteraction umi = finder.selectUnique(
-                new String[] { FinderKey.HASH, FinderKey.MAIL },
-                new Object[] { h, m });
+                new String[] { FinderKey.HASH, FinderKey.MAIL, FinderKey.TYPE },
+                new Object[] { h, m, UserMailInteraction.Type.MAIL_CONFIRMATION.ordinal() });
 
         if (umi != null) {
-            if (umi.getStatus() == UserMailInteraction.Status.DONE || Hours.hoursBetween(new DateTime(umi.getCreatedAt()), DateTime.now()).getHours() <= MAX_TIME_AVERAGE) {
-                if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
-                    UserMailInteraction userMailInteraction = new UserMailInteraction();
-                    userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
-                    userMailInteraction.update(umi.getId());
+            if (Hours.hoursBetween(new DateTime(umi.getCreatedAt()), DateTime.now()).getHours() <= MAX_TIME_AVERAGE) {
+                switch (umi.getStatus()) {
+                    case WAITING:
+                    case DONE:
+                        if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
+                            UserMailInteraction userMailInteraction = new UserMailInteraction();
+                            userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
+                            userMailInteraction.update(umi.getId());
 
-                    User user = umi.getUser();
-                    User userModified = new User();
-                    userModified.setStatus(User.Status.ACTIVE);
-                    userModified.update(user.getId());
+                            User user = umi.getUser();
+                            User userModified = new User();
+                            userModified.setStatus(User.Status.ACTIVE);
+                            userModified.update(user.getId());
+                        }
+
+                        User user = umi.getUser();
+                        return ok(confirmMail.render(Messages.get(MessageKey.User.CONFIRM_MAIL_SUCCESS, user.getName(), user.getMail())));
+
+                    default:
+                        UserUtil.confirmEmail(umi.getUser(), false);
+                        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE)));
                 }
-
-                User user = umi.getUser();
-                return ok(confirmMail.render(Messages.get(MessageKey.User.CONFIRM_MAIL_SUCCESS, user.getName(), user.getMail())));
             } else {
                 UserMailInteraction userMailInteraction = new UserMailInteraction();
                 userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
@@ -90,37 +102,32 @@ public class UserController extends AbstractApplication {
     /**
      * Método responsável por exibir a View que irá ser responsável por
      * capturar os dados para realizar a recuperação da senha do usuário.
-     * @param ts - Milisegundos
      * @param h - Hash
      * @param m - Email
      * @return View
      */
     @AddCSRFToken
-    public static Result showRecoveryPassword(Long ts, String h, String m) {
+    public static Result showRecoveryPassword(String h, String m) {
         FinderFactory factory = FinderFactory.getInstance();
         IFinder<UserMailInteraction> finder = factory.get(UserMailInteraction.class);
         UserMailInteraction umi = finder.selectUnique(
-                new String[] { FinderKey.HASH, FinderKey.MAIL },
-                new Object[] { h, m });
+                new String[] { FinderKey.HASH, FinderKey.MAIL, FinderKey.TYPE },
+                new Object[] { h, m, UserMailInteraction.Type.RECOVERY_PASSWORD.ordinal() });
 
-        if (umi != null) {
-            if ((Hours.hoursBetween(DateTime.now(), new DateTime(ts)).getHours() > MAX_TIME_AVERAGE) || umi.getStatus() == UserMailInteraction.Status.CANCELED) {
-                if (umi.getStatus() != UserMailInteraction.Status.CANCELED) {
-                    UserMailInteraction userMailInteraction = new UserMailInteraction();
-                    userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
-                    userMailInteraction.update(umi.getId());
-                }
+        if (umi != null
+                && (Hours.hoursBetween(DateTime.now(), new DateTime(umi.getCreatedAt())).getHours() <= MAX_TIME_AVERAGE)) {
+            switch (umi.getStatus()) {
+                case WAITING:
+                    User user = umi.getUser();
+                    return ok(recoveryPassword.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_WARNING), user.getId(), umi.getId()));
 
-                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
-            } else {
-                if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
-                    UserMailInteraction userMailInteraction = new UserMailInteraction();
-                    userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
-                    userMailInteraction.update(umi.getId());
-                }
-
-                User user = umi.getUser();
-                return ok(recoveryPassword.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_WARNING), user.getId(), umi.getId()));
+                default:
+                    if (umi.getStatus() != UserMailInteraction.Status.CANCELED) {
+                        UserMailInteraction userMailInteraction = new UserMailInteraction();
+                        userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
+                        userMailInteraction.update(umi.getId());
+                    }
+                    return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
             }
         }
 
@@ -144,30 +151,45 @@ public class UserController extends AbstractApplication {
 
             FinderFactory factory = FinderFactory.getInstance();
             IFinder<UserMailInteraction> mailFinder = factory.get(UserMailInteraction.class);
-            UserMailInteraction userMailInteraction = mailFinder.selectUnique(mailId);
-            if (userMailInteraction.getStatus() == UserMailInteraction.Status.DONE) {
+            UserMailInteraction umi = mailFinder.selectUnique(mailId);
+            if (umi.getStatus() == UserMailInteraction.Status.WAITING) {
+                UserMailInteraction userMailInteraction = new UserMailInteraction();
+                userMailInteraction.setStatus(UserMailInteraction.Status.DONE);
+                userMailInteraction.update(umi.getId());
+
                 IFinder<User> finder = factory.get(User.class);
+                IFinder<Token> finderT = factory.get(Token.class);
                 User user = finder.selectUnique(id);
 
-                List<Token> tokens = user.getTokens();
+                List<Token> tokens = finderT.selectAll(
+                        new String[] {FinderKey.USER_ID},
+                        new Object[] {user.getId()});
                 if (tokens != null) {
                     for (Token token : tokens) {
+                        Cache.remove(token.getContent());
                         token.delete();
                     }
                 }
                 user.refresh();
 
-                User userChanged = new User();
-                userChanged.setPassword(password);
-                userChanged.update(user.getId());
+                try {
+                    password = SecurityUtil.md5(password);
 
-                return ok(recoveryPassword.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_SUCCESS), (long) -1, (long) -1));
+                    User userChanged = new User();
+                    userChanged.setPassword(password);
+                    userChanged.update(user.getId());
+
+                    return ok(recoveryPassword.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_SUCCESS), (long) -1, (long) -1));
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
             } else {
                 return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
             }
-        } else {
-            return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID)));
         }
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID)));
     }
 
     /**

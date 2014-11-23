@@ -31,15 +31,17 @@ public class Token extends Model {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @OneToOne(mappedBy = "token", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "token", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     private Mobile mobile;
 
     @Enumerated(value = EnumType.ORDINAL)
     private Target target;
 
-    @Version
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DateUtil.DATE_HOUR_PATTERN)
     private Date since;
+
+    @Version
+    private Date modifiedAt;
 
     public Token() {
         // Do nothing...
@@ -93,4 +95,11 @@ public class Token extends Model {
         this.target = target;
     }
 
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
 }

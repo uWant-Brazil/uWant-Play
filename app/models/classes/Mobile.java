@@ -39,6 +39,8 @@ public class Mobile extends Model {
     @Enumerated(value = EnumType.ORDINAL)
     private OS os;
 
+    private Date since;
+
     @Version
     private Date modifiedAt;
 
@@ -86,6 +88,22 @@ public class Mobile extends Model {
     }
 
     @JsonIgnore
+    public Date getSince() {
+        return since;
+    }
+
+    public void setSince(Date since) {
+        this.since = since;
+    }
+
+    public OS getOs() {
+        return os;
+    }
+
+    public void setOs(OS os) {
+        this.os = os;
+    }
+
     public Date getModifiedAt() {
         return modifiedAt;
     }

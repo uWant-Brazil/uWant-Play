@@ -1,0 +1,28 @@
+@(user: models.classes.User, hash: String, mail: String)
+
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+<div id="all">
+    <p>Olá, @user.getName()!</p>
+    <br />
+    <p>Você acaba de solicitar a redefinição de sua senha em nosso sistema.</p>
+    <p>Para realizar a configuração da nova senha, acesse o link <a href="@controllers.web.routes.UserController.showRecoveryPassword(hash, mail)">REDEFINIR SENHA</a>!</p>
+    <br />
+    <p>Caso você não consiga acessar o link acima, tente através desse link:</p>
+    <span>http://www.uwant.com.br@controllers.web.routes.UserController.showRecoveryPassword(hash, mail)</span>
+    <br />
+    <p>Caso você não tenha solicitado a redefinição da senha, recomendamos você trocar a senha do seu usuário de e-mail, evitando possíveis acessos indejesados.</p>
+    <p>Esperamos ter ajudado, até mais!</p>
+    <br />
+    <p>uWant, sua rede social de desejos!</p>
+    <br />
+    <p><strong>ATENÇÃO!</strong></p>
+    <p><strong>NÃO RESPONDA ESSE E-MAIL!</strong></p>
+</div>
+</body>
+</html>

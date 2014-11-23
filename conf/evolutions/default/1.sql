@@ -69,6 +69,7 @@ create table user_mobiles (
   user_id                   bigint,
   token_id                  bigint,
   os                        integer,
+  since                     timestamp,
   modified_at               timestamp not null,
   constraint ck_user_mobiles_os check (os in (0,1,2)),
   constraint uq_user_mobiles_identifier unique (identifier),
@@ -135,7 +136,8 @@ create table token (
   content                   varchar(255) not null,
   user_id                   bigint,
   target                    integer,
-  since                     timestamp not null,
+  since                     timestamp,
+  modified_at               timestamp not null,
   constraint ck_token_target check (target in (0,1)),
   constraint uq_token_content unique (content),
   constraint pk_token primary key (id))

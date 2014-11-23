@@ -65,8 +65,7 @@ public abstract  class UserUtil {
             }
         }
 
-        // TODO HTML para confirmação do e-mail do usuário.
-        final String content = "Confirme seu email:<br /><br /> http://homologacao.uwant.com.br/user/confirmMail?h=" + hash + "&m=" + mail;
+        final String content = views.html.emails.email_confirmar.render(user, hash, mail).toString();
 
         try {
             MailUtil.send(mail, CONFIRM_MAIL_SUBJECT, content);
@@ -163,8 +162,7 @@ public abstract  class UserUtil {
             userMailInteraction.setCreatedAt(new Date());
             userMailInteraction.save();
 
-            // TODO HTML para confirmação do e-mail do usuário.
-            final String content = "Recupere sua senha:<br /><br /> http://homologacao.uwant.com.br/user/recoveryPassword?ts=" + System.currentTimeMillis() + "&h=" + hash + "&m=" + mail;
+            final String content = views.html.emails.email_recuperar.render(user, hash, mail).toString();
 
             try {
                 MailUtil.send(mail, RECOVERY_PASSWORD_MAIL_SUBJECT, content);
