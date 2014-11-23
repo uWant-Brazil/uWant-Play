@@ -85,17 +85,6 @@ img {
 	margin:0 auto;
 	height: 100%;
 }
-#download {
-	width:200px;
-	float:left;
-	color:#FFF;
-	font-size: 46px;
-	margin: 40px 0;
-	text-decoration:none;
-}
-#download:hover {
-	text-decoration:none;
-}
 #slogan {
 	width:310px;
 	height:265px;
