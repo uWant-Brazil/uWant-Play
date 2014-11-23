@@ -44,9 +44,12 @@ public class AuthenticationController extends AbstractApplication {
                             if (user == null) {
                                 password = SecurityUtil.md5(password);
 
+                                // Disponibilização de autenticação tanto com o login quanto com o e-mail do usuário.
+                                String keyLogin = RegexUtil.isValidMail(login) ? FinderKey.MAIL : FinderKey.LOGIN;
+
                                 FinderFactory factory = FinderFactory.getInstance();
                                 IFinder<User> finder = factory.get(User.class);
-                                user = finder.selectUnique(new String[]{FinderKey.LOGIN, FinderKey.PASSWORD}, new String[]{login, password});
+                                user = finder.selectUnique(new String[]{keyLogin, FinderKey.PASSWORD}, new String[]{login, password});
                             }
 
                             if (user != null && UserUtil.isAvailable(user)) {
