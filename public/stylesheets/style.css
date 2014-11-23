@@ -163,7 +163,12 @@ footer {
     margin-left:145px;
     margin-bottom: 15px;
 }
-#cadastro input {
+#cadastro input:not([type="submit"]){
+    border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    font-size: 16px !important;
+}
+#cadastro input[type="submit"]{
     border-radius: 0px !important;
     -moz-border-radius: 0px !important;
 }
@@ -186,7 +191,12 @@ footer {
     float:left;
     margin-bottom: 100px;
 }
-#login input {
+#login input:not([type="submit"]) {
+    border-radius: 0px !important;
+    -moz-border-radius: 0px !important;
+    font-size: 16px !important;
+}
+#login input[type="submit"] {
     border-radius: 0px !important;
     -moz-border-radius: 0px !important;
 }
@@ -203,7 +213,9 @@ footer {
 .buttonAuthentication:hover {
     color:#FFF !important;
 }
-
+.form-group {
+    margin-bottom: 12px !important;
+}
 #forgotPassword{
     color: gray;
     font-size: 16px;
@@ -309,7 +321,8 @@ input[type=checkbox] {
     text-align: right;
     color: rgb(169, 165, 165);
     font-weight: normal;
-    margin-bottom: 15px;
+    margin-top: 5px;
+    margin-bottom: 20px;
 }
 .checkright{
     width: 105px;
@@ -319,6 +332,7 @@ input[type=checkbox] {
     text-align: right;
     color: rgb(169, 165, 165);
     font-weight: normal;
-    margin-bottom: 15px;
+    margin-top: 5px;
+    margin-bottom: 20px;
     margin-right: 105px;
 }
