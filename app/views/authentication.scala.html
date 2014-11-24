@@ -72,11 +72,39 @@
             <input type="submit" class="btn buttonAuthentication" value="Entrar">
             }
 
-            <a href="#" id="forgotPassword">Esqueceu sua senha?</a>
+            <a href="#"  id="forgotPassword" data-toggle="modal" data-target="#modalforgotPassword">
+                Esqueceu sua senha?
+            </a>
 
             <a href="#" id="sigInFacebook" class="btn">Entre com o Facebook</a>
         </div>
 
     </div><!--/container-center-->
 </div><!--/container-->
+
+
+<!--MODAL esqueceu senha -->
+<!-- Modal -->
+<div class="modal fade" id="modalforgotPassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="recuperarSenha" action="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">Recuperar senha</h4>
+            </div>
+            <div class="modal-body">
+                <h4>Digite o e-mail cadastrado</h4>
+                <div class="form-group">
+                    <input type="email" class="form-control" placeholder="Email">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btnModalCustom">Recuperar</button>
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
 }
