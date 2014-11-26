@@ -1,15 +1,14 @@
 @(userForm: Form[models.cloud.forms.UserViewModel])
 
+@implicitField = @{ FieldConstructor(UWInputText.f) }
+
 @import helper._
 
 @main(Messages.apply("site.index.title")) {
-<script type="text/javascript" src="@routes.Assets.at("/javascripts/jquery.mask.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.mask.js")"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-        //aplica máscara no campo Data Nascimento
         $('.dateMask').mask('00/00/0000');
-
-        //não exibe o botão de 'Entrar' da main
         $('#extras_topo a').css('display', 'none');
         $('#extras_topo').css('width', '240px');
 
@@ -24,41 +23,41 @@
 
                 <div id="profileWrap">
                     <div class="profile-avatar-wrap">
-                        <img src="@routes.Assets.at("/images/ic_semfoto.png")" id="profile-avatar" alt="Image for Profile">
+                        <img src="@routes.Assets.at("images/ic_semfoto.png")" id="profile-avatar" alt="Image for Profile">
                         <div id="profile"></div>
                     </div>
-                    <input type="file" id="uploader">
+                    <input type="file" id="uploader" name="picture">
                 </div>
 
-            <div class="form-group">
-                <input type="text" id="register-login" class="form-control" placeholder="Login">
-            </div>
+                <div class="form-group">
+                    @inputText(userForm("login"), 'id -> "register-login", 'class -> "form-control", 'placeholder -> "Login")
+                </div>
 
-            <div class="form-group">
-                <input type="text" id="register-name" class="form-control" placeholder="Nome + sobrenome">
-            </div>
-            <div class="checkleft gender_radio">
-                <input type="radio" value="Feminino" id="check-female" name="gender" />
-                <label for="check-female">Feminino</label>
-            </div>
-            <div class="checkright gender_radio">
-                <input type="radio" value="Masculino" id="check-male" name="gender" />
-                <label for="check-male">Masculino</label>
-            </div>
+                <div class="form-group">
+                    @inputText(userForm("name"), 'id -> "register-name", 'class -> "form-control", 'placeholder -> "Nome + Sobrenome")
+                </div>
+                <div class="checkleft gender_radio">
+                    <input type="radio" value="FEMALE" id="check-female" name="gender" />
+                    <label for="check-female">Feminino</label>
+                </div>
+                <div class="checkright gender_radio">
+                    <input type="radio" value="MALE" id="check-male" name="gender" />
+                    <label for="check-male">Masculino</label>
+                </div>
 
-            <div class="form-group">
-                <input type="email" id="register-email" class="form-control" placeholder="Email" autocomplete="off">
-            </div>
+                <div class="form-group">
+                    @inputText(userForm("mail"), 'id -> "register-email", 'class -> "form-control", 'placeholder -> "Email", 'autocomplete -> "off")
+                </div>
 
-            <div class="form-group">
-                <input type="password" id="register-password" class="form-control" placeholder="Senha" autocomplete="off">
-            </div>
+                <div class="form-group">
+                    @inputPassword(userForm("password"), 'id -> "register-password", 'class -> "form-control", 'placeholder -> "Senha", 'autocomplete -> "off")
+                </div>
 
-            <div class="form-group">
-                <input type="text" id="register-birthday" class="form-control dateMask" placeholder="Data Nascimento">
-            </div>
+                <div class="form-group">
+                    @inputText(userForm("birthday"), 'id -> "register-birthday", 'class -> "form-control dateMask", 'placeholder -> "Data Nascimento")
+                </div>
 
-            <input type="submit" class="btn buttonAuthentication" value="Cadastrar">
+                <input type="submit" class="btn buttonAuthentication" value="Cadastrar">
             }
         </div>
 
@@ -67,15 +66,15 @@
                 @CSRF.formField
                 <h1>@Messages.apply("authentication.login.title")</h1>
 
-            <div class="form-group">
-                <input type="text" id="username" class="form-control" placeholder="Login">
-            </div>
+                <div class="form-group">
+                    @inputText(userForm("login"), 'id -> "username", 'class -> "form-control", 'placeholder -> "Login")
+                </div>
 
-            <div class="form-group">
-                <input type="password" id="password" class="form-control" placeholder="Senha">
-            </div>
+                <div class="form-group">
+                    @inputPassword(userForm("password"), 'id -> "password", 'class -> "form-control", 'placeholder -> "Senha")
+                </div>
 
-            <input type="submit" class="btn buttonAuthentication" value="Entrar">
+                <input type="submit" class="btn buttonAuthentication" value="Entrar">
             }
 
             <a href="#"  id="forgotPassword" data-toggle="modal" data-target="#modalforgotPassword">
@@ -85,42 +84,40 @@
             <a href="#" id="sigInFacebook" class="btn">Entre com o Facebook</a>
         </div>
 
-    </div><!--/container-center-->
-</div><!--/container-->
+    </div>
+</div>
 
-<!-- Custom upload file profile -->
-<script src="@routes.Assets.at("/javascripts/resample.js")"></script>
-<script src="@routes.Assets.at("/javascripts/avatar.js")"></script>
+<script src="@routes.Assets.at("javascripts/resample.js")"></script>
+<script src="@routes.Assets.at("javascripts/avatar.js")"></script>
 <script type="text/javascript">
 	$(document).ready(function(e) {
         $('input[type=file]').change(function() {
-			// select the form and submit
 			$('#profile').css('display', 'block');
 		});
     });
 </script>
 
-<!--MODAL esqueceu senha -->
-<!-- Modal -->
 <div class="modal fade" id="modalforgotPassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="recuperarSenha" action="">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title" id="myModalLabel">Recuperar senha</h4>
-            </div>
-            <div class="modal-body">
-                <h4>Digite o e-mail cadastrado</h4>
-                <div class="form-group">
-                    <input type="email" class="form-control" placeholder="Email">
+            @form(action = controllers.web.routes.UserController.startRecoveryPassword(), 'id -> "form_recuperar_senha") {
+                @CSRF.formField
+
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Recuperar senha</h4>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                <button type="submit" class="btn btnModalCustom">Recuperar</button>
-            </div>
-            </form>
+                <div class="modal-body">
+                    <h4>Digite o e-mail do seu cadastro cadastrado</h4>
+                    <div class="form-group">
+                        @inputText(userForm("mail"), 'class -> "form-control")
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-default">Recuperar</button>
+                </div>
+            }
         </div>
     </div>
 </div>

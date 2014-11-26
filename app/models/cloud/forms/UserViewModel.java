@@ -5,6 +5,7 @@ import play.data.format.Formats;
 import play.data.validation.Constraints;
 import utils.DateUtil;
 
+import java.io.File;
 import java.util.Date;
 
 public class UserViewModel {
@@ -26,6 +27,11 @@ public class UserViewModel {
     @Constraints.Required
     @Formats.DateTime(pattern = DateUtil.DATE_PATTERN)
     private Date birthday;
+
+    @Constraints.Required
+    private String gender;
+
+    private File picture;
 
     public UserViewModel() {
     }
@@ -75,5 +81,21 @@ public class UserViewModel {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public File getPicture() {
+        return picture;
+    }
+
+    public void setPicture(File picture) {
+        this.picture = picture;
     }
 }

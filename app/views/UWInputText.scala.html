@@ -1,0 +1,7 @@
+@(elements: helper.FieldElements)
+<div class="input">
+    @elements.input
+    @if(elements.args.get('_showConstraints).map{ _ == true}.getOrElse(false)) {
+    <pre class="help-block">@elements.infos(elements.lang).mkString(", ")</pre>
+    }
+</div>

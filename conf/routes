@@ -39,6 +39,7 @@ POST    /v1/mobile/action/feeds                 controllers.mobile.ActionControl
 # Web methods
 GET     /                                       controllers.AbstractApplication.index()
 GET     /v1/about                               controllers.AbstractApplication.about()
+POST    /v1/web/recoveryPassword                controllers.web.UserController.startRecoveryPassword()
 GET     /v1/web/user/recoveryPassword           controllers.web.UserController.showRecoveryPassword(ts:Long ?= 0, h:String ?= "0", m:String ?= "0")
 POST    /v1/web/user/recoveryPassword           controllers.web.UserController.recoveryPassword(id:Long ?= 0, mailId:Long ?= 0)
 GET     /v1/web/user/confirmMail                controllers.web.UserController.confirmMailView(h:String ?= "0", m:String ?= "0")
@@ -48,4 +49,4 @@ GET     /v1/web/wishlist                        controllers.web.WishListControll
 GET     /v1/web/authorize                       controllers.web.AuthenticationController.authorizeView()
 POST    /v1/web/authorize                       controllers.web.AuthenticationController.authorize()
 POST    /v1/web/register                        controllers.web.UserController.register()
-GET     /v1/web/:login                                 controllers.web.UserController.perfil(login: String)
+GET     /v1/web/:login                          controllers.web.UserController.perfil(login: String)

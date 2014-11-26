@@ -48,7 +48,7 @@ public class UWGlobal extends GlobalSettings {
 
     @Override
     public F.Promise<Result> onHandlerNotFound(Http.RequestHeader request) {
-        return invalidSession(request);
+        return super.onHandlerNotFound(request);
     }
 
     private F.Promise<Result> invalidSession(Http.RequestHeader request) {
