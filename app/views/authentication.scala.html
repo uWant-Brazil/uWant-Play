@@ -1,4 +1,4 @@
-@(userForm: Form[models.cloud.forms.UserViewModel])
+@(registerForm: Form[models.cloud.forms.UserRegisterViewModel], authForm: Form[models.cloud.forms.UserAuthenticationViewModel])
 
 @implicitField = @{ FieldConstructor(UWInputText.f) }
 
@@ -30,11 +30,11 @@
                 </div>
 
                 <div class="form-group">
-                    @inputText(userForm("login"), 'id -> "register-login", 'class -> "form-control", 'placeholder -> "Login")
+                    @inputText(registerForm("login"), 'id -> "register-login", 'class -> "form-control", 'placeholder -> "Login")
                 </div>
 
                 <div class="form-group">
-                    @inputText(userForm("name"), 'id -> "register-name", 'class -> "form-control", 'placeholder -> "Nome + Sobrenome")
+                    @inputText(registerForm("name"), 'id -> "register-name", 'class -> "form-control", 'placeholder -> "Nome + Sobrenome")
                 </div>
                 <div class="checkleft gender_radio">
                     <input type="radio" value="FEMALE" id="check-female" name="gender" />
@@ -46,15 +46,15 @@
                 </div>
 
                 <div class="form-group">
-                    @inputText(userForm("mail"), 'id -> "register-email", 'class -> "form-control", 'placeholder -> "Email", 'autocomplete -> "off")
+                    @inputText(registerForm("mail"), 'id -> "register-email", 'class -> "form-control", 'placeholder -> "Email", 'autocomplete -> "off")
                 </div>
 
                 <div class="form-group">
-                    @inputPassword(userForm("password"), 'id -> "register-password", 'class -> "form-control", 'placeholder -> "Senha", 'autocomplete -> "off")
+                    @inputPassword(registerForm("password"), 'id -> "register-password", 'class -> "form-control", 'placeholder -> "Senha", 'autocomplete -> "off")
                 </div>
 
                 <div class="form-group">
-                    @inputText(userForm("birthday"), 'id -> "register-birthday", 'class -> "form-control dateMask", 'placeholder -> "Data Nascimento")
+                    @inputText(registerForm("birthday"), 'id -> "register-birthday", 'class -> "form-control dateMask", 'placeholder -> "Data Nascimento")
                 </div>
 
                 <input type="submit" class="btn buttonAuthentication" value="Cadastrar">
@@ -67,11 +67,11 @@
                 <h1>@Messages.apply("authentication.login.title")</h1>
 
                 <div class="form-group">
-                    @inputText(userForm("login"), 'id -> "username", 'class -> "form-control", 'placeholder -> "Login")
+                    @inputText(authForm("login"), 'id -> "username", 'class -> "form-control", 'placeholder -> "Login")
                 </div>
 
                 <div class="form-group">
-                    @inputPassword(userForm("password"), 'id -> "password", 'class -> "form-control", 'placeholder -> "Senha")
+                    @inputPassword(authForm("password"), 'id -> "password", 'class -> "form-control", 'placeholder -> "Senha")
                 </div>
 
                 <input type="submit" class="btn buttonAuthentication" value="Entrar">
@@ -110,7 +110,7 @@
                 <div class="modal-body">
                     <h4>Digite o e-mail do seu cadastro cadastrado</h4>
                     <div class="form-group">
-                        @inputText(userForm("mail"), 'class -> "form-control")
+                        @inputText(registerForm("mail"), 'class -> "form-control")
                     </div>
                 </div>
                 <div class="modal-footer">

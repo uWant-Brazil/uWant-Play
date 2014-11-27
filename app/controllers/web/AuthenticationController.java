@@ -29,7 +29,7 @@ public class AuthenticationController extends AbstractApplication {
      */
     @AddCSRFToken
     public static F.Promise<Result> authorizeView() {
-        return F.Promise.<Result>pure(ok(views.html.authentication.render(Form.form(UserRegisterViewModel.class))));
+        return F.Promise.<Result>pure(ok(views.html.authentication.render(Form.form(UserRegisterViewModel.class), Form.form(UserAuthenticationViewModel.class))));
     }
 
     /**
