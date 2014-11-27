@@ -1,20 +1,18 @@
 package controllers.web;
 
-import com.ning.http.client.FilePart;
 import controllers.AbstractApplication;
+import models.classes.Multimedia;
 import models.classes.Token;
 import models.classes.User;
 import models.classes.UserMailInteraction;
-import models.classes.WishList;
 import models.cloud.forms.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
-import play.data.Form;
-import play.filters.csrf.AddCSRFToken;
 import play.cache.Cache;
+import play.data.Form;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
 import play.i18n.Messages;
@@ -23,8 +21,7 @@ import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.WebAuthenticator;
-import utils.SecurityUtil;
-import utils.DateUtil;
+import utils.CDNUtil;
 import utils.SecurityUtil;
 import utils.UserUtil;
 import utils.WishListUtil;
@@ -34,14 +31,6 @@ import views.html.unauthorized;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -248,35 +237,49 @@ public class UserController extends AbstractApplication {
         Http.MultipartFormData data = request().body().asMultipartFormData();
         Form<UserViewModel> form = Form.form(UserViewModel.class).bindFromRequest(data.asFormUrlEncoded());
         if (isValidForm(form)) {
-            UserViewModel model = form.get();
-            try {
-                if (!UserUtil.alreadyExists(model.getLogin(), model.getMail())) {
-                    User.Gender gender = User.Gender.valueOf(model.getGender());
+            final UserViewModel model = form.get();
 
-                    User user = new User();
-                    user.setLogin(model.getLogin());
-                    user.setPassword(SecurityUtil.md5(model.getPassword()));
-                    user.setName(model.getName());
-                    user.setMail(model.getMail());
-                    user.setBirthday(model.getBirthday());
-                    user.setGender(gender);
-                    user.setStatus(User.Status.PARTIAL_ACTIVE);
-                    user.setSince(new Date());
-                    user.save();
-                    user.refresh();
+            return F.Promise.<Result>promise(() -> {
+                try {
+                    if (!UserUtil.alreadyExists(model.getLogin(), model.getMail())) {
+                        User.Gender gender = User.Gender.valueOf(model.getGender());
 
-                    UserUtil.confirmEmail(user, false);
+                        User user = new User();
+                        user.setLogin(model.getLogin());
+                        user.setPassword(SecurityUtil.md5(model.getPassword()));
+                        user.setName(model.getName());
+                        user.setMail(model.getMail());
+                        user.setBirthday(model.getBirthday());
+                        user.setGender(gender);
+                        user.setStatus(User.Status.PARTIAL_ACTIVE);
+                        user.setSince(new Date());
+                        user.save();
+                        user.refresh();
 
-                    Http.MultipartFormData.FilePart picture = data.getFile("picture");
-                    return F.Promise.<Result>pure(ok());
+                        UserUtil.confirmEmail(user, false);
+
+                        Http.MultipartFormData.FilePart picture = data.getFile("picture");
+                        if (picture != null) {
+                            Multimedia multimedia = CDNUtil.sendFile(picture.getFile());
+
+                            User u = new User();
+                            u.setPicture(multimedia);
+                            u.update(user.getId());
+                        }
+
+                        return ok(views.html.success.render("Parabéns, o seu usuário foi cadastrado com sucesso! Acabamos de enviar um e-mail para confirmação de sua conta. Por favor, verifique seu provedor de e-mails!"));
+                    }
+                } catch (UserAlreadyExistException e) {
+                    e.printStackTrace();
+                    return invalidWebSession("Já existe um usuário cadastrado com este login/e-mail. Tente novamente!").get(5, TimeUnit.MINUTES);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-            } catch (UserAlreadyExistException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+
+                return invalidWebSession().get(5, TimeUnit.MINUTES);
+            });
         }
 
         return invalidWebSession();

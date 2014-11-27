@@ -148,6 +148,9 @@ public class AbstractApplication extends Controller {
         public static final String SINCE = "since";
     }
 
+    /**
+     * Classe estática responsável por manter todas as chaves de acesso as mensagens do tradutor do Play!
+     */
     public static class MessageKey {
         public static final class Abstract {
             public static final String WEB_SESSION_INVALID = "abstract.websession.invalid";
@@ -454,7 +457,7 @@ public class AbstractApplication extends Controller {
      * Método responsável por renderizar a página inicial do uWant.
      * @return HTML
      */
-    //@Cached(key = "homepage")
+    @Cached(key = "homepage")
     public static F.Promise<Result> index() {
         return F.Promise.<Result>pure(ok(views.html.index.render()));
     }
