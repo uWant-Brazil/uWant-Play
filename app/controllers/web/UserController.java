@@ -1,26 +1,30 @@
 package controllers.web;
 
+import com.ning.http.client.FilePart;
 import controllers.AbstractApplication;
 import models.classes.Token;
 import models.classes.User;
 import models.classes.UserMailInteraction;
-import models.cloud.forms.MultimediaViewModel;
-import models.cloud.forms.ProductViewModel;
-import models.cloud.forms.UserViewModel;
-import models.cloud.forms.WishListViewModel;
+import models.classes.WishList;
+import models.cloud.forms.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
-import models.exceptions.UWException;
+import models.exceptions.*;
 import org.joda.time.DateTime;
 import org.joda.time.Hours;
+import play.data.Form;
+import play.filters.csrf.AddCSRFToken;
 import play.cache.Cache;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
 import play.i18n.Messages;
 import play.libs.F;
+import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.WebAuthenticator;
+import utils.SecurityUtil;
+import utils.DateUtil;
 import utils.SecurityUtil;
 import utils.UserUtil;
 import utils.WishListUtil;
@@ -34,6 +38,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -97,6 +106,43 @@ public class UserController extends AbstractApplication {
         }
 
         return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_INVALID)));
+    }
+
+    @RequireCSRFCheck
+    public static F.Promise<Result> startRecoveryPassword() {
+        Form<RecoveryPasswordViewModel> form = Form.form(RecoveryPasswordViewModel.class).bindFromRequest();
+        if (isValidForm(form)) {
+            RecoveryPasswordViewModel model = form.get();
+
+            FinderFactory factory = FinderFactory.getInstance();
+            IFinder<User> finder = factory.get(User.class);
+            User user = finder.selectUnique(new String[] { FinderKey.MAIL }, new Object[] { model.getMail() });
+
+            try {
+                if (user == null) {
+                    throw new UserDoesntExistException();
+                }
+
+                if (UserUtil.isAvailable(user)) {
+                    if (UserUtil.isMailConfirmed(user)) {
+                        UserUtil.recoveryPassword(user);
+                    } else {
+                        // Uma nova confirmação será enviada...
+                        throw new UnconfirmedMailException(user);
+                    }
+                } else {
+                    throw new AuthenticationException();
+                }
+
+                return F.Promise.<Result>pure(redirect(controllers.web.routes.AuthenticationController.authorize()));
+            } catch (UWException e) {
+                e.printStackTrace();
+
+                return invalidWebSession(e.getMessage());
+            }
+        }
+
+        return invalidMobileSession();
     }
 
     /**
@@ -199,7 +245,41 @@ public class UserController extends AbstractApplication {
      */
     @RequireCSRFCheck
     public static F.Promise<Result> register() {
-        return F.Promise.<Result>pure(ok());
+        Http.MultipartFormData data = request().body().asMultipartFormData();
+        Form<UserViewModel> form = Form.form(UserViewModel.class).bindFromRequest(data.asFormUrlEncoded());
+        if (isValidForm(form)) {
+            UserViewModel model = form.get();
+            try {
+                if (!UserUtil.alreadyExists(model.getLogin(), model.getMail())) {
+                    User.Gender gender = User.Gender.valueOf(model.getGender());
+
+                    User user = new User();
+                    user.setLogin(model.getLogin());
+                    user.setPassword(SecurityUtil.md5(model.getPassword()));
+                    user.setName(model.getName());
+                    user.setMail(model.getMail());
+                    user.setBirthday(model.getBirthday());
+                    user.setGender(gender);
+                    user.setStatus(User.Status.PARTIAL_ACTIVE);
+                    user.setSince(new Date());
+                    user.save();
+                    user.refresh();
+
+                    UserUtil.confirmEmail(user, false);
+
+                    Http.MultipartFormData.FilePart picture = data.getFile("picture");
+                    return F.Promise.<Result>pure(ok());
+                }
+            } catch (UserAlreadyExistException e) {
+                e.printStackTrace();
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return invalidWebSession();
     }
 
     /**
