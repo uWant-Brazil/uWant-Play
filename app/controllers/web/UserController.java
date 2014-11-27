@@ -2,10 +2,7 @@ package controllers.web;
 
 import com.ning.http.client.FilePart;
 import controllers.AbstractApplication;
-import models.classes.Token;
-import models.classes.User;
-import models.classes.UserMailInteraction;
-import models.classes.WishList;
+import models.classes.*;
 import models.cloud.forms.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
@@ -18,10 +15,7 @@ import play.filters.csrf.RequireCSRFCheck;
 import play.libs.F;
 import play.mvc.Http;
 import play.mvc.Result;
-import utils.DateUtil;
-import utils.SecurityUtil;
-import utils.UserUtil;
-import utils.WishListUtil;
+import utils.*;
 import views.html.recoveryPassword;
 import views.html.unauthorized;
 import views.html.confirmMail;
@@ -223,35 +217,49 @@ public class UserController extends AbstractApplication {
         Http.MultipartFormData data = request().body().asMultipartFormData();
         Form<UserViewModel> form = Form.form(UserViewModel.class).bindFromRequest(data.asFormUrlEncoded());
         if (isValidForm(form)) {
-            UserViewModel model = form.get();
-            try {
-                if (!UserUtil.alreadyExists(model.getLogin(), model.getMail())) {
-                    User.Gender gender = User.Gender.valueOf(model.getGender());
+            final UserViewModel model = form.get();
 
-                    User user = new User();
-                    user.setLogin(model.getLogin());
-                    user.setPassword(SecurityUtil.md5(model.getPassword()));
-                    user.setName(model.getName());
-                    user.setMail(model.getMail());
-                    user.setBirthday(model.getBirthday());
-                    user.setGender(gender);
-                    user.setStatus(User.Status.PARTIAL_ACTIVE);
-                    user.setSince(new Date());
-                    user.save();
-                    user.refresh();
+            return F.Promise.<Result>promise(() -> {
+                try {
+                    if (!UserUtil.alreadyExists(model.getLogin(), model.getMail())) {
+                        User.Gender gender = User.Gender.valueOf(model.getGender());
 
-                    UserUtil.confirmEmail(user, false);
+                        User user = new User();
+                        user.setLogin(model.getLogin());
+                        user.setPassword(SecurityUtil.md5(model.getPassword()));
+                        user.setName(model.getName());
+                        user.setMail(model.getMail());
+                        user.setBirthday(model.getBirthday());
+                        user.setGender(gender);
+                        user.setStatus(User.Status.PARTIAL_ACTIVE);
+                        user.setSince(new Date());
+                        user.save();
+                        user.refresh();
 
-                    Http.MultipartFormData.FilePart picture = data.getFile("picture");
-                    return F.Promise.<Result>pure(ok());
+                        UserUtil.confirmEmail(user, false);
+
+                        Http.MultipartFormData.FilePart picture = data.getFile("picture");
+                        if (picture != null) {
+                            Multimedia multimedia = CDNUtil.sendFile(picture.getFile());
+
+                            User u = new User();
+                            u.setPicture(multimedia);
+                            u.update(user.getId());
+                        }
+
+                        return ok(views.html.success.render("Parabéns, o seu usuário foi cadastrado com sucesso! Acabamos de enviar um e-mail para confirmação de sua conta. Por favor, verifique seu provedor de e-mails!"));
+                    }
+                } catch (UserAlreadyExistException e) {
+                    e.printStackTrace();
+                    return invalidWebSession("Já existe um usuário cadastrado com este login/e-mail. Tente novamente!").get(5, TimeUnit.MINUTES);
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
-            } catch (UserAlreadyExistException e) {
-                e.printStackTrace();
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+
+                return invalidWebSession().get(5, TimeUnit.MINUTES);
+            });
         }
 
         return invalidWebSession();
