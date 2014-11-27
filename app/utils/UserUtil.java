@@ -2,7 +2,7 @@ package utils;
 
 import controllers.AbstractApplication;
 import models.classes.*;
-import models.cloud.forms.UserViewModel;
+import models.cloud.forms.UserRegisterViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.InvalidMailException;
@@ -285,13 +285,13 @@ public abstract  class UserUtil {
      * @param login - Usuário referencia
      * @return
      */
-    public static UserViewModel getPerfilUser(User user, String login) {
+    public static UserRegisterViewModel getPerfilUser(User user, String login) {
         if (!user.getLogin().equalsIgnoreCase(login)) {
             FinderFactory factory = FinderFactory.getInstance();
             IFinder<User> finder = factory.get(User.class);
             user = finder.selectUnique(new String[] {AbstractApplication.FinderKey.LOGIN}, new Object[] {login});
         }
 
-        return new UserViewModel(user);
+        return new UserRegisterViewModel(user);
     }
 }

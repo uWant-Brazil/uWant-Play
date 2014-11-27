@@ -8,7 +8,7 @@ import utils.DateUtil;
 import java.io.File;
 import java.util.Date;
 
-public class UserViewModel {
+public class UserRegisterViewModel {
 
     @Constraints.Required
     @Constraints.MinLength(4)
@@ -33,10 +33,10 @@ public class UserViewModel {
 
     private File picture;
 
-    public UserViewModel() {
+    public UserRegisterViewModel() {
     }
 
-    public UserViewModel(User user) {
+    public UserRegisterViewModel(User user) {
         this.login = user.getLogin();
         this.name = user.getName();
         this.mail = user.getMail();

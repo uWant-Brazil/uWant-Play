@@ -235,9 +235,9 @@ public class UserController extends AbstractApplication {
     @RequireCSRFCheck
     public static F.Promise<Result> register() {
         Http.MultipartFormData data = request().body().asMultipartFormData();
-        Form<UserViewModel> form = Form.form(UserViewModel.class).bindFromRequest(data.asFormUrlEncoded());
+        Form<UserRegisterViewModel> form = Form.form(UserRegisterViewModel.class).bindFromRequest(data.asFormUrlEncoded());
         if (isValidForm(form)) {
-            final UserViewModel model = form.get();
+            final UserRegisterViewModel model = form.get();
 
             return F.Promise.<Result>promise(() -> {
                 try {
@@ -295,7 +295,7 @@ public class UserController extends AbstractApplication {
         return F.Promise.<Result>promise(() -> {
             try {
                 User user = authenticateSession();
-                UserViewModel userVM = UserUtil.getPerfilUser(user, login);
+                UserRegisterViewModel userVM = UserUtil.getPerfilUser(user, login);
                 List<WishListViewModel> wishlistsVM = WishListUtil.getPerfilWishList(user, login);
 
                 List<MultimediaViewModel> randomAuxVM = new ArrayList<MultimediaViewModel>(10);

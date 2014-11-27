@@ -3,7 +3,8 @@ package controllers.web;
 import controllers.AbstractApplication;
 import models.classes.Token;
 import models.classes.User;
-import models.cloud.forms.UserViewModel;
+import models.cloud.forms.UserAuthenticationViewModel;
+import models.cloud.forms.UserRegisterViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import play.data.Form;
@@ -28,7 +29,7 @@ public class AuthenticationController extends AbstractApplication {
      */
     @AddCSRFToken
     public static F.Promise<Result> authorizeView() {
-        return F.Promise.<Result>pure(ok(views.html.authentication.render(Form.form(UserViewModel.class))));
+        return F.Promise.<Result>pure(ok(views.html.authentication.render(Form.form(UserRegisterViewModel.class))));
     }
 
     /**
@@ -38,9 +39,9 @@ public class AuthenticationController extends AbstractApplication {
      */
     @RequireCSRFCheck
     public static F.Promise<Result> authorize() {
-        Form<UserViewModel> form = Form.<UserViewModel>form(UserViewModel.class).bindFromRequest();
+        Form<UserAuthenticationViewModel> form = Form.form(UserAuthenticationViewModel.class).bindFromRequest();
         if (isValidForm(form)) {
-            final UserViewModel model = form.get();
+            final UserAuthenticationViewModel model = form.get();
 
             return F.Promise.<Result>promise(() -> {
                 FinderFactory factory = FinderFactory.getInstance();
@@ -54,7 +55,8 @@ public class AuthenticationController extends AbstractApplication {
                 } else {
                     generateToken(user, Token.Target.WEB);
 
-                    return redirect(controllers.web.routes.UserController.perfil(user.getLogin()));
+                    //return redirect(controllers.web.routes.UserController.perfil(user.getLogin()));
+                    return ok(views.html.success.render(String.format("Olá %s, você registrou o seu usuário e autenticou em nosso sistema, mas os nossos serviços ainda está em fase ALPHA. Aguarde que em breve iremos liberar o acesso a todos!", user.getName())));
                 }
             });
         } else {
