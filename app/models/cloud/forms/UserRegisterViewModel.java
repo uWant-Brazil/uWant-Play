@@ -33,6 +33,8 @@ public class UserRegisterViewModel {
 
     private File picture;
 
+    private MultimediaViewModel multimedia;
+
     public UserRegisterViewModel() {
     }
 
@@ -41,6 +43,7 @@ public class UserRegisterViewModel {
         this.name = user.getName();
         this.mail = user.getMail();
         this.birthday = user.getBirthday();
+        this.multimedia = new MultimediaViewModel(user.getPicture());
     }
 
     public String getLogin() {
@@ -97,5 +100,13 @@ public class UserRegisterViewModel {
 
     public void setPicture(File picture) {
         this.picture = picture;
+    }
+
+    public MultimediaViewModel getMultimedia() {
+        return multimedia;
+    }
+
+    public void setMultimedia(MultimediaViewModel multimedia) {
+        this.multimedia = multimedia;
     }
 }

@@ -310,7 +310,7 @@ public class UserController extends AbstractApplication {
                 int range = randomAuxVM.size() >= 8 ? 8 : randomAuxVM.size();
                 List<MultimediaViewModel> randomVM = new ArrayList<MultimediaViewModel>(10);
                 while (range > 0 && randomAuxVM.size() > 0) {
-                    int randomIndex = random.nextInt(randomAuxVM.size() + 1);
+                    int randomIndex = random.nextInt(randomAuxVM.size());
                     MultimediaViewModel mvm = randomAuxVM.get(randomIndex);
                     randomAuxVM.remove(randomIndex);
                     randomVM.add(mvm);

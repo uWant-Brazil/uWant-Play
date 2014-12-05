@@ -3,8 +3,11 @@ package controllers.web;
 import controllers.AbstractApplication;
 import models.classes.Token;
 import models.classes.User;
+import models.classes.WishList;
+import models.cloud.forms.MultimediaViewModel;
 import models.cloud.forms.UserAuthenticationViewModel;
 import models.cloud.forms.UserRegisterViewModel;
+import models.cloud.forms.WishListViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import play.data.Form;
@@ -15,7 +18,9 @@ import play.libs.F;
 import play.mvc.Result;
 import utils.SecurityUtil;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Controlador responsável pelas requisições mobile relacionadas a autenticação no sistema.
@@ -55,8 +60,8 @@ public class AuthenticationController extends AbstractApplication {
                 } else {
                     generateToken(user, Token.Target.WEB);
 
-                    //return redirect(controllers.web.routes.UserController.perfil(user.getLogin()));
-                    return ok(views.html.success.render(String.format("Olá %s, você registrou o seu usuário e autenticou em nosso sistema, mas os nossos serviços ainda está em fase ALPHA. Aguarde que em breve iremos liberar o acesso a todos!", user.getName())));
+                    return redirect(controllers.web.routes.UserController.perfil(user.getLogin()));
+                    //return ok(views.html.success.render(String.format("Olá %s, você registrou o seu usuário e autenticou em nosso sistema, mas os nossos serviços ainda está em fase ALPHA. Aguarde que em breve iremos liberar o acesso a todos!", user.getName())));
                 }
             });
         } else {
