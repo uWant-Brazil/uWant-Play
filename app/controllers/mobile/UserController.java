@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controlador responsável pelo tratamento de requisições mobile referentes a interações com o usuário.
@@ -626,6 +627,59 @@ public class UserController extends AbstractApplication {
                     jsonResponse.put(ParameterKey.STATUS, true);
                     jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.User.LIST_CIRCLE_SUCCESS));
                     jsonResponse.put(ParameterKey.FRIENDS, Json.toJson(circle));
+                } else {
+                    throw new AuthenticationException();
+                }
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            }
+
+            return ok(jsonResponse);
+        });
+    }
+
+    /**
+     * Método responsável por listar um usuário específico que estão contidos
+     * no círculo de amigos do usuário logado a partir do nome ou login do amigo.
+     * @return JSON
+     */
+    @Security.Authenticated(MobileAuthenticator.class)
+    public static F.Promise<Result> listUserFromCircle() {
+        return F.Promise.<Result>promise(() -> {
+            final ObjectNode jsonResponse = Json.newObject();
+            try {
+                final User user = authenticateToken();
+                if (user != null && UserUtil.isAvailable(user)) {
+                    JsonNode body = request().body().asJson();
+                    if (body.hasNonNull(ParameterKey.QUERY)) {
+                        final long userId = user.getId();
+                        final String query = body.get(ParameterKey.QUERY).asText();
+
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<FriendsCircle> finder = factory.get(FriendsCircle.class);
+                        IFinder<User> finderUser = factory.get(User.class);
+
+                        List<Long> requesterCircle = finder.selectAll(
+                                new String[]{FinderKey.REQUESTER_ID},
+                                new Object[]{userId})
+                                .parallelStream()
+                                .map(f -> f.getRelation().getTargetId())
+                                .collect(Collectors.toList());
+
+                        List<User> circle = finderUser.getFinder()
+                                .where()
+                                .and(Expr.in(ParameterKey.ID, requesterCircle),
+                                        Expr.or(Expr.eq(ParameterKey.NAME, query),
+                                                Expr.eq(ParameterKey.LOGIN, query)))
+                                .findList();
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.User.LIST_CIRCLE_SUCCESS));
+                        jsonResponse.put(ParameterKey.FRIENDS, Json.toJson(circle));
+                    }
                 } else {
                     throw new AuthenticationException();
                 }

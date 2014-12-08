@@ -28,6 +28,7 @@ POST    /v1/mobile/user/list                    controllers.mobile.UserControlle
 POST    /v1/mobile/user/circle/join             controllers.mobile.UserController.joinCircle()
 POST    /v1/mobile/user/circle/leave            controllers.mobile.UserController.leaveCircle()
 POST    /v1/mobile/user/circle/list             controllers.mobile.UserController.listCircle()
+POST    /v1/mobile/user/circle/mark             controllers.mobile.UserController.listUserFromCircle()
 POST    /v1/mobile/action/comment               controllers.mobile.ActionController.comment()
 POST    /v1/mobile/action/listComments          controllers.mobile.ActionController.listComments()
 POST    /v1/mobile/action/want                  controllers.mobile.ActionController.want()
