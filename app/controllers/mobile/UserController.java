@@ -26,6 +26,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -92,6 +93,14 @@ public class UserController extends AbstractApplication {
                                 user.setSince(new Date());
                                 user.save();
                                 user.refresh();
+
+                                // Criação da lista de desejos default do usuário - Lista de Aniversário
+                                WishList wishList = new WishList();
+                                wishList.setStatus(WishList.Status.ACTIVE);
+                                wishList.setTitle(Messages.get(MessageKey.WishList.DEFAULT_NAME));
+                                wishList.setUUID(UUID.randomUUID().toString());
+                                wishList.setUser(user);
+                                wishList.save();
 
                                 UserUtil.confirmEmail(user, false);
 

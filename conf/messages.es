@@ -46,6 +46,7 @@ wishlist.products.success=A consulta pelos produtos da lista de desejos foi real
 wishlist.list.success=A consulta pela lista de desejos foi realizada com sucesso.
 wishlist.update.success=A lista de desejos ({0}) foi editada com sucesso.
 wishlist.create.success=A lista de desejo ({0}) foi criada com sucesso.
+wishlist.default.name=Aniversário
 
 abstract.websession.invalid=Você tem certeza que está no lugar certo? :-)
 abstract.mobilesession.invalid=Você não está autorizado a realizar este tipo de ação.

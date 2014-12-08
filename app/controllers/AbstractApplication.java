@@ -209,6 +209,7 @@ public class AbstractApplication extends Controller {
             public static final String LIST_SUCCESS = "wishlist.list.success";
             public static final String UPDATE_SUCCESS = "wishlist.update.success";
             public static final String CREATE_SUCCESS = "wishlist.create.success";
+            public static final String DEFAULT_NAME = "wishlist.default.name";
         }
         public static final class Global {
             public static final String MOBILE_SESSION_ERROR = "global.mobilesession.error";
