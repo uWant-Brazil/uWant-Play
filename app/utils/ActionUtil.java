@@ -313,7 +313,7 @@ public abstract class ActionUtil {
      * @return feed em formato JSON.
      * @throws UserDoesntExistException
      */
-    public static List<ObjectNode> listFriendsFeeds(final User user, final int startIndex, final int endIndex) {
+    public static List<ObjectNode> listMeAndFriendsFeeds(final User user, final int startIndex, final int endIndex) {
         SqlQuery query = Ebean.createSqlQuery(CONST_LIST_FRIENDS_FEEDS_SQL);
         query.setParameter(AbstractApplication.FinderKey.USER_ID, user.getId());
         query.setParameter(AbstractApplication.FinderKey.STATUS_1, User.Status.ACTIVE.ordinal());
@@ -322,8 +322,9 @@ public abstract class ActionUtil {
         List<ObjectNode> actionsNode = null;
         List<SqlRow> rows = query.findList();
         if (rows != null && rows.size() > 0) {
-            Object[] targetIds = new Object[rows.size()];
-            for (int i = 0; i < rows.size(); i++) {
+            Object[] targetIds = new Object[rows.size() + 1];
+            targetIds[0] = user.getId();
+            for (int i = 1; i < rows.size(); i++) {
                 SqlRow row = rows.get(i);
                 Long targetId = row.getLong(AbstractApplication.FinderKey.TARGET_ID);
                 targetIds[i] = targetId;

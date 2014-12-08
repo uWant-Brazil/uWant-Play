@@ -59,7 +59,7 @@ public class ActionController extends AbstractApplication {
                             long wishListId = body.get(ParameterKey.WISHLIST_ID).asLong(Long.MIN_VALUE);
                             actions = ActionUtil.listWishListFeeds(user, wishListId, startIndex, endIndex);
                         } else {
-                            actions = ActionUtil.listFriendsFeeds(user, startIndex, endIndex);
+                            actions = ActionUtil.listMeAndFriendsFeeds(user, startIndex, endIndex);
                         }
 
                         jsonResponse.put(ParameterKey.STATUS, true);
