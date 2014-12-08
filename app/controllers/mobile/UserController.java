@@ -271,8 +271,8 @@ public class UserController extends AbstractApplication {
 
                         String query = body.get(ParameterKey.QUERY).asText();
                         ExpressionList<User> expression;
-                        if (query.isEmpty()) {
-                            expression = finder.where().ne(FinderKey.ID, user.getId());
+                        if (query.length() < 3) {
+                            throw new IndexOutOfBoundException();
                         } else {
                             expression = finder.where()
                                     .or(Expr.or(
