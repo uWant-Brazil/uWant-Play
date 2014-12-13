@@ -1,6 +1,542 @@
 @(user: models.cloud.forms.UserRegisterViewModel, random: java.util.List[models.cloud.forms.MultimediaViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])
 
 @main(Messages.apply("site.index.title")) {
-<div id="container">
+<link type="text/css" rel="stylesheet" media="all" href="@routes.Assets.at("stylesheets/scroller-mask.css")">
+<script type="text/javascript" src="@routes.Assets.at("javascripts/scroller-mask.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.simplemodal.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#extras_topo a').css('display', 'none');
+        $('#extras_topo').css('width', '240px');
+
+        // Load dialog on click
+        $('.list-featured').click(function (e) {
+            $('.list-modal-content').modal();
+
+            return false;
+        });
+
+        //add event
+        $('#add').click( function(){
+            $(this).css('background', '#fecc3f url("/assets/images/ic_accept.png") center left no-repeat');
+            $(this).css('background-position', '20px 6px');
+            $(this).css('padding', '12px 68px 8px 65px');
+            $(this).text("Amigos");
+        });
+
+        //uwantar event
+        $('.uwantar').click( function(){
+            $(this).css('background', 'url("/assets/images/ic_feed_wantar_on.png") center left no-repeat');
+            $(this).css('background-position', '5px 7px');
+        });
+
+        $(".grid-lists-scroller").amazon_scroller({
+            scroller_title_show: 'disable',
+            scroller_window_background_color: "none",
+            scroller_window_padding: '10',
+            scroller_border_size: '0',
+            scroller_show_count: '3',
+            directory: '/assets/images/profile_list_featured/'
+        });
+
+    });
+</script>
+<div id="container" class="tela_perfil">
+    <div class="container_center">
+        <div id="profile_mini">
+            <div id="photoWrap">
+                <div class="photo_avatar">
+                    <img src="@routes.Assets.at("images/ju.jpg")">
+                    <div id="photo"></div>
+                </div>
+            </div>
+            <p id="nome_usuario">
+                Felipe Bonezi
+            </p>
+            <a href="#" id="add">Adicionar</a>
+        </div>
+
+        <div id="grid">
+            <ul id="grid_list">
+                <li class="list-featured">
+                    <img src="@routes.Assets.at("images/profile_list_featured/0.png")">
+                </li>
+                <li class="list-featured">
+                    <img src="@routes.Assets.at("images/profile_list_featured/1.png")">
+                </li>
+                <li class="list-featured">
+                    <img src="@routes.Assets.at("images/profile_list_featured/2.png")">
+                </li>
+                <li class="list-featured">
+                    <img src="@routes.Assets.at("images/profile_list_featured/3.png")">
+                </li>
+                <li class="list-featured">
+                    <img src="@routes.Assets.at("images/profile_list_featured/4.png")">
+                </li>
+                <li class="list-featured">
+                    <img src="@routes.Assets.at("images/profile_list_featured/5.png")">
+                </li>
+                <li class="list-featured">
+                    <img src="@routes.Assets.at("images/profile_list_featured/6.png")">
+                </li>
+                <li class="list-featured">
+                    <img src="@routes.Assets.at("images/profile_list_featured/7.png")">
+                </li>
+            </ul>
+        </div>
+    </div>
 </div>
+
+<div class="container_center">
+    <div class="list-scroller-title">
+        <h3>Lista de aniversário</h3>
+        <p>Data do evento 20 Out 2014</p>
+    </div>
+    <div class="grid-lists-scroller amazon_scroller">
+        <div class="amazon_scroller_mask">
+            <ul>
+                <li>
+                    <a href="link1"><img src="@routes.Assets.at("images/profile_list_featured/0.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link2"><img src="@routes.Assets.at("images/profile_list_featured/1.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link3"><img src="@routes.Assets.at("images/profile_list_featured/2.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link4"><img src="@routes.Assets.at("images/profile_list_featured/3.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link1"><img src="@routes.Assets.at("images/profile_list_featured/4.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link2"><img src="@routes.Assets.at("images/profile_list_featured/5.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link3"><img src="@routes.Assets.at("images/profile_list_featured/6.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link4"><img src="@routes.Assets.at("images/profile_list_featured/7.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <ul class="amazon_scroller_nav">
+            <li style="display:none;"></li>
+            <li style="right: -45px;"></li>
+        </ul>
+        <div style="clear: both"></div>
+    </div>
+
+
+    <div class="list-scroller-title">
+        <h3>Lista de Casamento</h3>
+        <p>Data do evento 05 Set 2014</p>
+    </div>
+    <div class="grid-lists-scroller amazon_scroller">
+        <div class="amazon_scroller_mask">
+            <ul>
+                <li>
+                    <a href="link1"><img src="@routes.Assets.at("images/profile_list_featured/0.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link2"><img src="@routes.Assets.at("images/profile_list_featured/1.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link3"><img src="@routes.Assets.at("images/profile_list_featured/2.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link4"><img src="@routes.Assets.at("images/profile_list_featured/3.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link1"><img src="@routes.Assets.at("images/profile_list_featured/4.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link2"><img src="@routes.Assets.at("images/profile_list_featured/5.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link3"><img src="@routes.Assets.at("images/profile_list_featured/6.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    <a href="link4"><img src="@routes.Assets.at("images/profile_list_featured/7.png")" /></a>
+                    <div>
+                        <ul>
+                            <li>
+                                <a href="#" class="uwantar">
+                                    5
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="addComment">
+                                    2
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="share">
+                                    1
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <ul class="amazon_scroller_nav">
+            <li style="display:none;"></li>
+            <li></li>
+        </ul>
+        <div style="clear: both"></div>
+    </div>
+
+</div>
+    
+    
+    <!-- modal content -->
+    <div class="list-modal-content">
+        <script type="text/javascript">
+                $(document).ready( function(){
+
+                    $('#grid_list li').click(function(){
+                            var index = $(this).parent().children().index(this);
+                            $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
+                    });
+                });
+        </script>
+        <h3 class="list-title">Lista de Aniversário</h3>
+        <div id="list-photo-options">
+            <div class="photoWrapSmall" style="margin-top: 10px;">
+                <div class="photo_avatar_small">
+                    <img src="@routes.Assets.at("images/ju.jpg")">
+                    <div class="photo-small"></div>
+                </div>
+            </div>
+            <h2 class="list-description">Nome do usuário <span class="user-action">ação</span> um desejo da loja <span class="store">Loja zero</span></h2>
+            <div id="img-zoom-view"></div>
+            <p class="photo-description">O meu ja está velho, estou aceitando de presente viu! <span class="marking">Priscila Costa</span></p>
+            <p class="date-post">20/08/2014</p>
+            <ul id="photo-actions">
+                <li>
+                    <a href="#" class="uwantar">
+                        5
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="addComment">
+                        2
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="share">
+                        1
+                    </a>
+                </li>
+            </ul>
+            <a href="#" id="preview-comments">Exibir comentários anteriores</a>
+            <form action="#" id="post-comment">
+                <div class="view-preview-comment">
+                    <div class="photoWrapSmall">
+                        <div class="photo_avatar_small">
+                            <img src="@routes.Assets.at("images/ju.jpg")">
+                            <div class="photo-small"></div>
+                        </div>
+                    </div>
+                    <h4>Thiago Fernandes</h4>
+                    <p>Este sofá está mais barato na loja <span class="marking">Casa de Cor</span>, é melhor ver isso lá.</p>
+                    <input type="text" name="comment" placeholder="Deixe seu comentário">
+                </div>
+            </form>
+        </div>
+
+        <ul class="grid-popup">
+            <li><img src="@routes.Assets.at("images/profile_list_featured/0.png")"><div></div></li>
+            <li><img src="@routes.Assets.at("images/profile_list_featured/1.png")"><div></div></li>
+            <li><img src="@routes.Assets.at("images/profile_list_featured/2.png")"><div></div></li>
+        </ul>
+    </div>
+
 }

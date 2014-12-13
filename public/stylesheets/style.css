@@ -82,7 +82,7 @@ img {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbc01e', endColorstr='#ce9716',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 
-#container_center {
+.container_center {
 	width:1024px;
 	margin:0 auto;
 	height: 100%;
@@ -358,4 +358,326 @@ input[type=radio] {
 	right: -5px;
 	background:url("../images/ic_comfoto.png") center bottom no-repeat;
 	display:none;
+}
+.tela_perfil{
+    height:350px !important;
+}
+#profile_mini {
+    width:250px;
+    height:280px;
+    float:left;
+    margin: 35px 0;
+    background-color:#FFFFFF;
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    padding:10px;
+}
+#grid {
+    width:750px;
+    height:280px;
+    float:right;
+    margin: 35px 0;
+    background-color:#FFFFFF;
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    padding:10px;
+}
+
+#nome_usuario {
+    width: 100%;
+    clear: both;
+    font-size: 18px;
+    color: #fecc3f;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#add{
+    font-size: 20px;
+    letter-spacing: 5px;
+    background: #fecc3f url("../images/ic_action_uwant.png") left center no-repeat;
+    background-position: 12px 2px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    padding: 12px 46px 8px 55px;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+#photoWrap {
+    width: 152px;
+    height: 152px;
+    position: relative;
+    float: left;
+    margin-left: 42px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+.photo_avatar {
+  width: 152px;
+  height: 152px;
+  float: left;
+  position: relative;
+  pointer-events: none;
+  border: 5px solid transparent;
+}
+
+.photo_avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#photo {
+	width: 152px;
+    height: 152px;
+    position: absolute;
+    z-index: 5;
+    top: -6px;
+    right: -5px;
+    background: url("../images/ic_comfoto_perfil.png") center bottom no-repeat;
+}
+#grid_list{
+    list-style: none;
+    width: 730px;
+}
+#grid_list li{
+    width: 175px;
+    height: 125px;
+    display: inline-block;
+    cursor: pointer;
+    border: 2px solid white;
+    margin: 2px;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+#grid_list li img{
+    width: 100%;
+    height: 100%;
+    border: 2px solid white;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.list-modal-content {
+    display:none;
+}
+#img-zoom-view {
+    width: 480px;
+    height: 100%;
+    float: left;
+    margin-left: 10px;
+}
+#img-zoom-view img{
+    width: 100%;
+}
+
+/* Overlay */
+#simplemodal-overlay {
+    background-color:#000;
+}
+
+/* Container */
+#simplemodal-container {
+    height:100%;
+    width:800px;
+    color:#bbb;
+    background-color:#F3F3F3;
+    padding:12px;
+    top: 10% !important;
+}
+#simplemodal-container a.modalCloseImg {
+    background:url("../images/x.png") no-repeat;
+    width:25px; height:29px;
+    display:inline;
+    z-index:3200;
+    position:absolute;
+    top:-15px;
+    right:-16px;
+    cursor:pointer;
+}
+.simplemodal-overlay {
+    overflow: auto !important!;
+}
+
+
+#list-photo-options {
+    width:500px;
+    height:100%;
+    float:left;
+    background:#FFFFFF;
+    border:1px solid #CCCCCC;
+}
+.list-title {
+    font-size: 18px;
+    color: #FDC42A;
+    margin: 0 0 8px 0;
+}
+
+.photoWrapSmall {
+    width: 44px;
+    height: 44px;
+    position: relative;
+    float: left;
+    margin: 0 5px 10px 10px;
+}
+.photo_avatar_small {
+  width: 44px;
+  height: 44px;
+  float: left;
+  position: relative;
+  pointer-events: none;
+}
+
+.photo_avatar_small img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.photo-small {
+	width: 44px;
+    height: 44px;
+    position: absolute;
+    z-index: 5;
+    top: 0px;
+    right: 0px;
+    background: url("../images/ic_logado_comfoto.png") center bottom no-repeat;
+}
+.list-description {
+     font-size: 16px;
+     font-weight: normal;
+     color: #7A7A7A;
+}
+.list-description span{
+    color:#000;
+}
+
+.photo-description {
+     font-size: 16px;
+     font-weight: normal;
+     color: #7A7A7A;
+     clear: both;
+     padding: 10px;
+}
+.marking{
+    font-weight:bold;
+    color:#000;
+}
+.date-post {
+    font-size:12px;
+    color: #7A7A7A;
+    text-align:right;
+    margin-top: -20px;
+    padding-right: 5px;
+}
+#photo-actions{
+    list-style:none;
+    margin-left: 2px;
+    margin-bottom: 5px;
+}
+#photo-actions li{
+    width:162px;
+    line-height:40px;
+    display:inline-block;
+    background-color:#CCCCCC;
+}
+#photo-actions li a{
+    color: #FFF;
+    padding: 11px 114px 12px 40px;
+}
+#photo-actions li a:hover{
+    text-decoration:none;
+}
+#photo-actions li a{
+    background-position: 5px 7px;
+}
+.uwantar{
+    background: url("../images/ic_feed_wantar.png") center left no-repeat;
+}
+.addComment{
+    background: url("../images/ic_feed_comentar.png") center left no-repeat;
+}
+.share{
+    background: url("../images/ic_feed_compartilhar.png") center left no-repeat;
+}
+
+#preview-comments{
+    width:500px;
+    line-height:15px;
+    font-size:12px;
+    color:#CCCCCC;
+    background: url("../images/ic_feed_comentar.png") center left no-repeat;
+    padding: 0 289px 3px 50px;
+    border-bottom: 1px solid #CCC;
+}
+
+.view-preview-comment h4{
+    margin-bottom: 5px;
+}
+.view-preview-comment p{
+    margin-top: -5px;
+    padding-right: 3px;
+}
+.view-preview-comment input[type=text]{
+    width: 100%;
+    height: 35px;
+    border: 1px solid #CCC;
+    padding-left: 10px;
+    font-size: 14px;
+}
+.grid-popup{
+    float:right;
+    list-style:none;
+}
+.grid-popup li{
+    width: 250px;
+    height: 190px;
+    border: 2px solid white;
+    margin: 10px 0;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.grid-popup li:first-child{
+    margin: 0;
+}
+.grid-popup li img{
+    width:100%;
+    height:100%;
+    border: 2px solid white;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.grid-popup li div {
+    width: 100%;
+    height: 35px;
+    background-color: #CCC;
+    margin-top: -35px;
+    position: relative;
+    opacity: 0.9;
+    filter: alpha(opacity=90); /* For IE8 and earlier */
+}
+
+.list-scroller-title {
+    width: 100%;
+    height: 40px;
+    border-left: 3px solid #FEC31D;
+    margin: 40px 0 10px 0;
+    padding-left: 10px;
+}
+.list-scroller-title h3{
+    font-size: 22px;
+    margin-bottom: 0px;
+}
+.list-scroller-title p{
+    font-size: 12px;
+    color: gray;
+    padding-bottom: 0px;
 }
