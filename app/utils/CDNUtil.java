@@ -18,24 +18,40 @@ public abstract class CDNUtil {
     private static final CDNType DEFAULT_TYPE = CDNType.AMAZON_S3;
 
     /**
+     * Descrição padrão para o arquivo que será salvo.
+     */
+    private static final String DEFAULT_DESCRIPTION = "";
+
+    /**
      * Método para envio de arquivo para a CDN padrão - Amazon S3.
      * @param file
      * @return multimedia
      */
     public static Multimedia sendFile(File file) {
-        return sendFile(DEFAULT_TYPE, file);
+        return sendFile(DEFAULT_TYPE, file, DEFAULT_DESCRIPTION);
+    }
+
+    /**
+     * Método para envio de arquivo para a CDN padrão - Amazon S3.
+     * @param file
+     * @param description
+     * @return multimedia
+     */
+    public static Multimedia sendFile(File file, String description) {
+        return sendFile(DEFAULT_TYPE, file, description);
     }
 
     /**
      * Método para envio de arquivo para CDN específicada.
      * @param type
      * @param file
+     * @param description
      * @return multimedia
      */
-    public static Multimedia sendFile(CDNType type, File file) {
+    public static Multimedia sendFile(CDNType type, File file, String description) {
         CDNFactory factory = CDNFactory.getInstance();
         ICDN icdn = factory.get(type);
-        return icdn.save(file);
+        return icdn.save(file, description);
     }
 
 }

@@ -54,6 +54,7 @@ abstract.mobilesession.invalid=Você não está autorizado a realizar este tipo 
 exception.authentication=O usuário ou senha informado é inválido.
 exception.indexoutofbounds=Os índices informados estão incorretos.
 exception.invaliddate=A data informada é inválida.
+exception.entity=Não foi encontrado nenhuma entidade para a ação executada.
 exception.invalidmail=O e-mail informado é inválido.
 exception.jsonbody=Ocorreu um problema no body do seu cabeçalho HTTP -> application/json.
 exception.multipartbody=Ocorreu um problema no body do seu cabeçalho HTTP -> application/multipart.

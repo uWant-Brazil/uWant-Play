@@ -48,7 +48,7 @@ public class AmazonS3CDN extends AbstractCDN<AWSCredentials> implements ICDN {
     }
 
     @Override
-    public Multimedia save(File file) {
+    public Multimedia save(File file, String description) {
         AWSCredentials credentials = prepareCredentials();
 
         String  fileName = file.getName();
@@ -58,7 +58,7 @@ public class AmazonS3CDN extends AbstractCDN<AWSCredentials> implements ICDN {
             s3Client.putObject(BUCKET, String.format("images/%s", fileName), file);
 
             String url = HOST + fileName;
-            return super.createMultimedia(fileName, url);
+            return super.createMultimedia(fileName, url, description);
         } catch (AmazonClientException e) {
             e.printStackTrace();
             return null;

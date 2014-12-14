@@ -5,11 +5,10 @@ import controllers.AbstractApplication;
 import models.classes.Multimedia;
 import models.classes.Product;
 import models.classes.User;
+import models.classes.WishList;
 import models.database.FinderFactory;
 import models.database.IFinder;
-import models.exceptions.AuthenticationException;
-import models.exceptions.MultipartBodyException;
-import models.exceptions.UWException;
+import models.exceptions.*;
 import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;
@@ -19,6 +18,7 @@ import play.mvc.Security;
 import security.MobileAuthenticator;
 import utils.CDNUtil;
 import utils.UserUtil;
+import utils.WishListUtil;
 
 import java.io.File;
 import java.util.Map;
@@ -51,20 +51,41 @@ public class CDNController extends AbstractApplication {
                             final File file = filePart.getFile();
 
                             Multimedia multimedia;
-                            if (formEncoded.containsKey(ParameterKey.MULTIMEDIA_PRODUCT)) {
+                            if (formEncoded.containsKey(ParameterKey.WISHLIST_ID)
+                                    && formEncoded.containsKey(ParameterKey.MULTIMEDIA_PRODUCT)
+                                    && formEncoded.containsKey(ParameterKey.DESCRIPTION)) {
+                                long wishListId = Long.valueOf(formEncoded.get(ParameterKey.WISHLIST_ID)[0]);
                                 long productId = Long.valueOf(formEncoded.get(ParameterKey.MULTIMEDIA_PRODUCT)[0]);
 
                                 FinderFactory factory = FinderFactory.getInstance();
-                                IFinder<Product> finder = factory.get(Product.class);
-                                final Product product = finder.selectUnique(productId);
+                                IFinder<WishList> finderW = factory.get(WishList.class);
+                                final WishList wishList = finderW.selectUnique(wishListId);
 
-                                multimedia = CDNUtil.sendFile(file);
-                                product.setMultimedia(multimedia);
-                                product.update();
+                                if (wishList != null
+                                        && WishListUtil.isOwner(wishList, user)) {
+                                    IFinder<Product> finder = factory.get(Product.class);
+                                    final Product product = finder.selectUnique(productId);
+
+                                    if (product != null) {
+                                        String description = formEncoded.get(ParameterKey.DESCRIPTION)[0];
+
+                                        multimedia = CDNUtil.sendFile(file, description);
+                                        product.setMultimedia(multimedia);
+                                        product.update();
+                                    } else {
+                                        throw new InvalidEntityException();
+                                    }
+                                } else {
+                                    throw new UnauthorizedOperationException();
+                                }
                             } else if (formEncoded.containsKey(ParameterKey.MULTIMEDIA_USER_PICTURE)) {
-                                multimedia = CDNUtil.sendFile(file);
-                                user.setPicture(multimedia);
-                                user.update();
+                                if (UserUtil.isAvailable(user)) {
+                                    multimedia = CDNUtil.sendFile(file);
+                                    user.setPicture(multimedia);
+                                    user.update();
+                                } else {
+                                    throw new UnauthorizedOperationException();
+                                }
                             } else {
                                 throw new MultipartBodyException();
                             }

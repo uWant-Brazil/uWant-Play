@@ -32,10 +32,12 @@ abstract class AbstractCDN<K> {
      * Método responsável por persistir o arquivo multimídia.
      * @param fileName
      * @param url
+     * @param description
      * @return
      */
-    protected Multimedia createMultimedia(String fileName, String url) {
+    protected Multimedia createMultimedia(String fileName, String url, String description) {
         Multimedia multimedia = new Multimedia();
+        multimedia.setDescription(description);
         multimedia.setFileName(fileName);
         multimedia.setUrl(url);
         multimedia.setCdn(this.type);

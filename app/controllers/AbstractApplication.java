@@ -221,6 +221,7 @@ public class AbstractApplication extends Controller {
             public static final String AUTHENTICATION = "exception.authentication";
             public static final String INDEX_OUT_OF_BOUNDS = "exception.indexoutofbounds";
             public static final String INVALID_DATE = "exception.invaliddate";
+            public static final String INVALID_ENTITY = "exception.entity";
             public static final String INVALID_MAIL = "exception.invalidmail";
             public static final String JSON_BODY = "exception.jsonbody";
             public static final String MULTIPART_BODY = "exception.multipartbody";
