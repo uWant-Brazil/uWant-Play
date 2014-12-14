@@ -40,10 +40,13 @@ public class ActionController extends AbstractApplication {
                 if (UserUtil.isAvailable(user)) {
                     JsonNode body = request().body().asJson();
                     if (body != null && body.hasNonNull(ParameterKey.START_INDEX)) {
-                        final int startIndex = body.get(ParameterKey.START_INDEX).asInt(0);
-                        final int endIndex;
+                        int startIndex = body.get(ParameterKey.START_INDEX).asInt(0);
+                        int endIndex;
                         if (body.hasNonNull(ParameterKey.END_INDEX)) {
                             endIndex = body.get(ParameterKey.END_INDEX).asInt(startIndex + 10);
+                            if (endIndex <= startIndex) {
+                                endIndex = startIndex + 10;
+                            }
                         } else {
                             endIndex = startIndex + 10;
                         }
