@@ -78,8 +78,9 @@ create table user_mobiles (
 
 create table multimedia (
   id                        bigint not null,
+  url                       varchar(255) not null,
   file_name                 varchar(255),
-  url                       varchar(255),
+  description               varchar(255),
   cdn                       integer,
   modified_at               timestamp not null,
   constraint ck_multimedia_cdn check (cdn in (0)),
