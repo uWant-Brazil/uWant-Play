@@ -125,11 +125,12 @@ public class ActionController extends AbstractApplication {
                             action.refresh();
 
                             List<ObjectNode> nodeComments = ActionUtil.getActionComments(user, actionId, 0, 10, factory);
+                            JsonNode nodeAction = ActionUtil.getFeed(factory, action, user);
 
                             jsonResponse.put(ParameterKey.STATUS, true);
                             jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Action.COMMENT_SUCCESS));
                             jsonResponse.put(ParameterKey.COMMENTS, Json.toJson(nodeComments));
-                            jsonResponse.put(ParameterKey.ACTION, ActionUtil.getFeed(factory, action, user));
+                            jsonResponse.put(ParameterKey.ACTION, nodeAction);
                         } else {
                             throw new JSONBodyException();
                         }

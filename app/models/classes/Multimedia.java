@@ -21,8 +21,11 @@ public class Multimedia extends Model {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = SEQUENCE_NAME)
     private long id;
 
-    private String fileName;
+    @Column(nullable = false)
     private String url;
+
+    private String fileName;
+    private String description;
 
     @Enumerated(EnumType.ORDINAL)
     private CDNType cdn;
@@ -53,6 +56,14 @@ public class Multimedia extends Model {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @JsonIgnore
