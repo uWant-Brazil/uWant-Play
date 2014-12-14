@@ -1,0 +1,140 @@
+.jcarousel-container {
+    -moz-border-radius: 10px;
+}
+
+.jcarousel-container-horizontal {
+    width: 925px;
+    padding: 20px 40px;
+    margin-left: -30px;
+}
+
+
+ .jcarousel-clip-horizontal {
+    width:  925px;
+    height: 200px;
+}
+ .jcarousel-clip-horizontal ul{
+    overflow: hidden; 
+    position: relative; 
+    top: 0px; 
+    left: -595px; 
+    margin: 0px; 
+    padding: 0px; 
+    width: 850px;
+}
+
+ .jcarousel-item {
+    float: left; 
+    list-style: none;
+    width: 300px;
+    height: 200px;
+    border: 2px solid white;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.jcarousel-item a{
+    text-decoration:none;
+}
+.jcarousel-item img{
+    width: 100%;
+    height: 100%;
+    border: 2px solid white;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.jcarousel-item div {
+    width: 296px;
+    height: 35px;
+    background-color: #CCC;
+    margin-top: -35px;
+    position: relative;
+    opacity: 0.9;
+    filter: alpha(opacity=90); /* For IE8 and earlier */
+}
+.jcarousel-item div ul {
+    width:100%;
+    left:0px !important;
+}
+.jcarousel-item div ul li{
+    border:none;
+    float: left;
+    display: inline-block;
+}
+.jcarousel-item div ul li a{
+    margin-left: 10px;
+    padding-left: 36px;
+    line-height: 42px;
+    padding-top: 7px;
+    margin-right: 50px;
+}
+.jcarousel-item div ul li:last-child a{
+    margin-right:0px;
+}
+
+.jcarousel-item-horizontal {
+    margin-right: 10px;
+}
+
+ .jcarousel-item-vertical {
+    margin-bottom: 10px;
+}
+
+ .jcarousel-item-placeholder { color: #000; background: #fff; }
+
+/**
+ *  Horizontal Buttons
+ */
+ .jcarousel-next-horizontal {
+    position: absolute;
+    top: 65px;
+    right: -90px;
+    width: 45px;
+    height: 96px;
+    cursor: pointer;
+    background:url("../images/img_uwant_seta.png") no-repeat;
+}
+
+ .jcarousel-next-horizontal:hover {
+   /* background-position: -32px 0;*/
+}
+
+ .jcarousel-next-horizontal:active {
+    background-position: -64px 0;
+}
+
+ .jcarousel-next-disabled-horizontal,
+ .jcarousel-next-disabled-horizontal:hover,
+ .jcarousel-next-disabled-horizontal:active {
+    cursor: default;
+    background-position: -96px 0;
+}
+
+ .jcarousel-prev-horizontal {
+    position: absolute;
+    top: 65px;
+    left: -15px;
+    width: 45px;
+    height: 96px;
+    cursor: pointer;
+    background: url("../images/img_uwant_setaPrev.png") no-repeat;
+}
+
+ .jcarousel-prev-horizontal:hover {
+   /* background-position: -32px 0;*/
+}
+
+ .jcarousel-prev-horizontal:active {
+    background-position: -64px 0;
+}
+
+ .jcarousel-prev-disabled-horizontal,
+ .jcarousel-prev-disabled-horizontal:hover,
+ .jcarousel-prev-disabled-horizontal:active {
+    cursor: default;
+    background-position: -96px 0;
+}
+
