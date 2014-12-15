@@ -51,7 +51,7 @@ public class NotificationController extends AbstractApplication {
             return ok(notification.render(null, user));
         }
 
-        return unauthorized(unauthorized.render("Você não tem permissão para realizar esta ação."));
+        return unauthorized(unauthorized.render("Você não tem permissão para realizar esta ação.", false));
     }
 
     /**
@@ -116,16 +116,16 @@ public class NotificationController extends AbstractApplication {
                         return ok(notification.render("A notificação foi enviada com sucesso!", user));
                     } catch (UWException e) {
                         e.printStackTrace();
-                        return unauthorized(unauthorized.render(e.getMessage()));
+                        return unauthorized(unauthorized.render(e.getMessage(), false));
                     } catch (ParseException e) {
                         e.printStackTrace();
-                        return unauthorized(unauthorized.render(e.getMessage()));
+                        return unauthorized(unauthorized.render(e.getMessage(), false));
                     }
                 }
             }
         }
 
-        return unauthorized(unauthorized.render("Ocorreu um erro inesperado. Entre em contato com o suporte"));
+        return unauthorized(unauthorized.render("Ocorreu um erro inesperado. Entre em contato com o suporte", false));
     }
 
 }

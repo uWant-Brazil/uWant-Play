@@ -420,7 +420,7 @@ public class AbstractApplication extends Controller {
         F.Promise<Result> result = (F.Promise<Result>) Cache.get(key);
 
         if (result == null) {
-            result = F.Promise.<Result>pure(ok(views.html.unauthorized.render(message)));
+            result = F.Promise.<Result>pure(ok(views.html.unauthorized.render(message, false)));
             Cache.set(key, result, Days.ONE.toStandardSeconds().getSeconds()); // Cache diário.
         }
 
@@ -439,9 +439,8 @@ public class AbstractApplication extends Controller {
      * Método responsável por exibir a view contendo o 'Sobre' do app.
      * @return HTML
      */
-    @Cached(key = "about")
     public static F.Promise<Result> about() {
-        return F.Promise.<Result>pure(ok(uwant_sobre.render()));
+        return F.Promise.<Result>pure(ok(uwant_sobre.render(isWebLogged())));
     }
 
     /**
@@ -457,9 +456,17 @@ public class AbstractApplication extends Controller {
      * Método responsável por renderizar a página inicial do uWant.
      * @return HTML
      */
-    @Cached(key = "homepage")
     public static F.Promise<Result> index() {
-        return F.Promise.<Result>pure(ok(views.html.index.render()));
+        return F.Promise.<Result>pure(ok(views.html.index.render(isWebLogged())));
+    }
+
+    protected static boolean isWebLogged() {
+        try {
+            return authenticateSession() != null;
+        } catch (TokenException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

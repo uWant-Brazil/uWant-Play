@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String, logged: Boolean)(content: Html)
 
 <!doctype html>
 <html>
@@ -19,22 +19,14 @@
 <body>
 <div id="all">
 
-    <header>
-        <div id="center_header">
-            <a href="@controllers.routes.AbstractApplication.index()">
-                <img src="@routes.Assets.at("images/img_logo.png")" id="logo" title="@Messages.apply("site.index.slogan")">
-            </a>
+    @if(logged) {
+        @header_logged()
+    } else {
+        @header()
+    }
 
-            <div id="extras_topo">
-                <form>
-                    <input type="text" class="search" placeholder="@Messages.apply("site.main.search")" name="srch-term" id="srch-term" required>
-                    <input type="button" class="button" value="">
-                </form>
-                <a href="@controllers.web.routes.AuthenticationController.authorizeView()">@Messages.apply("site.main.join")</a>
-            </div>
-        </div>
-    </header>
-            @content
+    @content
+
     <footer>
         <div id="center_footer">
             <ul>

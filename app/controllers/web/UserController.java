@@ -81,7 +81,7 @@ public class UserController extends AbstractApplication {
 
                     default:
                         UserUtil.confirmEmail(umi.getUser(), false);
-                        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE)));
+                        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE), isWebLogged()));
                 }
             } else {
                 UserMailInteraction userMailInteraction = new UserMailInteraction();
@@ -90,11 +90,11 @@ public class UserController extends AbstractApplication {
 
                 UserUtil.confirmEmail(umi.getUser(), false);
 
-                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE)));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE), isWebLogged()));
             }
         }
 
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_INVALID)));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_INVALID), isWebLogged()));
     }
 
     @RequireCSRFCheck
@@ -162,11 +162,11 @@ public class UserController extends AbstractApplication {
                         userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
                         userMailInteraction.update(umi.getId());
                     }
-                    return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
+                    return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE), isWebLogged()));
             }
         }
 
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID)));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID), isWebLogged()));
     }
 
     /**
@@ -221,10 +221,10 @@ public class UserController extends AbstractApplication {
                     e.printStackTrace();
                 }
             } else {
-                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE), isWebLogged()));
             }
         }
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID)));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID), isWebLogged()));
     }
 
     /**
@@ -267,7 +267,7 @@ public class UserController extends AbstractApplication {
                             u.update(user.getId());
                         }
 
-                        return ok(views.html.success.render("Parabéns, o seu usuário foi cadastrado com sucesso! Acabamos de enviar um e-mail para confirmação de sua conta. Por favor, verifique seu provedor de e-mails!"));
+                        return ok(views.html.success.render("Parabéns, o seu usuário foi cadastrado com sucesso! Acabamos de enviar um e-mail para confirmação de sua conta. Por favor, verifique seu provedor de e-mails!", isWebLogged()));
                     }
                 } catch (UserAlreadyExistException e) {
                     e.printStackTrace();
@@ -317,7 +317,7 @@ public class UserController extends AbstractApplication {
                     range--;
                 }
 
-                return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM));
+                return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM, isWebLogged()));
             } catch (UWException e) {
                 e.printStackTrace();
                 return invalidWebSession().get(5, TimeUnit.MINUTES);

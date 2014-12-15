@@ -1,0 +1,15 @@
+<header>
+    <div id="center_header">
+        <a href="@controllers.routes.AbstractApplication.index()">
+            <img src="@routes.Assets.at("images/img_logo.png")" id="logo" title="@Messages.apply("site.index.slogan")">
+        </a>
+
+        <div id="extras_topo">
+            <form>
+                <input type="text" class="search" placeholder="@Messages.apply("site.main.search")" name="srch-term" id="srch-term" required>
+                <input type="button" class="button" value="">
+            </form>
+            <a href="@controllers.web.routes.AuthenticationController.authorizeView()">@Messages.apply("site.main.join")</a>
+        </div>
+    </div>
+</header>

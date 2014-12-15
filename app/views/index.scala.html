@@ -1,4 +1,6 @@
-@main(Messages.apply("site.index.title")) {
+@(logged: Boolean)
+
+@main(Messages.apply("site.index.title"), logged) {
 <div id="container">
     <div class="container_center" style="background: url(@routes.Assets.at("images/img_app.png")) left center no-repeat;">
 
