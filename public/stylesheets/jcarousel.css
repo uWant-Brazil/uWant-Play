@@ -33,6 +33,7 @@
     -moz-border-radius: 10px;
     -khtml-border-radius: 10px;
     -webkit-border-radius: 10px;
+    cursor:pointer;
 }
 .jcarousel-item a{
     text-decoration:none;

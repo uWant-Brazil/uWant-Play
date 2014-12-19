@@ -47,10 +47,10 @@ img {
 	margin-top: 45px;
 }
 #extras_topo  form {
-	width:270px;
+	width:250px;
 	float:left;
 }
-#extras_topo a {
+#extras_topo .sigin {
 	float:right;
 	color:#FEC01D;
 	font-size: 20px;
@@ -69,6 +69,56 @@ img {
     top: 5px;
     border:2px solid #fecc3f;
     background:#fecc3f url("../images/ic_search.png") center no-repeat;
+}
+
+.submenu1 {
+    width: 44px;
+    height: 44px;
+    float: right;
+    margin-top: -5px;
+    margin-right: 35px;
+    list-style: none;
+}
+.submenu1 li a {padding:0; text-decoration:none;}
+.submenu1 li ul {list-style:none;}
+
+.submenu1  li {float:left;padding:0;position:relative;}
+.submenu1 li:hover > div {display:block;}
+.submenu1 .submenu1-column {
+    display:none;
+    position:absolute;
+    width: 180px;
+    left: -50px;
+    float: left;
+    clear: both;
+    background: url("../images/img_seta_cima.png") center top no-repeat;
+    background-position: 78px 0px;
+    top: 55px;
+}
+
+.submenu1 .submenu1-column ul{
+    list-style: none;
+    width: 180px;
+    height: 180px;
+    position: relative;
+    background: #636363;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+.submenu1 .submenu1-column ul li:first-child{
+    margin-top: 8px;
+}
+.submenu1 .submenu1-column ul li{
+    width: 180px;
+    height: 35px;
+    line-height: 35px;
+    padding-left: 8px;
+    color:#FFF;
+}
+.submenu1 .submenu1-column li:hover{
+    color:#FFF;
+    text:decoration:none;
+    background:#999999;
 }
 #container {
 	height:1000px;
@@ -367,17 +417,68 @@ input[type=radio] {
     height:280px;
     float:left;
     margin: 35px 0;
+    margin-left:8px;
     background-color:#FFFFFF;
     border-radius:5px;
     -webkit-border-radius:5px;
     -moz-border-radius:5px;
     padding:10px;
 }
+.submenu2 {
+    width: 44px;
+    height: 44px;
+    float: right;
+    margin-top: -5px;
+    margin-right: -35px;
+    list-style: none;
+}
+.submenu2 li a {padding:0; text-decoration:none;}
+.submenu2 li ul {list-style:none;}
+
+.submenu2  li {float:left;padding:0;position:relative;}
+.submenu2 li:hover > div {display:block;}
+.submenu2 .submenu2-column {
+    display:none;
+    position:absolute;
+    width: 180px;
+    left: 12px;
+    float: left;
+    clear: both;
+    background: url("../images/img_seta_lado.png") center left no-repeat;
+    background-position: -2px 13px;
+    top: -5px;
+}
+
+.submenu2 .submenu2-column ul{
+    list-style: none;
+    width: 180px;
+    height: 137px;
+    position: relative;
+    background: #636363;
+    margin-left: 10px;
+    border-radius: 8px;
+}
+.submenu2 .submenu2-column ul li:first-child{
+    margin-top: 8px;
+}
+.submenu2 .submenu2-column ul li{
+    width: 180px;
+    height: 35px;
+    line-height: 35px;
+    padding-left: 8px;
+    color:#FFF;
+}
+.submenu2 .submenu2-column li:hover{
+    color:#FFF;
+    text:decoration:none;
+    background:#999999;
+}
 #grid {
     width:750px;
     height:280px;
     float:right;
     margin: 35px 0;
+    margin-right:8px;
     background-color:#FFFFFF;
     border-radius:5px;
     -webkit-border-radius:5px;
@@ -521,6 +622,9 @@ input[type=radio] {
 }
 
 .photoWrapSmall {
+    display: block;
+    position: relative;
+    left: 0;
     width: 44px;
     height: 44px;
     position: relative;
@@ -608,12 +712,13 @@ input[type=radio] {
 }
 
 #preview-comments{
-    width:500px;
-    line-height:15px;
-    font-size:12px;
-    color:#CCCCCC;
-    background: url("../images/ic_feed_comentar.png") center left no-repeat;
-    padding: 0 289px 3px 50px;
+    width: 500px;
+    line-height: 15px;
+    font-size: 12px;
+    color: #CCCCCC;
+    background: url("../images/ic_comentario_anteriores_cinza.png") center left no-repeat;
+    padding: 4px 289px 5px 50px;
+    background-position: 22px -4px;
     border-bottom: 1px solid #CCC;
 }
 
@@ -658,13 +763,35 @@ input[type=radio] {
     -webkit-border-radius: 10px;
 }
 .grid-popup li div {
-    width: 100%;
+    width: 246px;
     height: 35px;
     background-color: #CCC;
     margin-top: -35px;
     position: relative;
     opacity: 0.9;
     filter: alpha(opacity=90); /* For IE8 and earlier */
+}
+.grid-popup li div ul {
+    width:100%;
+    left:0px !important;
+}
+.grid-popup li div ul li{
+    width: 80px;
+    height: 35px;
+    margin: 0;
+    border:none;
+    float: left;
+    display: inline-block;
+}
+.grid-popup li div ul li a{
+    margin-left: 10px;
+    padding-left: 36px;
+    line-height: 42px;
+    padding-top: 7px;
+    margin-right: 50px;
+}
+.grid-popup li div ul li:last-child a{
+    margin-right:0px;
 }
 
 .list-scroller-title {
@@ -683,3 +810,18 @@ input[type=radio] {
     color: gray;
     padding-bottom: 0px;
 }
+#sendComment {
+    width:28px;
+    height:28px;
+    float:right;
+    background: url("../images/ic_enviar_mensagem.png") no-repeat;
+    cursor:pointer;
+    border: 0;
+    position: relative;
+    margin-top: -32px;
+    margin-right: 5px;
+}
+#sendComment:hover{
+    background: url("../images/ic_enviar_mensagem_on.png") no-repeat;
+}
+
