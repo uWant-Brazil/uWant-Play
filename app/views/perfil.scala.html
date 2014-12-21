@@ -13,7 +13,11 @@
     $(document).ready(function(){
         // Load dialog on click
         $('.list-featured').click(function (e) {
-            $('.list-modal-content').modal();
+            var wlId = $(this).attr('data-wl');
+            var pId = $(this).attr('data-p');
+            var pic = $(this).attr('data-pic');
+
+            $('.list-modal-content').attr('data-wl', wlId).attr('data-p', pId).attr('data-pic', pic).modal();
 
             return false;
         });
@@ -68,7 +72,7 @@
         <div id="grid">
             <ul id="grid_list">
                 @for(p <- random) {
-                <li class="list-featured">
+                <li class="list-featured" data-wl="@p.getWishlistId()" data-p="@p.getId()" data-pic="@p.getPicture().getUrl()">
                     <img src="@p.getPicture().getUrl()" data-id="@p.getId()">
                 </li>
                 }
@@ -82,8 +86,10 @@
         $(document).ready( function(){
 
             $('.multiple-carousel li').click(function(e){
+                    var pic = $(this).attr('data-pic');
+
                     var index = $(this).parent().children().index(this);
-                    $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
+                    $('#img-zoom-view').html("<img src='" + pic + "'>");
                     $('.list-modal-content').modal();
                     return false;
             });
@@ -92,7 +98,7 @@
 
     @for(wl <- wishlists) {
     <div class="list-scroller-title">
-        <h3>@wl.getTitle()</h3>
+        <h3 id="wl-title-@wl.getId()">@wl.getTitle()</h3>
         <p>@wl.getDescription()</p>
     </div>
     <div id="jcarousel-list-@wl.getUUID()" data-id="@wl.getUUID()">
@@ -101,7 +107,7 @@
                 <ul id="first-carousel" class="multiple-carousel jcarousel-list jcarousel-list-horizontal">
 
                     @for(p <- wl.getProducts()) {
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-@getProductIndex(p, wl.getProducts()) jcarousel-item-@getProductIndex(p, wl.getProducts())-horizontal" jcarouselindex="@getProductIndex(p, wl.getProducts())" data-id="@getProductIndex(p, wl.getProducts())">
+                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-@getProductIndex(p, wl.getProducts()) jcarousel-item-@getProductIndex(p, wl.getProducts())-horizontal" jcarouselindex="@getProductIndex(p, wl.getProducts())" data-id="@getProductIndex(p, wl.getProducts())" data-wl="@p.getWishlistId()" data-p="@p.getId()" data-pic="@p.getPicture().getUrl()">
                         <img src="@p.getPicture().getUrl()" alt="">
                         <div>
                             <ul>
@@ -141,9 +147,11 @@
             $(document).ready( function(){
 
                 $('#grid_list li').click(function(){
+                        var pic = $(this).attr('data-pic');
+
                         $('input[type=text]').blur();
                         var index = $(this).parent().children().index(this);
-                        $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
+                        $('#img-zoom-view').html("<img src='" + pic + "'>");
                         $('#img-zoom-view').focus();
                 });
             });

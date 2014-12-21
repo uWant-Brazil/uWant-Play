@@ -1,10 +1,12 @@
 package models.cloud.forms;
 
 import models.classes.Product;
+import models.classes.WishList;
 
 public class ProductViewModel {
 
     private long id;
+    private long wishlistId;
     private String name;
     private String description;
     private MultimediaViewModel picture;
@@ -12,8 +14,9 @@ public class ProductViewModel {
     public ProductViewModel() {
     }
 
-    public ProductViewModel(Product product) {
+    public ProductViewModel(Product product, WishList wishList) {
         this.id = product.getId();
+        this.wishlistId = wishList.getId();
         this.name = product.getName();
         // TODO this.description = product.getDescription();
         this.picture = new MultimediaViewModel(product.getMultimedia());
@@ -21,6 +24,10 @@ public class ProductViewModel {
 
     public long getId() {
         return id;
+    }
+
+    public long getWishlistId() {
+        return wishlistId;
     }
 
     public String getName() {
