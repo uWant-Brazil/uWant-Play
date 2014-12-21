@@ -50,3 +50,4 @@ POST    /v1/web/authorize                       controllers.web.AuthenticationCo
 GET     /v1/web/logoff                          controllers.web.AuthenticationController.logoff()
 POST    /v1/web/register                        controllers.web.UserController.register()
 GET     /v1/web/:login                          controllers.web.UserController.perfil(login: String)
+POST    /v1/web/user/circle/join                controllers.web.UserController.joinCircle(login: String)

@@ -192,6 +192,21 @@ public abstract  class UserUtil {
      * Método responsável por informar se dois usuários são amigos.
      * Ou seja, se ambos estão em seu círculo de amigos.
      * @param meId - Usuário
+     * @param youLogin - Usuário
+     * @return level - FriendCircle.Level
+     */
+    public static FriendsCircle.FriendshipLevel getFriendshipLevel(long meId, String youLogin) {
+        FinderFactory factory = FinderFactory.getInstance();
+        IFinder<User> finder = factory.get(User.class);
+        User you = finder.selectUnique(new String[] {AbstractApplication.FinderKey.LOGIN}, new Object[] {youLogin});
+
+        return getFriendshipLevel(meId, you.getId());
+    }
+
+    /**
+     * Método responsável por informar se dois usuários são amigos.
+     * Ou seja, se ambos estão em seu círculo de amigos.
+     * @param meId - Usuário
      * @param youId - Usuário
      * @return level - FriendCircle.Level
      */

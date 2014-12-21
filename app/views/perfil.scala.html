@@ -1,4 +1,6 @@
-@(user: models.cloud.forms.UserViewModel, random: java.util.List[models.cloud.forms.ProductViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])
+@(user: models.cloud.forms.UserViewModel, random: java.util.List[models.cloud.forms.ProductViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])(isMe: Boolean, friendship: models.classes.FriendsCircle.FriendshipLevel)
+
+@import helper._
 
 @getProductIndex(p: models.cloud.forms.ProductViewModel, ps: java.util.List[models.cloud.forms.ProductViewModel]) = {
     @ps.indexOf(p);
@@ -24,10 +26,14 @@
 
         //add event
         $('#add').click( function(){
+            @if(friendship == models.classes.FriendsCircle.FriendshipLevel.NONE) {
             $(this).css('background', '#fecc3f url("/assets/images/ic_accept.png") center left no-repeat');
             $(this).css('background-position', '20px 6px');
-            $(this).css('padding', '12px 68px 8px 65px');
-            $(this).text("Amigos");
+            $(this).css('padding', '10px 68px 8px 65px');
+            $(this).text("Convidado");
+
+            $.post("@CSRF(controllers.web.routes.UserController.joinCircle(user.getLogin()))");
+            }
         });
 
         //uwantar event
@@ -66,7 +72,15 @@
             <p id="nome_usuario">
                 @user.getName()
             </p>
-            <a href="#" id="add">Adicionar</a>
+            @if(!isMe) {
+                @{friendship match {
+                    case models.classes.FriendsCircle.FriendshipLevel.MUTUAL => <a href="#" id="add" style="background: #fecc3f url('/assets/images/ic_accept.png) center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Amigos</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.WAITING_ME => <a href="#" id="add" style="background: #fecc3f url('/assets/images/ic_accept.png) center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Convidado</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.WAITING_YOU => <a href="#" id="add" style="background: #fecc3f url(/assets/images/ic_accept.png') center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Aceitar</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.NONE => <a href="#" id="add">Adicionar</a>
+                }}
+            </a>
+            }
         </div>
 
         <div id="grid">
@@ -98,7 +112,7 @@
 
     @for(wl <- wishlists) {
     <div class="list-scroller-title">
-        <h3 id="wl-title-@wl.getId()">@wl.getTitle()</h3>
+        <h3 id="wl-title-@wl.getUUID()">@wl.getTitle()</h3>
         <p>@wl.getDescription()</p>
     </div>
     <div id="jcarousel-list-@wl.getUUID()" data-id="@wl.getUUID()">
