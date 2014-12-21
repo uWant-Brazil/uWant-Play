@@ -4,17 +4,23 @@ import models.classes.Product;
 
 public class ProductViewModel {
 
+    private long id;
     private String name;
     private String description;
-    private MultimediaViewModel multimedia;
+    private MultimediaViewModel picture;
 
     public ProductViewModel() {
     }
 
     public ProductViewModel(Product product) {
+        this.id = product.getId();
         this.name = product.getName();
         // TODO this.description = product.getDescription();
-        this.multimedia = new MultimediaViewModel(product.getMultimedia());
+        this.picture = new MultimediaViewModel(product.getMultimedia());
+    }
+
+    public long getId() {
+        return id;
     }
 
     public String getName() {
@@ -33,11 +39,7 @@ public class ProductViewModel {
         this.description = description;
     }
 
-    public MultimediaViewModel getMultimedia() {
-        return multimedia;
-    }
-
-    public void setMultimedia(MultimediaViewModel multimedia) {
-        this.multimedia = multimedia;
+    public MultimediaViewModel getPicture() {
+        return picture;
     }
 }

@@ -36,4 +36,20 @@ insert into multimedia (id,file_name,url,cdn,modified_at) values (nextVal('multi
 insert into product (id,name,modified_at,multimedia,manufacturer_id) values (nextVal('product_id_seq'),'Camisa do Tabajara FC',now(),(select id from multimedia where file_name = 'tabajara.jpg'),(select id from manufacturer where name = 'uWant'));
 insert into wishlist_product (id,wishlist_id,product_id,status) values (nextVal('wishlist_product_id_seq'),1,5,0);
 
+insert into multimedia (id,file_name,url,cdn,modified_at) values (nextVal('multimedia_id_seq'),'moto-x-kitkat.jpg','http://phandroid.s3.amazonaws.com/wp-content/uploads/2013/11/Moto-X-KitKat.png',0,now());
+insert into product (id,name,modified_at,multimedia,manufacturer_id) values (nextVal('product_id_seq'),'Motorola Moto X',now(),(select id from multimedia where file_name = 'moto-x-kitkat.jpg'),(select id from manufacturer where name = 'uWant'));
+insert into wishlist_product (id,wishlist_id,product_id,status) values (nextVal('wishlist_product_id_seq'),1,6,0);
+
+insert into multimedia (id,file_name,url,cdn,modified_at) values (nextVal('multimedia_id_seq'),'audi-a3.jpg','http://www.topgear.com/uk/assets/cms/3371532c-9bad-40f7-ace8-43b8f1f18934/Image.jpg?p=120809_03:39',0,now());
+insert into product (id,name,modified_at,multimedia,manufacturer_id) values (nextVal('product_id_seq'),'Audi A3',now(),(select id from multimedia where file_name = 'audi-a3.jpg'),(select id from manufacturer where name = 'uWant'));
+insert into wishlist_product (id,wishlist_id,product_id,status) values (nextVal('wishlist_product_id_seq'),1,7,0);
+
+insert into multimedia (id,file_name,url,cdn,modified_at) values (nextVal('multimedia_id_seq'),'darth-vader.jpg','http://i01.i.aliimg.com/photo/v0/107366141/Funko_Darth_Vader_Bobble_Head_toy.jpg',0,now());
+insert into product (id,name,modified_at,multimedia,manufacturer_id) values (nextVal('product_id_seq'),'Darth Vader Toy',now(),(select id from multimedia where file_name = 'darth-vader.jpg'),(select id from manufacturer where name = 'uWant'));
+insert into wishlist_product (id,wishlist_id,product_id,status) values (nextVal('wishlist_product_id_seq'),1,8,0);
+
+insert into multimedia (id,file_name,url,cdn,modified_at) values (nextVal('multimedia_id_seq'),'mac-book.jpg','http://rack.1.mshcdn.com/media/ZgkyMDEzLzAzLzI2L2ExL21hY2Jvb2twcm8xLjVlYWJiLmpwZwpwCXRodW1iCTEyMDB4NjI3IwplCWpwZw/1c182b01/58a/macbook-pro-13-retina.jpg',0,now());
+insert into product (id,name,modified_at,multimedia,manufacturer_id) values (nextVal('product_id_seq'),'MacBook Pro',now(),(select id from multimedia where file_name = 'mac-book.jpg'),(select id from manufacturer where name = 'uWant'));
+insert into wishlist_product (id,wishlist_id,product_id,status) values (nextVal('wishlist_product_id_seq'),1,9,0);
+
 # --- !Downs

@@ -299,20 +299,20 @@ public class UserController extends AbstractApplication {
                 UserViewModel userVM = UserUtil.getPerfilUser(user, login);
                 List<WishListViewModel> wishlistsVM = WishListUtil.getPerfilWishList(user, login);
 
-                List<MultimediaViewModel> randomAuxVM = new ArrayList<MultimediaViewModel>(10);
+                List<ProductViewModel> randomAuxVM = new ArrayList<>(10);
                 for (WishListViewModel wlvm : wishlistsVM) {
                     List<ProductViewModel> psvm = wlvm.getProducts();
                     for (ProductViewModel pvm : psvm) {
-                        randomAuxVM.add(pvm.getMultimedia());
+                        randomAuxVM.add(pvm);
                     }
                 }
 
                 Random random = new Random();
                 int range = randomAuxVM.size() >= 8 ? 8 : randomAuxVM.size();
-                List<MultimediaViewModel> randomVM = new ArrayList<MultimediaViewModel>(10);
+                List<ProductViewModel> randomVM = new ArrayList<>(10);
                 while (range > 0 && randomAuxVM.size() > 0) {
                     int randomIndex = random.nextInt(randomAuxVM.size());
-                    MultimediaViewModel mvm = randomAuxVM.get(randomIndex);
+                    ProductViewModel mvm = randomAuxVM.get(randomIndex);
                     randomAuxVM.remove(randomIndex);
                     randomVM.add(mvm);
                     range--;
