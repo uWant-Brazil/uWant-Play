@@ -81,7 +81,7 @@ public class UserController extends AbstractApplication {
 
                     default:
                         UserUtil.confirmEmail(umi.getUser(), false);
-                        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE), isWebLogged()));
+                        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE), null));
                 }
             } else {
                 UserMailInteraction userMailInteraction = new UserMailInteraction();
@@ -90,11 +90,11 @@ public class UserController extends AbstractApplication {
 
                 UserUtil.confirmEmail(umi.getUser(), false);
 
-                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE), isWebLogged()));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE), null));
             }
         }
 
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_INVALID), isWebLogged()));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_INVALID), null));
     }
 
     @RequireCSRFCheck
@@ -162,11 +162,11 @@ public class UserController extends AbstractApplication {
                         userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
                         userMailInteraction.update(umi.getId());
                     }
-                    return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE), isWebLogged()));
+                    return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE), null));
             }
         }
 
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID), isWebLogged()));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID), null));
     }
 
     /**
@@ -221,10 +221,10 @@ public class UserController extends AbstractApplication {
                     e.printStackTrace();
                 }
             } else {
-                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE), isWebLogged()));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE), null));
             }
         }
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID), isWebLogged()));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID), null));
     }
 
     /**
@@ -267,7 +267,7 @@ public class UserController extends AbstractApplication {
                             u.update(user.getId());
                         }
 
-                        return ok(views.html.success.render("Parabéns, o seu usuário foi cadastrado com sucesso! Acabamos de enviar um e-mail para confirmação de sua conta. Por favor, verifique seu provedor de e-mails!", isWebLogged()));
+                        return ok(views.html.success.render("Parabéns, o seu usuário foi cadastrado com sucesso! Acabamos de enviar um e-mail para confirmação de sua conta. Por favor, verifique seu provedor de e-mails!"));
                     }
                 } catch (UserAlreadyExistException e) {
                     e.printStackTrace();
@@ -290,12 +290,13 @@ public class UserController extends AbstractApplication {
      * @param login
      * @return
      */
+    @AddCSRFToken
     @Security.Authenticated(WebAuthenticator.class)
     public static F.Promise<Result> perfil(String login) {
         return F.Promise.<Result>promise(() -> {
             try {
                 User user = authenticateSession();
-                UserRegisterViewModel userVM = UserUtil.getPerfilUser(user, login);
+                UserViewModel userVM = UserUtil.getPerfilUser(user, login);
                 List<WishListViewModel> wishlistsVM = WishListUtil.getPerfilWishList(user, login);
 
                 List<MultimediaViewModel> randomAuxVM = new ArrayList<MultimediaViewModel>(10);
@@ -317,7 +318,7 @@ public class UserController extends AbstractApplication {
                     range--;
                 }
 
-                return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM, isWebLogged()));
+                return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM));
             } catch (UWException e) {
                 e.printStackTrace();
                 return invalidWebSession().get(5, TimeUnit.MINUTES);

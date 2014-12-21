@@ -1,4 +1,4 @@
-@(title: String, logged: Boolean)(content: Html)
+@(title: String, user: models.cloud.forms.UserViewModel)(content: Html)
 
 <!doctype html>
 <html>
@@ -19,8 +19,8 @@
 <body>
 <div id="all">
 
-    @if(logged) {
-        @header_logged()
+    @if(user != null) {
+        @header_logged(user)
     } else {
         @header()
     }

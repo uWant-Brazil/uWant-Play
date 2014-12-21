@@ -1,6 +1,6 @@
-@(user: models.cloud.forms.UserRegisterViewModel, random: java.util.List[models.cloud.forms.MultimediaViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])(logged: Boolean)
+@(user: models.cloud.forms.UserViewModel, random: java.util.List[models.cloud.forms.MultimediaViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])
 
-@main(Messages.apply("site.index.title"), logged) {
+@main(Messages.apply("site.index.title"), user) {
 <link rel="stylesheet" media="all" href="@routes.Assets.at("stylesheets/jcarousel.css")">
 <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.4.2.min.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.jcarousel.min.js")"></script>

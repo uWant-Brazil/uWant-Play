@@ -10,12 +10,15 @@ import models.cloud.forms.UserRegisterViewModel;
 import models.cloud.forms.WishListViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
+import models.exceptions.TokenException;
 import play.data.Form;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
 import play.i18n.Messages;
 import play.libs.F;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.WebAuthenticator;
 import utils.SecurityUtil;
 
 import java.util.List;
@@ -67,6 +70,20 @@ public class AuthenticationController extends AbstractApplication {
         } else {
             return invalidWebSession(Messages.get(MessageKey.Authentication.AUTHORIZE_FAIL));
         }
+    }
+
+    @Security.Authenticated(WebAuthenticator.class)
+    public static F.Promise<Result> logoff() {
+        try {
+            User user = authenticateSession();
+            if (user != null) {
+                removeSession(user);
+            }
+        } catch (TokenException e) {
+            e.printStackTrace();
+        }
+
+        return F.Promise.pure(redirect(controllers.routes.AbstractApplication.index()));
     }
 
 }
