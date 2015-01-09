@@ -1,0 +1,39 @@
+@(user: models.cloud.forms.UserViewModel)
+<header>
+    <div id="center_header" class="header_logged">
+        <a href="@controllers.routes.AbstractApplication.index()">
+            <img src="@routes.Assets.at("images/img_logo.png")" id="logo" title="@Messages.apply("site.index.slogan")">
+        </a>
+
+        <div id="extras_topo">
+            <form>
+                <input type="text" class="search" placeholder="@Messages.apply("site.main.search")" name="srch-term" id="srch-term" required>
+                <input type="button" class="button" value="">
+            </form>
+
+            <div class="submenu1-wrap">
+                <ul class="submenu1">
+                    <li><a href="#">
+                        <div class="photoWrapSmall" style="margin-top: 10px;">
+                            <div class="photo_avatar_small">
+                                <img src="@user.getPicture().getUrl()">
+                                <div class="photo-small"></div>
+                            </div>
+                        </div>
+                        </a>
+                        <div class="submenu1-column">
+                            <ul>
+                                <a href="#"><li>Feed de Notícias</li></a>
+                                <a href="#"><li>Perfil</li></a>
+                                <a href="#"><li>Configurações</li></a>
+                                <a href="@controllers.web.routes.AuthenticationController.logoff()"><li>Logout</li></a>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+
+        </div>
+    </div>
+</header>

@@ -48,5 +48,7 @@ GET     /v1/web/admin/notification/:id          controllers.web.NotificationCont
 POST    /v1/web/admin/notification/:id          controllers.web.NotificationController.send(id:Long)
 GET     /v1/web/authorize                       controllers.web.AuthenticationController.authorizeView()
 POST    /v1/web/authorize                       controllers.web.AuthenticationController.authorize()
+GET     /v1/web/logoff                          controllers.web.AuthenticationController.logoff()
 POST    /v1/web/register                        controllers.web.UserController.register()
 GET     /v1/web/:login                          controllers.web.UserController.perfil(login: String)
+POST    /v1/web/user/circle/join                controllers.web.UserController.joinCircle(login: String)

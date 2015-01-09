@@ -1,10 +1,9 @@
 package controllers.web;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
-import models.classes.Multimedia;
-import models.classes.Token;
-import models.classes.User;
-import models.classes.UserMailInteraction;
+import models.classes.*;
 import models.cloud.forms.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
@@ -17,9 +16,11 @@ import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
 import play.i18n.Messages;
 import play.libs.F;
+import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
+import security.MobileAuthenticator;
 import security.WebAuthenticator;
 import utils.CDNUtil;
 import utils.SecurityUtil;
@@ -81,7 +82,7 @@ public class UserController extends AbstractApplication {
 
                     default:
                         UserUtil.confirmEmail(umi.getUser(), false);
-                        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE)));
+                        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE), null));
                 }
             } else {
                 UserMailInteraction userMailInteraction = new UserMailInteraction();
@@ -90,11 +91,11 @@ public class UserController extends AbstractApplication {
 
                 UserUtil.confirmEmail(umi.getUser(), false);
 
-                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE)));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_EXPIRE), null));
             }
         }
 
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_INVALID)));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.CONFIRM_MAIL_INVALID), null));
     }
 
     @RequireCSRFCheck
@@ -162,11 +163,11 @@ public class UserController extends AbstractApplication {
                         userMailInteraction.setStatus(UserMailInteraction.Status.CANCELED);
                         userMailInteraction.update(umi.getId());
                     }
-                    return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
+                    return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE), null));
             }
         }
 
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID)));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID), null));
     }
 
     /**
@@ -221,10 +222,10 @@ public class UserController extends AbstractApplication {
                     e.printStackTrace();
                 }
             } else {
-                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE)));
+                return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_EXPIRE), null));
             }
         }
-        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID)));
+        return unauthorized(unauthorized.render(Messages.get(MessageKey.User.RECOVERY_PASSWORD_INVALID), null));
     }
 
     /**
@@ -290,38 +291,87 @@ public class UserController extends AbstractApplication {
      * @param login
      * @return
      */
+    @AddCSRFToken
     @Security.Authenticated(WebAuthenticator.class)
     public static F.Promise<Result> perfil(String login) {
         return F.Promise.<Result>promise(() -> {
             try {
                 User user = authenticateSession();
-                UserRegisterViewModel userVM = UserUtil.getPerfilUser(user, login);
+                UserViewModel userVM = UserUtil.getPerfilUser(user, login);
                 List<WishListViewModel> wishlistsVM = WishListUtil.getPerfilWishList(user, login);
 
-                List<MultimediaViewModel> randomAuxVM = new ArrayList<MultimediaViewModel>(10);
+                List<ProductViewModel> randomAuxVM = new ArrayList<>(10);
                 for (WishListViewModel wlvm : wishlistsVM) {
                     List<ProductViewModel> psvm = wlvm.getProducts();
                     for (ProductViewModel pvm : psvm) {
-                        randomAuxVM.add(pvm.getMultimedia());
+                        randomAuxVM.add(pvm);
                     }
                 }
 
                 Random random = new Random();
                 int range = randomAuxVM.size() >= 8 ? 8 : randomAuxVM.size();
-                List<MultimediaViewModel> randomVM = new ArrayList<MultimediaViewModel>(10);
+                List<ProductViewModel> randomVM = new ArrayList<>(10);
                 while (range > 0 && randomAuxVM.size() > 0) {
-                    int randomIndex = random.nextInt(randomAuxVM.size() + 1);
-                    MultimediaViewModel mvm = randomAuxVM.get(randomIndex);
+                    int randomIndex = random.nextInt(randomAuxVM.size());
+                    ProductViewModel mvm = randomAuxVM.get(randomIndex);
                     randomAuxVM.remove(randomIndex);
                     randomVM.add(mvm);
                     range--;
                 }
 
-                return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM));
+                boolean isMe = user.getLogin().equals(login);
+                FriendsCircle.FriendshipLevel friendship = null;
+                if (!isMe) {
+                    friendship = UserUtil.getFriendshipLevel(user.getId(), login);
+                }
+
+                return ok(views.html.perfil.render(userVM, randomVM, wishlistsVM, isMe, friendship));
             } catch (UWException e) {
                 e.printStackTrace();
                 return invalidWebSession().get(5, TimeUnit.MINUTES);
             }
+        });
+    }
+
+    /**
+     * Método responsável por adicionar ou aceitar o usuário
+     * em seu círculo de amigos.
+     * @return JSON
+     */
+    @RequireCSRFCheck
+    @Security.Authenticated(WebAuthenticator.class)
+    public static F.Promise<Result> joinCircle(final String login) {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateSession();
+                if (user != null && UserUtil.isAvailable(user)) {
+                    FinderFactory factory = FinderFactory.getInstance();
+                    IFinder<User> finder = factory.get(User.class);
+                    User userTarget = finder.selectUnique(
+                            new String[]{FinderKey.LOGIN},
+                            new Object[]{login});
+
+                    if (userTarget != null && UserUtil.isAvailable(userTarget)) {
+                        boolean isFriends = UserUtil.joinCircle(user, factory, userTarget);
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.User.JOIN_CIRCLE_SUCCESS, userTarget.getLogin()));
+                        jsonResponse.put(ParameterKey.FRIENDS, isFriends);
+                    } else {
+                        throw new UserDoesntExistException();
+                    }
+                } else {
+                    throw new AuthenticationException();
+                }
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            }
+
+            return ok(jsonResponse);
         });
     }
 

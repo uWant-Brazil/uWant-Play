@@ -1,6 +1,289 @@
-@(user: models.cloud.forms.UserRegisterViewModel, random: java.util.List[models.cloud.forms.MultimediaViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])
+@(user: models.cloud.forms.UserViewModel, random: java.util.List[models.cloud.forms.ProductViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])(isMe: Boolean, friendship: models.classes.FriendsCircle.FriendshipLevel)
 
-@main(Messages.apply("site.index.title")) {
-<div id="container">
+@import helper._
+
+@getProductIndex(p: models.cloud.forms.ProductViewModel, ps: java.util.List[models.cloud.forms.ProductViewModel]) = {
+    @ps.indexOf(p);
+}
+
+@main(Messages.apply("site.index.title"), user) {
+<link rel="stylesheet" media="all" href="@routes.Assets.at("stylesheets/jcarousel.css")">
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.4.2.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.jcarousel.min.js")"></script>
+<script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.simplemodal.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        // Load dialog on click
+        $('.list-featured').click(function (e) {
+            var wlId = $(this).attr('data-wl');
+            var pId = $(this).attr('data-p');
+            var pic = $(this).attr('data-pic');
+
+            $('.list-modal-content').attr('data-wl', wlId).attr('data-p', pId).attr('data-pic', pic).modal();
+
+            return false;
+        });
+
+        //add event
+        $('#add').click( function(){
+            @if(friendship == models.classes.FriendsCircle.FriendshipLevel.NONE) {
+            $(this).css('background', '#fecc3f url("/assets/images/ic_accept.png") center left no-repeat');
+            $(this).css('background-position', '20px 6px');
+            $(this).css('padding', '10px 68px 8px 65px');
+            $(this).text("Convidado");
+
+            $.post("@CSRF(controllers.web.routes.UserController.joinCircle(user.getLogin()))");
+            }
+        });
+
+        //uwantar event
+        $('.uwantar').click( function(){
+            $(this).css('background', 'url("/assets/images/ic_feed_wantar_on.png") center left no-repeat');
+            $('.uwantar-position').css('background-position', '5px 7px');
+        });
+
+        // Initialise multiples carousels by class selector.
+	    jQuery('.multiple-carousel').jcarousel();
+    });
+</script>
+<div id="container" class="tela_perfil">
+    <div class="container_center">
+
+        <div id="profile_mini">
+            <div class="submenu2-wrap">
+                <ul class="submenu2">
+                    <li><a href="#"><img src="@routes.Assets.at("images/ic_opcoes_usuario.png")"></a>
+                        <div class="submenu2-column">
+                            <ul>
+                                <a href="#"><li>Feed de <span>Usuário</span></li></a>
+                                <a href="#"><li>Denunciar</li></a>
+                                <a href="#"><li>Bloquear</li></a>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div id="photoWrap">
+                <div class="photo_avatar">
+                    <img src="@user.getPicture().getUrl()">
+                    <div id="photo"></div>
+                </div>
+            </div>
+            <p id="nome_usuario">
+                @user.getName()
+            </p>
+            @if(!isMe) {
+                @{friendship match {
+                    case models.classes.FriendsCircle.FriendshipLevel.MUTUAL => <a href="#" id="add" style="background: #fecc3f url('/assets/images/ic_accept.png) center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Amigos</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.WAITING_ME => <a href="#" id="add" style="background: #fecc3f url('/assets/images/ic_accept.png) center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Convidado</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.WAITING_YOU => <a href="#" id="add" style="background: #fecc3f url(/assets/images/ic_accept.png') center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Aceitar</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.NONE => <a href="#" id="add">Adicionar</a>
+                }}
+            </a>
+            }
+        </div>
+
+        <div id="grid">
+            <ul id="grid_list">
+                @for(p <- random) {
+                <li class="list-featured" data-wl="@p.getWishlistId()" data-p="@p.getId()" data-pic="@p.getPicture().getUrl()">
+                    <img src="@p.getPicture().getUrl()" data-id="@p.getId()">
+                </li>
+                }
+            </ul>
+        </div>
+    </div>
 </div>
+
+<div class="container_center">
+    <script type="text/javascript">
+        $(document).ready( function(){
+
+            $('.multiple-carousel li').click(function(e){
+                    var pic = $(this).attr('data-pic');
+
+                    var index = $(this).parent().children().index(this);
+                    $('#img-zoom-view').html("<img src='" + pic + "'>");
+                    $('.list-modal-content').modal();
+                    return false;
+            });
+        });
+    </script>
+
+    @for(wl <- wishlists) {
+    <div class="list-scroller-title">
+        <h3 id="wl-title-@wl.getUUID()">@wl.getTitle()</h3>
+        <p>@wl.getDescription()</p>
+    </div>
+    <div id="jcarousel-list-@wl.getUUID()" data-id="@wl.getUUID()">
+        <div class="jcarousel-container jcarousel-container-horizontal">
+            <div class="jcarousel-clip jcarousel-clip-horizontal">
+                <ul id="first-carousel" class="multiple-carousel jcarousel-list jcarousel-list-horizontal">
+
+                    @for(p <- wl.getProducts()) {
+                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-@getProductIndex(p, wl.getProducts()) jcarousel-item-@getProductIndex(p, wl.getProducts())-horizontal" jcarouselindex="@getProductIndex(p, wl.getProducts())" data-id="@getProductIndex(p, wl.getProducts())" data-wl="@p.getWishlistId()" data-p="@p.getId()" data-pic="@p.getPicture().getUrl()">
+                        <img src="@p.getPicture().getUrl()" alt="">
+                        <div>
+                            <ul>
+                                <li>
+                                    <a href="#" class="uwantar">
+                                        0
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="addComment">
+                                        0
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="share">
+                                        0
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    }
+
+                </ul>
+            </div>
+            <div class="jcarousel-prev jcarousel-prev-horizontal" disabled="false" style="display: block;"></div>
+            <div class="jcarousel-next jcarousel-next-horizontal jcarousel-next-disabled jcarousel-next-disabled-horizontal" disabled="true" style="display: block;"></div>
+        </div>
+    </div>
+    }
+</div>
+    
+    
+<!-- modal content -->
+<div class="list-modal-content">
+    <script type="text/javascript">
+            $(document).ready( function(){
+
+                $('#grid_list li').click(function(){
+                        var pic = $(this).attr('data-pic');
+
+                        $('input[type=text]').blur();
+                        var index = $(this).parent().children().index(this);
+                        $('#img-zoom-view').html("<img src='" + pic + "'>");
+                        $('#img-zoom-view').focus();
+                });
+            });
+    </script>
+    <h3 class="list-title">Lista de Aniversário</h3>
+    <div id="list-photo-options">
+        <div class="photoWrapSmall" style="margin-top: 10px;">
+            <div class="photo_avatar_small">
+                <img src="@routes.Assets.at("images/ju.jpg")">
+                <div class="photo-small"></div>
+            </div>
+        </div>
+        <h2 class="list-description">Nome do usuário <span class="user-action">ação</span> um desejo da loja <span class="store">Loja zero</span></h2>
+        <div id="img-zoom-view"></div>
+        <p class="photo-description">O meu ja está velho, estou aceitando de presente viu! <span class="marking">Priscila Costa</span></p>
+        <p class="date-post">20/08/2014</p>
+        <ul id="photo-actions">
+            <li>
+                <a href="#" class="uwantar uwantar-position">
+                    5
+                </a>
+            </li>
+            <li>
+                <a href="#" class="addComment">
+                    2
+                </a>
+            </li>
+            <li>
+                <a href="#" class="share">
+                    1
+                </a>
+            </li>
+        </ul>
+        <a href="#" id="preview-comments">Exibir comentários anteriores</a>
+        <form action="#" id="post-comment">
+            <div class="view-preview-comment">
+                <div class="photoWrapSmall">
+                    <div class="photo_avatar_small">
+                        <img src="@routes.Assets.at("images/ju.jpg")">
+                        <div class="photo-small"></div>
+                    </div>
+                </div>
+                <h4>Thiago Fernandes</h4>
+                <p>Este sofá está mais barato na loja <span class="marking">Casa de Cor</span>, é melhor ver isso lá.</p>
+                <input type="text" name="comment" placeholder="Deixe seu comentário">
+                <input type="submit" value="" id="sendComment">
+            </div>
+        </form>
+    </div>
+
+    <ul class="grid-popup">
+        <li>
+            <img src="@routes.Assets.at("images/profile_list_featured/0.png")">
+            <div>
+                <ul>
+                    <li>
+                        <a href="#" class="uwantar">
+                            5
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="addComment">
+                            2
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="share">
+                            1
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <img src="@routes.Assets.at("images/profile_list_featured/1.png")">
+            <div>
+                <ul>
+                    <li>
+                        <a href="#" class="uwantar">
+                            5
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="addComment">
+                            2
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="share">
+                            1
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <img src="@routes.Assets.at("images/profile_list_featured/2.png")">
+            <div>
+                <ul>
+                    <li>
+                        <a href="#" class="uwantar">
+                            5
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="addComment">
+                            2
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="share">
+                            1
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
+
 }

@@ -47,10 +47,10 @@ img {
 	margin-top: 45px;
 }
 #extras_topo  form {
-	width:270px;
+	width:250px;
 	float:left;
 }
-#extras_topo a {
+#extras_topo .sigin {
 	float:right;
 	color:#FEC01D;
 	font-size: 20px;
@@ -70,6 +70,56 @@ img {
     border:2px solid #fecc3f;
     background:#fecc3f url("../images/ic_search.png") center no-repeat;
 }
+
+.submenu1 {
+    width: 44px;
+    height: 44px;
+    float: right;
+    margin-top: -5px;
+    margin-right: 35px;
+    list-style: none;
+}
+.submenu1 li a {padding:0; text-decoration:none;}
+.submenu1 li ul {list-style:none;}
+
+.submenu1  li {float:left;padding:0;position:relative;}
+.submenu1 li:hover > div {display:block;}
+.submenu1 .submenu1-column {
+    display:none;
+    position:absolute;
+    width: 180px;
+    left: -50px;
+    float: left;
+    clear: both;
+    background: url("../images/img_seta_cima.png") center top no-repeat;
+    background-position: 78px 0px;
+    top: 55px;
+}
+
+.submenu1 .submenu1-column ul{
+    list-style: none;
+    width: 180px;
+    height: 180px;
+    position: relative;
+    background: #636363;
+    margin-top: 15px;
+    border-radius: 8px;
+}
+.submenu1 .submenu1-column ul li:first-child{
+    margin-top: 8px;
+}
+.submenu1 .submenu1-column ul li{
+    width: 180px;
+    height: 35px;
+    line-height: 35px;
+    padding-left: 8px;
+    color:#FFF;
+}
+.submenu1 .submenu1-column li:hover{
+    color:#FFF;
+    text:decoration:none;
+    background:#999999;
+}
 #container {
 	height:1000px;
 	background: #fbc01e; /* Old browsers */
@@ -82,7 +132,7 @@ img {
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fbc01e', endColorstr='#ce9716',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 
-#container_center {
+.container_center {
 	width:1024px;
 	margin:0 auto;
 	height: 100%;
@@ -359,3 +409,419 @@ input[type=radio] {
 	background:url("../images/ic_comfoto.png") center bottom no-repeat;
 	display:none;
 }
+.tela_perfil{
+    height:350px !important;
+}
+#profile_mini {
+    width:250px;
+    height:280px;
+    float:left;
+    margin: 35px 0;
+    margin-left:8px;
+    background-color:#FFFFFF;
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    padding:10px;
+}
+.submenu2 {
+    width: 44px;
+    height: 44px;
+    float: right;
+    margin-top: -5px;
+    margin-right: -35px;
+    list-style: none;
+}
+.submenu2 li a {padding:0; text-decoration:none;}
+.submenu2 li ul {list-style:none;}
+
+.submenu2  li {float:left;padding:0;position:relative;}
+.submenu2 li:hover > div {display:block;}
+.submenu2 .submenu2-column {
+    display:none;
+    position:absolute;
+    width: 180px;
+    left: 12px;
+    float: left;
+    clear: both;
+    background: url("../images/img_seta_lado.png") center left no-repeat;
+    background-position: -2px 13px;
+    top: -5px;
+}
+
+.submenu2 .submenu2-column ul{
+    list-style: none;
+    width: 180px;
+    height: 137px;
+    position: relative;
+    background: #636363;
+    margin-left: 10px;
+    border-radius: 8px;
+}
+.submenu2 .submenu2-column ul li:first-child{
+    margin-top: 8px;
+}
+.submenu2 .submenu2-column ul li{
+    width: 180px;
+    height: 35px;
+    line-height: 35px;
+    padding-left: 8px;
+    color:#FFF;
+}
+.submenu2 .submenu2-column li:hover{
+    color:#FFF;
+    text:decoration:none;
+    background:#999999;
+}
+#grid {
+    width:750px;
+    height:280px;
+    float:right;
+    margin: 35px 0;
+    margin-right:8px;
+    background-color:#FFFFFF;
+    border-radius:5px;
+    -webkit-border-radius:5px;
+    -moz-border-radius:5px;
+    padding:10px;
+}
+
+#nome_usuario {
+    width: 100%;
+    clear: both;
+    font-size: 18px;
+    color: #fecc3f;
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+#add{
+    font-size: 20px;
+    letter-spacing: 5px;
+    background: #fecc3f url("../images/ic_action_uwant.png") left center no-repeat;
+    background-position: 12px 2px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    padding: 12px 46px 8px 55px;
+    color: #FFFFFF;
+    text-decoration: none;
+}
+
+#photoWrap {
+    width: 152px;
+    height: 152px;
+    position: relative;
+    float: left;
+    margin-left: 42px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+.photo_avatar {
+  width: 152px;
+  height: 152px;
+  float: left;
+  position: relative;
+  pointer-events: none;
+  border: 5px solid transparent;
+}
+
+.photo_avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#photo {
+	width: 152px;
+    height: 152px;
+    position: absolute;
+    z-index: 5;
+    top: -6px;
+    right: -5px;
+    background: url("../images/ic_comfoto_perfil.png") center bottom no-repeat;
+}
+#grid_list{
+    list-style: none;
+    width: 730px;
+}
+#grid_list li{
+    width: 175px;
+    height: 125px;
+    display: inline-block;
+    cursor: pointer;
+    border: 2px solid white;
+    margin: 2px;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+#grid_list li img{
+    width: 100%;
+    height: 100%;
+    border: 2px solid white;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.list-modal-content {
+    display:none;
+}
+#img-zoom-view {
+    width: 480px;
+    height: 100%;
+    float: left;
+    margin-left: 10px;
+}
+#img-zoom-view img{
+    width: 100%;
+}
+
+/* Overlay */
+#simplemodal-overlay {
+    background-color:#000;
+    overflow: hidden !important;
+}
+
+/* Container */
+#simplemodal-container {
+    position: absolute !important;
+    height:740px;
+    width:800px;
+    color:#bbb;
+    background-color:#F3F3F3;
+    padding:12px;
+    top: 10% !important;
+}
+#simplemodal-container a.modalCloseImg {
+    background:url("../images/x.png") no-repeat;
+    width:25px; height:29px;
+    display:inline;
+    z-index:3200;
+    position:absolute;
+    top: -12px;
+    right: -12px;
+    cursor:pointer;
+}
+.simplemodal-overlay {
+    /*overflow: auto !important!;*/
+}
+
+
+#list-photo-options {
+    width:500px;
+    height:100%;
+    float:left;
+    background:#FFFFFF;
+    border:1px solid #CCCCCC;
+}
+.list-title {
+    font-size: 18px;
+    color: #FDC42A;
+    margin: 0 0 8px 0;
+}
+
+.photoWrapSmall {
+    display: block;
+    position: relative;
+    left: 0;
+    width: 44px;
+    height: 44px;
+    position: relative;
+    float: left;
+    margin: 0 5px 10px 10px;
+}
+.photo_avatar_small {
+  width: 44px;
+  height: 44px;
+  float: left;
+  position: relative;
+  pointer-events: none;
+}
+
+.photo_avatar_small img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.photo-small {
+	width: 44px;
+    height: 44px;
+    position: absolute;
+    z-index: 5;
+    top: 0px;
+    right: 0px;
+    background: url("../images/ic_logado_comfoto.png") center bottom no-repeat;
+}
+.list-description {
+     font-size: 16px;
+     font-weight: normal;
+     color: #7A7A7A;
+}
+.list-description span{
+    color:#000;
+}
+
+.photo-description {
+     font-size: 16px;
+     font-weight: normal;
+     color: #7A7A7A;
+     clear: both;
+     padding: 10px;
+}
+.marking{
+    font-weight:bold;
+    color:#000;
+}
+.date-post {
+    font-size:12px;
+    color: #7A7A7A;
+    text-align:right;
+    margin-top: -20px;
+    padding-right: 5px;
+}
+#photo-actions{
+    list-style:none;
+    margin-left: 2px;
+    margin-bottom: 5px;
+}
+#photo-actions li{
+    width:162px;
+    line-height:40px;
+    display:inline-block;
+    background-color:#CCCCCC;
+}
+#photo-actions li a{
+    color: #FFF;
+    padding: 11px 114px 12px 40px;
+}
+#photo-actions li a:hover{
+    text-decoration:none;
+}
+#photo-actions li a{
+    background-position: 5px 7px;
+}
+.uwantar{
+    background: url("../images/ic_feed_wantar.png") center left no-repeat;
+}
+.addComment{
+    background: url("../images/ic_feed_comentar.png") center left no-repeat;
+}
+.share{
+    background: url("../images/ic_feed_compartilhar.png") center left no-repeat;
+}
+
+#preview-comments{
+    width: 500px;
+    line-height: 15px;
+    font-size: 12px;
+    color: #CCCCCC;
+    background: url("../images/ic_comentario_anteriores_cinza.png") center left no-repeat;
+    padding: 4px 289px 5px 50px;
+    background-position: 22px -4px;
+    border-bottom: 1px solid #CCC;
+}
+
+.view-preview-comment h4{
+    margin-bottom: 5px;
+}
+.view-preview-comment p{
+    margin-top: -5px;
+    padding-right: 3px;
+}
+.view-preview-comment input[type=text]{
+    width: 100%;
+    height: 35px;
+    border: 1px solid #CCC;
+    padding-left: 10px;
+    font-size: 14px;
+}
+.grid-popup{
+    float:right;
+    list-style:none;
+}
+.grid-popup li{
+    width: 250px;
+    height: 190px;
+    border: 2px solid #F3F3F3;
+    margin: 10px 0;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.grid-popup li:first-child{
+    margin: 0;
+}
+.grid-popup li img{
+    width:100%;
+    height:100%;
+    border: 2px solid #F3F3F3;
+    border-radius: 10px;
+    -moz-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+.grid-popup li div {
+    width: 246px;
+    height: 35px;
+    background-color: #CCC;
+    margin-top: -35px;
+    position: relative;
+    opacity: 0.9;
+    filter: alpha(opacity=90); /* For IE8 and earlier */
+}
+.grid-popup li div ul {
+    width:100%;
+    left:0px !important;
+}
+.grid-popup li div ul li{
+    width: 80px;
+    height: 35px;
+    margin: 0;
+    border:none;
+    float: left;
+    display: inline-block;
+}
+.grid-popup li div ul li a{
+    margin-left: 10px;
+    padding-left: 36px;
+    line-height: 42px;
+    padding-top: 7px;
+    margin-right: 50px;
+}
+.grid-popup li div ul li:last-child a{
+    margin-right:0px;
+}
+
+.list-scroller-title {
+    width: 100%;
+    height: 40px;
+    border-left: 3px solid #FEC31D;
+    margin: 40px 0 10px 0;
+    padding-left: 10px;
+}
+.list-scroller-title h3{
+    font-size: 22px;
+    margin-bottom: 0px;
+}
+.list-scroller-title p{
+    font-size: 12px;
+    color: gray;
+    padding-bottom: 0px;
+}
+#sendComment {
+    width:28px;
+    height:28px;
+    float:right;
+    background: url("../images/ic_enviar_mensagem.png") no-repeat;
+    cursor:pointer;
+    border: 0;
+    position: relative;
+    margin-top: -32px;
+    margin-right: 5px;
+}
+#sendComment:hover{
+    background: url("../images/ic_enviar_mensagem_on.png") no-repeat;
+}
+

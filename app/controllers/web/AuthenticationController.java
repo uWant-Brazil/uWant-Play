@@ -3,19 +3,27 @@ package controllers.web;
 import controllers.AbstractApplication;
 import models.classes.Token;
 import models.classes.User;
+import models.classes.WishList;
+import models.cloud.forms.MultimediaViewModel;
 import models.cloud.forms.UserAuthenticationViewModel;
 import models.cloud.forms.UserRegisterViewModel;
+import models.cloud.forms.WishListViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
+import models.exceptions.TokenException;
 import play.data.Form;
 import play.filters.csrf.AddCSRFToken;
 import play.filters.csrf.RequireCSRFCheck;
 import play.i18n.Messages;
 import play.libs.F;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.WebAuthenticator;
 import utils.SecurityUtil;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Controlador responsável pelas requisições mobile relacionadas a autenticação no sistema.
@@ -55,13 +63,27 @@ public class AuthenticationController extends AbstractApplication {
                 } else {
                     generateToken(user, Token.Target.WEB);
 
-                    //return redirect(controllers.web.routes.UserController.perfil(user.getLogin()));
-                    return ok(views.html.success.render(String.format("Olá %s, você registrou o seu usuário e autenticou em nosso sistema, mas os nossos serviços ainda está em fase ALPHA. Aguarde que em breve iremos liberar o acesso a todos!", user.getName())));
+                    return redirect(controllers.web.routes.UserController.perfil(user.getLogin()));
+                    //return ok(views.html.success.render(String.format("Olá %s, você registrou o seu usuário e autenticou em nosso sistema, mas os nossos serviços ainda está em fase ALPHA. Aguarde que em breve iremos liberar o acesso a todos!", user.getName())));
                 }
             });
         } else {
             return invalidWebSession(Messages.get(MessageKey.Authentication.AUTHORIZE_FAIL));
         }
+    }
+
+    @Security.Authenticated(WebAuthenticator.class)
+    public static F.Promise<Result> logoff() {
+        try {
+            User user = authenticateSession();
+            if (user != null) {
+                removeSession(user);
+            }
+        } catch (TokenException e) {
+            e.printStackTrace();
+        }
+
+        return F.Promise.pure(redirect(controllers.routes.AbstractApplication.index()));
     }
 
 }

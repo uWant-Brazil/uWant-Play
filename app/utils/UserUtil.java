@@ -3,6 +3,7 @@ package utils;
 import controllers.AbstractApplication;
 import models.classes.*;
 import models.cloud.forms.UserRegisterViewModel;
+import models.cloud.forms.UserViewModel;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.InvalidMailException;
@@ -191,6 +192,21 @@ public abstract  class UserUtil {
      * Método responsável por informar se dois usuários são amigos.
      * Ou seja, se ambos estão em seu círculo de amigos.
      * @param meId - Usuário
+     * @param youLogin - Usuário
+     * @return level - FriendCircle.Level
+     */
+    public static FriendsCircle.FriendshipLevel getFriendshipLevel(long meId, String youLogin) {
+        FinderFactory factory = FinderFactory.getInstance();
+        IFinder<User> finder = factory.get(User.class);
+        User you = finder.selectUnique(new String[] {AbstractApplication.FinderKey.LOGIN}, new Object[] {youLogin});
+
+        return getFriendshipLevel(meId, you.getId());
+    }
+
+    /**
+     * Método responsável por informar se dois usuários são amigos.
+     * Ou seja, se ambos estão em seu círculo de amigos.
+     * @param meId - Usuário
      * @param youId - Usuário
      * @return level - FriendCircle.Level
      */
@@ -285,13 +301,13 @@ public abstract  class UserUtil {
      * @param login - Usuário referencia
      * @return
      */
-    public static UserRegisterViewModel getPerfilUser(User user, String login) {
+    public static UserViewModel getPerfilUser(User user, String login) {
         if (!user.getLogin().equalsIgnoreCase(login)) {
             FinderFactory factory = FinderFactory.getInstance();
             IFinder<User> finder = factory.get(User.class);
             user = finder.selectUnique(new String[] {AbstractApplication.FinderKey.LOGIN}, new Object[] {login});
         }
 
-        return new UserRegisterViewModel(user);
+        return new UserViewModel(user);
     }
 }

@@ -51,7 +51,7 @@ public class NotificationController extends AbstractApplication {
             return ok(notification.render(null, user));
         }
 
-        return unauthorized(unauthorized.render("Você não tem permissão para realizar esta ação."));
+        return unauthorized(unauthorized.render("Você não tem permissão para realizar esta ação.", null));
     }
 
     /**
@@ -100,14 +100,8 @@ public class NotificationController extends AbstractApplication {
                             long dateOffset = when.getTime() - now.getTime();
                             Akka.system().scheduler().scheduleOnce(
                                     Duration.create(dateOffset, TimeUnit.MILLISECONDS),
-                                    new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            NotificationUtil.send(title, action, mobiles);
-                                        }
-
-                                    }, Akka.system().dispatcher()
+                                    (Runnable) () -> NotificationUtil.send(title, action, mobiles),
+                                    Akka.system().dispatcher()
                             );
                         } else {
                             NotificationUtil.send(title, action, mobiles);
@@ -116,16 +110,16 @@ public class NotificationController extends AbstractApplication {
                         return ok(notification.render("A notificação foi enviada com sucesso!", user));
                     } catch (UWException e) {
                         e.printStackTrace();
-                        return unauthorized(unauthorized.render(e.getMessage()));
+                        return unauthorized(unauthorized.render(e.getMessage(), null));
                     } catch (ParseException e) {
                         e.printStackTrace();
-                        return unauthorized(unauthorized.render(e.getMessage()));
+                        return unauthorized(unauthorized.render(e.getMessage(), null));
                     }
                 }
             }
         }
 
-        return unauthorized(unauthorized.render("Ocorreu um erro inesperado. Entre em contato com o suporte"));
+        return unauthorized(unauthorized.render("Ocorreu um erro inesperado. Entre em contato com o suporte", null));
     }
 
 }
