@@ -52,11 +52,14 @@ public class AuthenticationController extends AbstractApplication {
             final UserAuthenticationViewModel model = form.get();
 
             return F.Promise.<Result>promise(() -> {
+                String login = model.getLogin();
+                String password = SecurityUtil.md5(model.getPassword());
+
                 FinderFactory factory = FinderFactory.getInstance();
                 IFinder<User> finder = factory.get(User.class);
                 User user = finder.selectUnique(
                         new String[]{FinderKey.LOGIN, FinderKey.PASSWORD},
-                        new Object[]{model.getLogin(), SecurityUtil.md5(model.getPassword())});
+                        new Object[]{login, password});
 
                 if (user == null) {
                     return invalidWebSession(Messages.get(MessageKey.Authentication.AUTHORIZE_FAIL)).get(5, TimeUnit.MINUTES);
