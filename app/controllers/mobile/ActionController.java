@@ -7,6 +7,7 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
+import play.db.ebean.Transactional;
 import play.i18n.Messages;
 import play.libs.F;
 import play.libs.Json;
@@ -15,6 +16,7 @@ import play.mvc.Security;
 import security.MobileAuthenticator;
 import utils.ActionUtil;
 import utils.NotificationUtil;
+import utils.TagUtil;
 import utils.UserUtil;
 
 import java.util.ArrayList;
@@ -90,6 +92,7 @@ public class ActionController extends AbstractApplication {
      * compartilhada/criada por um usuário.
      * @return JSON
      */
+    @Transactional
     public static F.Promise<Result> comment() {
         return F.Promise.<Result>promise(() -> {
             ObjectNode jsonResponse = Json.newObject();
@@ -124,6 +127,7 @@ public class ActionController extends AbstractApplication {
                             actionComment.save();
 
                             NotificationUtil.send(actionComment, userAction);
+                            TagUtil.verifyAndNotify(user, commentText);
 
                             action.refresh();
 
@@ -211,6 +215,7 @@ public class ActionController extends AbstractApplication {
      * Método responsável por 'wantar' uma ação compartilhada/criada por um usuário.
      * @return JSON
      */
+    @Transactional
     public static F.Promise<Result> want() {
         return F.Promise.<Result>promise(() -> {
             ObjectNode jsonResponse = Json.newObject();
@@ -317,6 +322,7 @@ public class ActionController extends AbstractApplication {
      * Método responsável por 'reportar' uma ação compartilhada/criada por um usuário.
      * @return JSON
      */
+    @Transactional
     public static F.Promise<Result> report() {
         return F.Promise.<Result>promise(() -> {
             ObjectNode jsonResponse = Json.newObject();
@@ -384,6 +390,7 @@ public class ActionController extends AbstractApplication {
      * exibidas no seu feed de atividades.
      * @return JSON
      */
+    @Transactional
     public static F.Promise<Result> toggleBlock() {
         return F.Promise.promise(() -> {
             final ObjectNode jsonResponse = Json.newObject();
@@ -443,6 +450,7 @@ public class ActionController extends AbstractApplication {
      * Método responsável por contar os 'compartilhamentos' as ações de um determinado usuário.
      * @return JSON.
      */
+    @Transactional
     public static F.Promise<Result> share() {
         return F.Promise.<Result>promise(() -> {
             final ObjectNode jsonResponse = Json.newObject();

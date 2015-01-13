@@ -497,4 +497,21 @@ public abstract class ActionUtil {
         return nodeComments;
     }
 
+    /**
+     * Método responsável por criar uma Action para citações de usuários.
+     * @param from - Quem citou.
+     * @param to - Quem foi citado.
+     * @return action de citação.
+     */
+    public static Action createTag(User from, User to) {
+        Action action = new Action();
+        action.setType(Action.Type.MENTION);
+        action.setFrom(from);
+        action.setUser(to);
+        action.setCreatedAt(new Date());
+        action.save();
+        action.refresh();
+
+        return action;
+    }
 }
