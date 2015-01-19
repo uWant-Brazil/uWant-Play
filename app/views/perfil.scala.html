@@ -96,8 +96,8 @@
     <script type="text/javascript">
         $(document).ready( function(){
 
-            $('.multiple-carousel li').click(function(e){
-                    var index = $(this).parent().children().index(this);
+            $('.multiple-carousel li img').click(function(e){
+                    var index = $(this).attr("src").replace( /^.*?([^\/]+)\..+?$/, '$1' );
                     $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
                     $('.list-modal-content').modal();
                     return false;
@@ -114,222 +114,242 @@
                 <ul id="first-carousel" class="multiple-carousel jcarousel-list jcarousel-list-horizontal">
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal" jcarouselindex="1">
                         <img src="@routes.Assets.at("images/profile_list_featured/0.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-2 jcarousel-item-2-horizontal" jcarouselindex="2">
                         <img src="@routes.Assets.at("images/profile_list_featured/1.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-3 jcarousel-item-3-horizontal" jcarouselindex="3">
                         <img src="@routes.Assets.at("images/profile_list_featured/2.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-4 jcarousel-item-4-horizontal" jcarouselindex="4">
                         <img src="@routes.Assets.at("images/profile_list_featured/3.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-5 jcarousel-item-5-horizontal" jcarouselindex="5">
                         <img src="@routes.Assets.at("images/profile_list_featured/4.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-6 jcarousel-item-6-horizontal" jcarouselindex="6">
                         <img src="@routes.Assets.at("images/profile_list_featured/5.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-7 jcarousel-item-7-horizontal" jcarouselindex="7">
                         <img src="@routes.Assets.at("images/profile_list_featured/6.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-8 jcarousel-item-8-horizontal" jcarouselindex="8">
                         <img src="@routes.Assets.at("images/profile_list_featured/7.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-9 jcarousel-item-9-horizontal" jcarouselindex="9">
                         <img src="@routes.Assets.at("images/profile_list_featured/8.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal" jcarouselindex="10">
                         <img src="@routes.Assets.at("images/profile_list_featured/9.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                 </ul>
@@ -350,222 +370,242 @@
                 <ul id="second-carousel" class="multiple-carousel jcarousel-list jcarousel-list-horizontal">
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal" jcarouselindex="1">
                         <img src="@routes.Assets.at("images/profile_list_featured/0.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-2 jcarousel-item-2-horizontal" jcarouselindex="2">
                         <img src="@routes.Assets.at("images/profile_list_featured/1.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-3 jcarousel-item-3-horizontal" jcarouselindex="3">
                         <img src="@routes.Assets.at("images/profile_list_featured/2.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-4 jcarousel-item-4-horizontal" jcarouselindex="4">
                         <img src="@routes.Assets.at("images/profile_list_featured/3.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-5 jcarousel-item-5-horizontal" jcarouselindex="5">
                         <img src="@routes.Assets.at("images/profile_list_featured/4.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-6 jcarousel-item-6-horizontal" jcarouselindex="6">
                         <img src="@routes.Assets.at("images/profile_list_featured/5.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-7 jcarousel-item-7-horizontal" jcarouselindex="7">
                         <img src="@routes.Assets.at("images/profile_list_featured/6.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-8 jcarousel-item-8-horizontal" jcarouselindex="8">
                         <img src="@routes.Assets.at("images/profile_list_featured/7.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-9 jcarousel-item-9-horizontal" jcarouselindex="9">
                         <img src="@routes.Assets.at("images/profile_list_featured/8.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal" jcarouselindex="10">
                         <img src="@routes.Assets.at("images/profile_list_featured/9.png")" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        5
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        2
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        1
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                 </ul>
@@ -588,6 +628,11 @@
                             var index = $(this).parent().children().index(this);
                             $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
                             $('#img-zoom-view').focus();
+                    });
+                    $('.grid-popup li img').click(function(e){
+                        var index = $(this).attr("src").replace( /^.*?([^\/]+)\..+?$/, '$1' );
+                        $('#img-zoom-view').empty();
+                        $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
                     });
                 });
         </script>

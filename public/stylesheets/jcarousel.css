@@ -47,35 +47,27 @@
     -khtml-border-radius: 10px;
     -webkit-border-radius: 10px;
 }
-.jcarousel-item div {
+.jcarousel-actions {
     width: 296px;
     height: 35px;
     background-color: #CCC;
-    margin-top: -35px;
     position: relative;
+    margin-top: -35px;
     opacity: 0.9;
-    filter: alpha(opacity=90); /* For IE8 and earlier */
 }
-.jcarousel-item div ul {
-    width:100%;
-    left:0px !important;
-}
-.jcarousel-item div ul li{
-    border:none;
-    float: left;
-    display: inline-block;
-}
-.jcarousel-item div ul li a{
-    margin-left: 10px;
+
+.jcarousel-actions table tr td a{
     padding-left: 36px;
     line-height: 42px;
     padding-top: 7px;
     margin-right: 50px;
 }
-.jcarousel-item div ul li:last-child a{
+.jcarousel-actions table tr td:first-child a{
+    margin-left:25px;
+}
+.jcarousel-actions table tr td:last-child a{
     margin-right:0px;
 }
-
 .jcarousel-item-horizontal {
     margin-right: 10px;
 }
