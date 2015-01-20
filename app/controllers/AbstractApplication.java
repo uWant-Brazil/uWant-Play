@@ -1,6 +1,7 @@
 package controllers;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import controllers.web.routes;
 import models.classes.Token;
 import models.classes.User;
 import models.database.FinderFactory;
@@ -333,12 +334,29 @@ public class AbstractApplication extends Controller {
     }
 
     /**
-     * Remoção do token do usuário referenciado no HTTP Header.
+     * Remoção do token do usuário referenciado no HTTP Header (MOBILE).
      * @param user - Usuário logado
      */
-    public static void removeToken(User user, Token.Target target) {
-        String tokenContent = request().getHeader(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
-        Token token = listToken(tokenContent, target);
+    public static void removeToken(User user) {
+        String tokenContent = getTokenAtHeader();
+        Token token = listToken(tokenContent, Token.Target.MOBILE);
+
+        if (token != null) {
+            Cache.remove(tokenContent);
+            session().remove(HeaderKey.HEADER_AUTHENTICATION_TOKEN);
+            token.refresh();
+            token.delete();
+            user.refresh();
+        }
+    }
+
+    /**
+     * Remoção do token do usuário referenciado no Session (WEB).
+     * @param user - Usuário logado
+     */
+    public static void removeSession(User user) {
+        String tokenContent = getTokenAtSession();
+        Token token = listToken(tokenContent, Token.Target.WEB);
 
         if (token != null) {
             Cache.remove(tokenContent);
@@ -420,7 +438,7 @@ public class AbstractApplication extends Controller {
         F.Promise<Result> result = (F.Promise<Result>) Cache.get(key);
 
         if (result == null) {
-            result = F.Promise.<Result>pure(ok(views.html.unauthorized.render(message, false)));
+            result = F.Promise.<Result>pure(ok(views.html.unauthorized.render(message, null)));
             Cache.set(key, result, Days.ONE.toStandardSeconds().getSeconds()); // Cache diário.
         }
 
@@ -440,7 +458,7 @@ public class AbstractApplication extends Controller {
      * @return HTML
      */
     public static F.Promise<Result> about() {
-        return F.Promise.<Result>pure(ok(uwant_sobre.render(isWebLogged())));
+        return F.Promise.<Result>pure(ok(uwant_sobre.render()));
     }
 
     /**
@@ -457,7 +475,17 @@ public class AbstractApplication extends Controller {
      * @return HTML
      */
     public static F.Promise<Result> index() {
-        return F.Promise.<Result>pure(ok(views.html.index.render(isWebLogged())));
+        boolean isLogged = isWebLogged();
+        if (isLogged) {
+            try {
+                User user = authenticateSession();
+                return F.Promise.pure(redirect(controllers.web.routes.UserController.perfil(user.getLogin())));
+            } catch (TokenException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return F.Promise.<Result>pure(ok(views.html.index.render()));
     }
 
     protected static boolean isWebLogged() {

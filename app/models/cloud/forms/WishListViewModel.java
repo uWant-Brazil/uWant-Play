@@ -29,7 +29,7 @@ public class WishListViewModel {
         if (ps != null && ps.size() > 0) {
             for (WishListProduct wp : ps) {
                 if (wp.getStatus() == WishListProduct.Status.ACTIVE) {
-                    products.add(new ProductViewModel(wp.getProduct()));
+                    products.add(new ProductViewModel(wp.getProduct(), wishlist));
                 }
             }
         }

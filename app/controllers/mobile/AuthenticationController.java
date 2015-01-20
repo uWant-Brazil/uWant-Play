@@ -94,7 +94,7 @@ public class AuthenticationController extends AbstractApplication {
             try {
                 User user = authenticateToken();
                 if (user != null && UserUtil.isAvailable(user)) {
-                    removeToken(user, Token.Target.MOBILE);
+                    removeToken(user);
 
                     jsonResponse.put(ParameterKey.STATUS, true);
                     jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Authentication.LOGOFF_SUCCESS));

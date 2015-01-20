@@ -1,3 +1,4 @@
+@(user: models.cloud.forms.UserViewModel)
 <header>
     <div id="center_header" class="header_logged">
         <a href="@controllers.routes.AbstractApplication.index()">
@@ -15,7 +16,7 @@
                     <li><a href="#">
                         <div class="photoWrapSmall" style="margin-top: 10px;">
                             <div class="photo_avatar_small">
-                                <img src="@routes.Assets.at("images/ju.jpg")">
+                                <img src="@user.getPicture().getUrl()">
                                 <div class="photo-small"></div>
                             </div>
                         </div>
@@ -25,7 +26,7 @@
                                 <a href="#"><li>Feed de Notícias</li></a>
                                 <a href="#"><li>Perfil</li></a>
                                 <a href="#"><li>Configurações</li></a>
-                                <a href="#"><li>Logout</li></a>
+                                <a href="@controllers.web.routes.AuthenticationController.logoff()"><li>Logout</li></a>
                             </ul>
                         </div>
                     </li>

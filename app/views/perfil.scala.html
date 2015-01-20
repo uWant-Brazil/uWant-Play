@@ -1,6 +1,12 @@
-@(user: models.cloud.forms.UserRegisterViewModel, random: java.util.List[models.cloud.forms.MultimediaViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])(logged: Boolean)
+@(user: models.cloud.forms.UserViewModel, random: java.util.List[models.cloud.forms.ProductViewModel], wishlists: java.util.List[models.cloud.forms.WishListViewModel])(isMe: Boolean, friendship: models.classes.FriendsCircle.FriendshipLevel)
 
-@main(Messages.apply("site.index.title"), logged) {
+@import helper._
+
+@getProductIndex(p: models.cloud.forms.ProductViewModel, ps: java.util.List[models.cloud.forms.ProductViewModel]) = {
+    @ps.indexOf(p);
+}
+
+@main(Messages.apply("site.index.title"), user) {
 <link rel="stylesheet" media="all" href="@routes.Assets.at("stylesheets/jcarousel.css")">
 <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery-1.4.2.min.js")"></script>
 <script type="text/javascript" src="@routes.Assets.at("javascripts/jquery.jcarousel.min.js")"></script>
@@ -9,17 +15,25 @@
     $(document).ready(function(){
         // Load dialog on click
         $('.list-featured').click(function (e) {
-            $('.list-modal-content').modal();
+            var wlId = $(this).attr('data-wl');
+            var pId = $(this).attr('data-p');
+            var pic = $(this).attr('data-pic');
+
+            $('.list-modal-content').attr('data-wl', wlId).attr('data-p', pId).attr('data-pic', pic).modal();
 
             return false;
         });
 
         //add event
         $('#add').click( function(){
+            @if(friendship == models.classes.FriendsCircle.FriendshipLevel.NONE) {
             $(this).css('background', '#fecc3f url("/assets/images/ic_accept.png") center left no-repeat');
             $(this).css('background-position', '20px 6px');
-            $(this).css('padding', '12px 68px 8px 65px');
-            $(this).text("Amigos");
+            $(this).css('padding', '10px 68px 8px 65px');
+            $(this).text("Convidado");
+
+            $.post("@CSRF(controllers.web.routes.UserController.joinCircle(user.getLogin()))");
+            }
         });
 
         //uwantar event
@@ -51,42 +65,31 @@
             </div>
             <div id="photoWrap">
                 <div class="photo_avatar">
-                    <img src="@routes.Assets.at("images/ju.jpg")">
+                    <img src="@user.getPicture().getUrl()">
                     <div id="photo"></div>
                 </div>
             </div>
             <p id="nome_usuario">
-                Felipe Bonezi
+                @user.getName()
             </p>
-            <a href="#" id="add">Adicionar</a>
+            @if(!isMe) {
+                @{friendship match {
+                    case models.classes.FriendsCircle.FriendshipLevel.MUTUAL => <a href="#" id="add" style="background: #fecc3f url('/assets/images/ic_accept.png) center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Amigos</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.WAITING_ME => <a href="#" id="add" style="background: #fecc3f url('/assets/images/ic_accept.png) center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Convidado</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.WAITING_YOU => <a href="#" id="add" style="background: #fecc3f url(/assets/images/ic_accept.png') center left no-repeat;background-position: 20px 6px;padding: 12px 68px 8px 65px;">Aceitar</a>
+                    case models.classes.FriendsCircle.FriendshipLevel.NONE => <a href="#" id="add">Adicionar</a>
+                }}
+            </a>
+            }
         </div>
 
         <div id="grid">
             <ul id="grid_list">
-                <li class="list-featured">
-                    <img src="@routes.Assets.at("images/profile_list_featured/0.png")">
+                @for(p <- random) {
+                <li class="list-featured" data-wl="@p.getWishlistId()" data-p="@p.getId()" data-pic="@p.getPicture().getUrl()">
+                    <img src="@p.getPicture().getUrl()" data-id="@p.getId()">
                 </li>
-                <li class="list-featured">
-                    <img src="@routes.Assets.at("images/profile_list_featured/1.png")">
-                </li>
-                <li class="list-featured">
-                    <img src="@routes.Assets.at("images/profile_list_featured/2.png")">
-                </li>
-                <li class="list-featured">
-                    <img src="@routes.Assets.at("images/profile_list_featured/3.png")">
-                </li>
-                <li class="list-featured">
-                    <img src="@routes.Assets.at("images/profile_list_featured/4.png")">
-                </li>
-                <li class="list-featured">
-                    <img src="@routes.Assets.at("images/profile_list_featured/5.png")">
-                </li>
-                <li class="list-featured">
-                    <img src="@routes.Assets.at("images/profile_list_featured/6.png")">
-                </li>
-                <li class="list-featured">
-                    <img src="@routes.Assets.at("images/profile_list_featured/7.png")">
-                </li>
+                }
             </ul>
         </div>
     </div>
@@ -97,6 +100,8 @@
         $(document).ready( function(){
 
             $('.multiple-carousel li img').click(function(e){
+                    var pic = $(this).attr('data-pic');
+                    
                     var index = $(this).attr("src").replace( /^.*?([^\/]+)\..+?$/, '$1' );
                     $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
                     $('.list-modal-content').modal();
@@ -104,16 +109,20 @@
             });
         });
     </script>
+
+    @for(wl <- wishlists) {
     <div class="list-scroller-title">
-        <h3>Lista de aniversário</h3>
-        <p>Data do evento 20 Out 2014</p>
+        <h3 id="wl-title-@wl.getUUID()">@wl.getTitle()</h3>
+        <p>@wl.getDescription()</p>
     </div>
-    <div id="jcarousel-list-aniver">
+    <div id="jcarousel-list-@wl.getUUID()" data-id="@wl.getUUID()">
         <div class="jcarousel-container jcarousel-container-horizontal">
             <div class="jcarousel-clip jcarousel-clip-horizontal">
                 <ul id="first-carousel" class="multiple-carousel jcarousel-list jcarousel-list-horizontal">
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal" jcarouselindex="1">
-                        <img src="@routes.Assets.at("images/profile_list_featured/0.png")" alt="">
+
+                    @for(p <- wl.getProducts()) {
+                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-@getProductIndex(p, wl.getProducts()) jcarousel-item-@getProductIndex(p, wl.getProducts())-horizontal" jcarouselindex="@getProductIndex(p, wl.getProducts())" data-id="@getProductIndex(p, wl.getProducts())" data-wl="@p.getWishlistId()" data-p="@p.getId()" data-pic="@p.getPicture().getUrl()">
+                        <img src="@p.getPicture().getUrl()" alt="">
                         <div class="jcarousel-actions">
                             <table>
                                 <tr>
@@ -136,492 +145,22 @@
                             </table>
                         </div>
                     </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-2 jcarousel-item-2-horizontal" jcarouselindex="2">
-                        <img src="@routes.Assets.at("images/profile_list_featured/1.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-3 jcarousel-item-3-horizontal" jcarouselindex="3">
-                        <img src="@routes.Assets.at("images/profile_list_featured/2.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-4 jcarousel-item-4-horizontal" jcarouselindex="4">
-                        <img src="@routes.Assets.at("images/profile_list_featured/3.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-5 jcarousel-item-5-horizontal" jcarouselindex="5">
-                        <img src="@routes.Assets.at("images/profile_list_featured/4.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-6 jcarousel-item-6-horizontal" jcarouselindex="6">
-                        <img src="@routes.Assets.at("images/profile_list_featured/5.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-7 jcarousel-item-7-horizontal" jcarouselindex="7">
-                        <img src="@routes.Assets.at("images/profile_list_featured/6.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-8 jcarousel-item-8-horizontal" jcarouselindex="8">
-                        <img src="@routes.Assets.at("images/profile_list_featured/7.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-9 jcarousel-item-9-horizontal" jcarouselindex="9">
-                        <img src="@routes.Assets.at("images/profile_list_featured/8.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal" jcarouselindex="10">
-                        <img src="@routes.Assets.at("images/profile_list_featured/9.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
+                    }
+
                 </ul>
             </div>
             <div class="jcarousel-prev jcarousel-prev-horizontal" disabled="false" style="display: block;"></div>
             <div class="jcarousel-next jcarousel-next-horizontal jcarousel-next-disabled jcarousel-next-disabled-horizontal" disabled="true" style="display: block;"></div>
         </div>
     </div>
-
-    <div class="list-scroller-title">
-        <h3>Lista de Casamento</h3>
-        <p>Data do evento 05 Set 2014</p>
-    </div>
-
-    <div id="jcarousel-list-marriage">
-        <div class="jcarousel-container jcarousel-container-horizontal">
-            <div class="jcarousel-clip jcarousel-clip-horizontal">
-                <ul id="second-carousel" class="multiple-carousel jcarousel-list jcarousel-list-horizontal">
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-1 jcarousel-item-1-horizontal" jcarouselindex="1">
-                        <img src="@routes.Assets.at("images/profile_list_featured/0.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-2 jcarousel-item-2-horizontal" jcarouselindex="2">
-                        <img src="@routes.Assets.at("images/profile_list_featured/1.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-3 jcarousel-item-3-horizontal" jcarouselindex="3">
-                        <img src="@routes.Assets.at("images/profile_list_featured/2.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-4 jcarousel-item-4-horizontal" jcarouselindex="4">
-                        <img src="@routes.Assets.at("images/profile_list_featured/3.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-5 jcarousel-item-5-horizontal" jcarouselindex="5">
-                        <img src="@routes.Assets.at("images/profile_list_featured/4.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-6 jcarousel-item-6-horizontal" jcarouselindex="6">
-                        <img src="@routes.Assets.at("images/profile_list_featured/5.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-7 jcarousel-item-7-horizontal" jcarouselindex="7">
-                        <img src="@routes.Assets.at("images/profile_list_featured/6.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-8 jcarousel-item-8-horizontal" jcarouselindex="8">
-                        <img src="@routes.Assets.at("images/profile_list_featured/7.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-9 jcarousel-item-9-horizontal" jcarouselindex="9">
-                        <img src="@routes.Assets.at("images/profile_list_featured/8.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                    <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-10 jcarousel-item-10-horizontal" jcarouselindex="10">
-                        <img src="@routes.Assets.at("images/profile_list_featured/9.png")" alt="">
-                        <div class="jcarousel-actions">
-                            <table>
-                                <tr>
-                                    <td>
-                                        <a href="#" class="uwantar">
-                                            5
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="addComment">
-                                            2
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="#" class="share">
-                                            1
-                                        </a>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-            <div class="jcarousel-prev jcarousel-prev-horizontal" disabled="false" style="display: block;"></div>
-            <div class="jcarousel-next jcarousel-next-horizontal jcarousel-next-disabled jcarousel-next-disabled-horizontal" disabled="true" style="display: block;"></div>
-        </div>
-    </div>
-
+    }
 </div>
     
     
-    <!-- modal content -->
-    <div class="list-modal-content">
-        <script type="text/javascript">
-                $(document).ready( function(){
+<!-- modal content -->
+<div class="list-modal-content">
+    <script type="text/javascript">
+            $(document).ready( function(){
 
                     $('#grid_list li').click(function(){
                             $('input[type=text]').blur();
@@ -635,121 +174,122 @@
                         $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
                     });
                 });
-        </script>
-        <h3 class="list-title">Lista de Aniversário</h3>
-        <div id="list-photo-options">
-            <div class="photoWrapSmall" style="margin-top: 10px;">
-                <div class="photo_avatar_small">
-                    <img src="@routes.Assets.at("images/ju.jpg")">
-                    <div class="photo-small"></div>
-                </div>
+            });
+    </script>
+    <h3 class="list-title">Lista de Aniversário</h3>
+    <div id="list-photo-options">
+        <div class="photoWrapSmall" style="margin-top: 10px;">
+            <div class="photo_avatar_small">
+                <img src="@routes.Assets.at("images/ju.jpg")">
+                <div class="photo-small"></div>
             </div>
-            <h2 class="list-description">Nome do usuário <span class="user-action">ação</span> um desejo da loja <span class="store">Loja zero</span></h2>
-            <div id="img-zoom-view"></div>
-            <p class="photo-description">O meu ja está velho, estou aceitando de presente viu! <span class="marking">Priscila Costa</span></p>
-            <p class="date-post">20/08/2014</p>
-            <ul id="photo-actions">
-                <li>
-                    <a href="#" class="uwantar uwantar-position">
-                        5
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="addComment">
-                        2
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="share">
-                        1
-                    </a>
-                </li>
-            </ul>
-            <a href="#" id="preview-comments">Exibir comentários anteriores</a>
-            <form action="#" id="post-comment">
-                <div class="view-preview-comment">
-                    <div class="photoWrapSmall">
-                        <div class="photo_avatar_small">
-                            <img src="@routes.Assets.at("images/ju.jpg")">
-                            <div class="photo-small"></div>
-                        </div>
-                    </div>
-                    <h4>Thiago Fernandes</h4>
-                    <p>Este sofá está mais barato na loja <span class="marking">Casa de Cor</span>, é melhor ver isso lá.</p>
-                    <input type="text" name="comment" placeholder="Deixe seu comentário">
-                    <input type="submit" value="" id="sendComment">
-                </div>
-            </form>
         </div>
-
-        <ul class="grid-popup">
+        <h2 class="list-description">Nome do usuário <span class="user-action">ação</span> um desejo da loja <span class="store">Loja zero</span></h2>
+        <div id="img-zoom-view"></div>
+        <p class="photo-description">O meu ja está velho, estou aceitando de presente viu! <span class="marking">Priscila Costa</span></p>
+        <p class="date-post">20/08/2014</p>
+        <ul id="photo-actions">
             <li>
-                <img src="@routes.Assets.at("images/profile_list_featured/0.png")">
-                <div>
-                    <ul>
-                        <li>
-                            <a href="#" class="uwantar">
-                                5
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="addComment">
-                                2
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="share">
-                                1
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <a href="#" class="uwantar uwantar-position">
+                    5
+                </a>
             </li>
             <li>
-                <img src="@routes.Assets.at("images/profile_list_featured/1.png")">
-                <div>
-                    <ul>
-                        <li>
-                            <a href="#" class="uwantar">
-                                5
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="addComment">
-                                2
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="share">
-                                1
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <a href="#" class="addComment">
+                    2
+                </a>
             </li>
             <li>
-                <img src="@routes.Assets.at("images/profile_list_featured/2.png")">
-                <div>
-                    <ul>
-                        <li>
-                            <a href="#" class="uwantar">
-                                5
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="addComment">
-                                2
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="share">
-                                1
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                <a href="#" class="share">
+                    1
+                </a>
             </li>
         </ul>
+        <a href="#" id="preview-comments">Exibir comentários anteriores</a>
+        <form action="#" id="post-comment">
+            <div class="view-preview-comment">
+                <div class="photoWrapSmall">
+                    <div class="photo_avatar_small">
+                        <img src="@routes.Assets.at("images/ju.jpg")">
+                        <div class="photo-small"></div>
+                    </div>
+                </div>
+                <h4>Thiago Fernandes</h4>
+                <p>Este sofá está mais barato na loja <span class="marking">Casa de Cor</span>, é melhor ver isso lá.</p>
+                <input type="text" name="comment" placeholder="Deixe seu comentário">
+                <input type="submit" value="" id="sendComment">
+            </div>
+        </form>
     </div>
+
+    <ul class="grid-popup">
+        <li>
+            <img src="@routes.Assets.at("images/profile_list_featured/0.png")">
+            <div>
+                <ul>
+                    <li>
+                        <a href="#" class="uwantar">
+                            5
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="addComment">
+                            2
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="share">
+                            1
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <img src="@routes.Assets.at("images/profile_list_featured/1.png")">
+            <div>
+                <ul>
+                    <li>
+                        <a href="#" class="uwantar">
+                            5
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="addComment">
+                            2
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="share">
+                            1
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li>
+            <img src="@routes.Assets.at("images/profile_list_featured/2.png")">
+            <div>
+                <ul>
+                    <li>
+                        <a href="#" class="uwantar">
+                            5
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="addComment">
+                            2
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" class="share">
+                            1
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
 
 }
