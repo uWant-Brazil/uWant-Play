@@ -76,6 +76,7 @@ public class AbstractApplication extends Controller {
         public static final String NAME = "name";
         public static final String NICK_NAME = "nickName";
         public static final String MANUFACTURER = "manufacturer";
+        public static final String MANUFACTURERS = "manufacturers";
         public static final String MULTIMEDIA_PRODUCT = "multimediaProduct";
         public static final String MULTIMEDIA_USER_PICTURE = "multimediaUserPicture";
         public static final String MULTIMEDIA = "multimedia";
