@@ -324,7 +324,7 @@ public abstract class ActionUtil {
         if (rows != null && rows.size() > 0) {
             Object[] targetIds = new Object[rows.size() + 1];
             targetIds[0] = user.getId();
-            for (int i = 1; i < rows.size(); i++) {
+            for (int i = 0; i < rows.size(); i++) {
                 SqlRow row = rows.get(i);
                 Long targetId = row.getLong(AbstractApplication.FinderKey.TARGET_ID);
                 targetIds[i] = targetId;
