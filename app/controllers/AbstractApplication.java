@@ -115,6 +115,7 @@ public class AbstractApplication extends Controller {
         public static final String COMMENT_ID = "commentId";
         public static final String TEXT = "text";
         public static final String SINCE = "since";
+        public static final String WISHLISTS = "wishlists";
     }
 
     /**
