@@ -284,8 +284,8 @@ public abstract  class UserUtil {
             mobileUser = userTarget;
         } else {
             action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
-            action.setFrom(userTarget);
-            action.setUser(user);
+            action.setFrom(user);
+            action.setUser(userTarget);
 
             mobileUser = user;
         }
