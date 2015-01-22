@@ -252,7 +252,9 @@ public class ActionController extends AbstractApplication {
                                     actionWant.setType(Action.Type.WANT);
                                     actionWant.save();
 
-                                    NotificationUtil.send(actionWant, userAction);
+                                    if (userAction.getId() != user.getId()) {
+                                        NotificationUtil.send(actionWant, userAction);
+                                    }
                                 } else {
                                     want.delete();
                                 }
@@ -290,7 +292,9 @@ public class ActionController extends AbstractApplication {
                                     actionWant.setType(Action.Type.WANT);
                                     actionWant.save();
 
-                                    NotificationUtil.send(actionWant, userAction);
+                                    if (userAction.getId() != user.getId()) {
+                                        NotificationUtil.send(actionWant, userAction);
+                                    }
                                 } else {
                                     want.delete();
                                 }
