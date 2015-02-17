@@ -99,11 +99,11 @@
     <script type="text/javascript">
         $(document).ready( function(){
 
-            $('.multiple-carousel li').click(function(e){
+            $('.multiple-carousel li img').click(function(e){
                     var pic = $(this).attr('data-pic');
-
-                    var index = $(this).parent().children().index(this);
-                    $('#img-zoom-view').html("<img src='" + pic + "'>");
+                    
+                    var index = $(this).attr("src").replace( /^.*?([^\/]+)\..+?$/, '$1' );
+                    $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
                     $('.list-modal-content').modal();
                     return false;
             });
@@ -123,24 +123,26 @@
                     @for(p <- wl.getProducts()) {
                     <li class="jcarousel-item jcarousel-item-horizontal jcarousel-item-@getProductIndex(p, wl.getProducts()) jcarousel-item-@getProductIndex(p, wl.getProducts())-horizontal" jcarouselindex="@getProductIndex(p, wl.getProducts())" data-id="@getProductIndex(p, wl.getProducts())" data-wl="@p.getWishlistId()" data-p="@p.getId()" data-pic="@p.getPicture().getUrl()">
                         <img src="@p.getPicture().getUrl()" alt="">
-                        <div>
-                            <ul>
-                                <li>
-                                    <a href="#" class="uwantar">
-                                        0
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="addComment">
-                                        0
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#" class="share">
-                                        0
-                                    </a>
-                                </li>
-                            </ul>
+                        <div class="jcarousel-actions">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <a href="#" class="uwantar">
+                                            5
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="addComment">
+                                            2
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="#" class="share">
+                                            1
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
                         </div>
                     </li>
                     }
@@ -160,13 +162,17 @@
     <script type="text/javascript">
             $(document).ready( function(){
 
-                $('#grid_list li').click(function(){
-                        var pic = $(this).attr('data-pic');
-
-                        $('input[type=text]').blur();
-                        var index = $(this).parent().children().index(this);
-                        $('#img-zoom-view').html("<img src='" + pic + "'>");
-                        $('#img-zoom-view').focus();
+                    $('#grid_list li').click(function(){
+                            $('input[type=text]').blur();
+                            var index = $(this).parent().children().index(this);
+                            $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
+                            $('#img-zoom-view').focus();
+                    });
+                    $('.grid-popup li img').click(function(e){
+                        var index = $(this).attr("src").replace( /^.*?([^\/]+)\..+?$/, '$1' );
+                        $('#img-zoom-view').empty();
+                        $('#img-zoom-view').html("<img src='/assets/images/profile_list_featured/"+index+".png'>");
+                    });
                 });
             });
     </script>
