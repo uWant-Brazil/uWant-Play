@@ -553,6 +553,9 @@ public class UserController extends AbstractApplication {
                                     } else {
                                         continue;
                                     }
+                                } else if (jsonContact.hasNonNull(ParameterKey.LOGIN)) {
+                                    String login = jsonContact.get(ParameterKey.LOGIN).asText();
+                                    userTarget = finder.selectUnique(new String[] {FinderKey.LOGIN}, new Object[] {login});
                                 } else {
                                     continue;
                                 }

@@ -7,6 +7,7 @@ import models.classes.*;
 import models.database.FinderFactory;
 import models.database.IFinder;
 import models.exceptions.*;
+import play.db.ebean.Model;
 import play.db.ebean.Transactional;
 import play.i18n.Messages;
 import play.libs.F;
@@ -393,6 +394,45 @@ public class WishListController extends AbstractApplication {
             }
 
             return ok(jsonResponse);
+        });
+    }
+
+    public static F.Promise<Result> search() {
+        return F.Promise.<Result>promise(() ->{
+            final ObjectNode objectNode = Json.newObject();
+
+            try {
+                User user = authenticateToken();
+                if (UserUtil.isAvailable(user)) {
+                    JsonNode body = request().body().asJson();
+                    if (body != null && body.hasNonNull(ParameterKey.WISHLIST)) {
+                        String wishListName = body.get(ParameterKey.WISHLIST).asText();
+
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<WishList> ifinder = factory.get(WishList.class);
+                        Model.Finder<Long, WishList> finder = ifinder.getFinder();
+
+                        List<WishList> wishLists = finder.where()
+                                .icontains(ParameterKey.TITLE, wishListName)
+                                .findList();
+
+                        objectNode.put(ParameterKey.STATUS, true);
+                        objectNode.put(ParameterKey.MESSAGE, "A pesquisa foi realizada com sucesso.");
+                        objectNode.put(ParameterKey.WISHLISTS, Json.toJson(wishLists));
+                    } else {
+                        throw new JSONBodyException();
+                    }
+                } else {
+                    throw new AuthenticationException();
+                }
+            } catch (UWException e) {
+                e.printStackTrace();
+                objectNode.put(ParameterKey.STATUS, false);
+                objectNode.put(ParameterKey.MESSAGE, e.getMessage());
+                objectNode.put(ParameterKey.ERROR, e.getCode());
+            }
+
+            return ok(objectNode);
         });
     }
 

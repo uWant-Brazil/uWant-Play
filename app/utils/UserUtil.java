@@ -252,47 +252,46 @@ public abstract  class UserUtil {
      */
     @Transactional
     public static boolean joinCircle(User user, FinderFactory factory, User userTarget) {
-        IFinder<FriendsCircle> finderCircle = factory.get(FriendsCircle.class);
-        FriendsCircle friendsCircle = finderCircle.selectUnique(
-                new String[] { AbstractApplication.FinderKey.REQUESTER_ID, AbstractApplication.FinderKey.TARGET_ID},
-                new Object[] { user.getId(), userTarget.getId() });
+        FriendsCircle.FriendshipLevel friendshipLevel = UserUtil.getFriendshipLevel(user.getId(), userTarget.getId());
+        FriendsCircle.FriendshipLevel friendshipLevelAfter;
+        switch (friendshipLevel) {
+            case NONE:
+            case WAITING_ME:
+                FriendsCircle.Relation relation = new FriendsCircle.Relation();
+                relation.setRequesterId(user.getId());
+                relation.setTargetId(userTarget.getId());
 
-        boolean isFriends = false;
-        if (friendsCircle == null) {
-            FriendsCircle.Relation relation = new FriendsCircle.Relation();
-            relation.setRequesterId(user.getId());
-            relation.setTargetId(userTarget.getId());
+                FriendsCircle friendsCircle = new FriendsCircle();
+                friendsCircle.setRelation(relation);
+                friendsCircle.save();
 
-            friendsCircle = new FriendsCircle();
-            friendsCircle.setRelation(relation);
-            friendsCircle.save();
+                friendshipLevelAfter = UserUtil.getFriendshipLevel(user.getId(), userTarget.getId());
 
-            FriendsCircle inverseFriendsCircle = finderCircle.selectUnique(
-                    new String[] { AbstractApplication.FinderKey.REQUESTER_ID, AbstractApplication.FinderKey.TARGET_ID},
-                    new Object[] { userTarget.getId(), user.getId() });
-            isFriends = (inverseFriendsCircle != null);
+                Action action = new Action();
+                action.setCreatedAt(new Date());
+                if (friendshipLevelAfter == FriendsCircle.FriendshipLevel.MUTUAL) {
+                    action.setType(Action.Type.ACCEPT_FRIENDS_CIRCLE);
+                    action.setFrom(user);
+                    action.setUser(userTarget);
+                } else if (friendshipLevelAfter == FriendsCircle.FriendshipLevel.WAITING_YOU) {
+                    action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
+                    action.setFrom(user);
+                    action.setUser(userTarget);
+                } else {
+                    return false;
+                }
+                action.save();
+
+                NotificationUtil.send(action, userTarget);
+                break;
+
+            default:
+                friendshipLevelAfter = friendshipLevel;
+                break;
         }
 
-        IMobileUser mobileUser;
-        Action action = new Action();
-        action.setCreatedAt(new Date());
-        if (isFriends) {
-            action.setType(Action.Type.ACCEPT_FRIENDS_CIRCLE);
-            action.setFrom(user);
-            action.setUser(userTarget);
 
-            mobileUser = userTarget;
-        } else {
-            action.setType(Action.Type.ADD_FRIENDS_CIRCLE);
-            action.setFrom(userTarget);
-            action.setUser(user);
-
-            mobileUser = user;
-        }
-        action.save();
-
-        NotificationUtil.send(action, mobileUser);
-        return isFriends;
+        return friendshipLevelAfter == FriendsCircle.FriendshipLevel.MUTUAL;
     }
 
     /**

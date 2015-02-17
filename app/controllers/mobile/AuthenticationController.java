@@ -123,40 +123,38 @@ public class AuthenticationController extends AbstractApplication {
             ObjectNode jsonResponse = Json.newObject();
             try {
                 JsonNode body = request().body().asJson();
-                if (body != null) {
-                    if (body.hasNonNull(ParameterKey.MAIL)) {
-                        String mail = body.get(ParameterKey.MAIL).asText();
+                if (body != null && body.hasNonNull(ParameterKey.MAIL)) {
+                    String mail = body.get(ParameterKey.MAIL).asText();
 
-                        if (!mail.isEmpty() && RegexUtil.isValidMail(mail)) {
-                            FinderFactory factory = FinderFactory.getInstance();
-                            IFinder<User> finderUser = factory.get(User.class);
-                            final User user = finderUser.selectUnique(
-                                    new String[]{FinderKey.MAIL},
-                                    new Object[]{mail});
+                    if (!mail.isEmpty() && RegexUtil.isValidMail(mail)) {
+                        FinderFactory factory = FinderFactory.getInstance();
+                        IFinder<User> finderUser = factory.get(User.class);
+                        final User user = finderUser.selectUnique(
+                                new String[]{FinderKey.MAIL},
+                                new Object[]{mail});
 
-                            if (user == null) {
-                                throw new UserDoesntExistException();
-                            }
-
-                            if (UserUtil.isAvailable(user)) {
-                                if (UserUtil.isMailConfirmed(user)) {
-                                    UserUtil.recoveryPassword(user);
-                                } else {
-                                    // Uma nova confirmação será enviada...
-                                    throw new UnconfirmedMailException(user);
-                                }
-                            } else {
-                                throw new AuthenticationException();
-                            }
-
-                            jsonResponse.put(ParameterKey.STATUS, true);
-                            jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Authentication.RECOVERY_PASSWORD_SUCCESS));
-                        } else {
-                            throw new InvalidMailException();
+                        if (user == null) {
+                            throw new UserDoesntExistException();
                         }
+
+                        if (UserUtil.isAvailable(user)) {
+                            if (UserUtil.isMailConfirmed(user)) {
+                                UserUtil.recoveryPassword(user);
+                            } else {
+                                // Uma nova confirmação será enviada...
+                                throw new UnconfirmedMailException(user);
+                            }
+                        } else {
+                            throw new AuthenticationException();
+                        }
+
+                        jsonResponse.put(ParameterKey.STATUS, true);
+                        jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.Authentication.RECOVERY_PASSWORD_SUCCESS));
                     } else {
-                        throw new JSONBodyException();
+                        throw new InvalidMailException();
                     }
+                } else {
+                    throw new JSONBodyException();
                 }
             } catch (UWException e) {
                 e.printStackTrace();
