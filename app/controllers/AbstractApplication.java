@@ -149,6 +149,7 @@ public class AbstractApplication extends Controller {
         public static final String TARGET = "target";
         public static final String COMMENT_ID = "comment_id";
         public static final String SINCE = "since";
+        public static final String TITLE = "title";
     }
 
     /**

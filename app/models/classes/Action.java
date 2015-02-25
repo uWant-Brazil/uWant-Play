@@ -61,8 +61,11 @@ public class Action extends Model {
     @OneToMany(mappedBy = "action", fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-    @OneToOne(mappedBy = "action", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    private WishList wishList;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    private WishList wishlist;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private WishListProduct product;
 
     @JsonIgnore
     public long getId() {
@@ -134,12 +137,20 @@ public class Action extends Model {
     }
 
     @JsonIgnore
-    public WishList getWishList() {
-        return wishList;
+    public WishList getWishlist() {
+        return wishlist;
     }
 
-    public void setWishList(WishList wishList) {
-        this.wishList = wishList;
+    public void setWishlist(WishList wishlist) {
+        this.wishlist = wishlist;
+    }
+
+    public WishListProduct getProduct() {
+        return product;
+    }
+
+    public void setProduct(WishListProduct product) {
+        this.product = product;
     }
 
     @Override

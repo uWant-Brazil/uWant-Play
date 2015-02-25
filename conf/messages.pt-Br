@@ -73,7 +73,7 @@ deadbolt.websession.invalid=Você não tem permissão para acessar essa funciona
 global.mobilesession.error=Aconteceu um erro inesperado com o servidor. Caso o erro persista, favor entrar em contato com o suporte através do e-mail support@uwant.com.br
 
 message.notification.added=adicionou
-message.notification.wish=desejo
+message.notification.wish=um desejo
 message.notification.wishes=desejos
 message.notification.inyourlist=na sua lista
 message.notification.shareyouraction=compartilhou a sua ação.

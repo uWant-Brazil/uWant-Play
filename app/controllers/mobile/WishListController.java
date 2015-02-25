@@ -1,5 +1,6 @@
 package controllers.mobile;
 
+import com.avaje.ebean.Expr;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import controllers.AbstractApplication;
@@ -57,16 +58,9 @@ public class WishListController extends AbstractApplication {
                                 wishList.setStatus(WishList.Status.ACTIVE);
                                 wishList.setUUID(UUID.randomUUID().toString());
                                 wishList.save();
-                                wishList.refresh();
-
-                                Map<Integer, Long> productIds = WishListUtil.fillProducts(body, wishList);
-
-                                wishList.refresh();
-                                ActionUtil.feed(wishList);
 
                                 jsonResponse.put(ParameterKey.STATUS, true);
                                 jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.CREATE_SUCCESS));
-                                jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
                             } else {
                                 throw new JSONBodyException();
                             }
@@ -123,35 +117,9 @@ public class WishListController extends AbstractApplication {
                                     wishListUpdated.setTitle(title);
                                     wishListUpdated.setDescription(description);
                                     wishListUpdated.update(wishList.getId());
-                                    wishList.refresh();
-
-                                    // Remove os produtos selecionados!
-                                    if (body.hasNonNull(ParameterKey.PRODUCTS_REMOVED)) {
-                                        JsonNode jsonElement = body.get(ParameterKey.PRODUCTS_REMOVED);
-                                        if (jsonElement.isArray()) {
-                                            IFinder<Product> finderProduct = factory.get(Product.class);
-                                            for (int i = 0; i < jsonElement.size(); i++) {
-                                                JsonNode node = jsonElement.get(i);
-                                                if (node.hasNonNull(ParameterKey.ID)) {
-                                                    long productId = node.get(ParameterKey.ID).asLong(0);
-                                                    Product product = finderProduct.selectUnique(productId);
-                                                    if (product != null) {
-                                                        WishListProduct wp = product.getWishListProducts().get(0);
-                                                        WishListProduct wpUpdated = new WishListProduct();
-                                                        wpUpdated.setStatus(WishListProduct.Status.REMOVED);
-                                                        wpUpdated.update(wp.getId());
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    // Adiciona os produtos novos!
-                                    Map<Integer, Long> productIds = WishListUtil.fillProducts(body, wishList);
 
                                     jsonResponse.put(ParameterKey.STATUS, true);
                                     jsonResponse.put(ParameterKey.MESSAGE, Messages.get(MessageKey.WishList.UPDATE_SUCCESS, title));
-                                    jsonResponse.put(ParameterKey.PRODUCTS, Json.toJson(productIds));
                                 } else {
                                     throw new WishListDoesntExistException();
                                 }
@@ -180,7 +148,7 @@ public class WishListController extends AbstractApplication {
 
     /**
      * Método responsável pela listagem de uma lista de desejos do usuário.
-     * Os produtos deverão ser buscado em outra requsição - <link>getProductByWishList()</link>
+     * Os produtos deverão ser buscado em outra requsição - <link>products()</link>
      * @return JSON
      */
     public static F.Promise<Result> list() {
@@ -259,7 +227,7 @@ public class WishListController extends AbstractApplication {
                                         new String[]{FinderKey.ID},
                                         new Object[]{id});
 
-                                if (wishList != null) {
+                                if (wishList != null && WishListUtil.isOwner(wishList, user)) {
                                     IFinder<WishListProduct> wlFinder = factory.get(WishListProduct.class);
                                     List<WishListProduct> products = wlFinder.selectAll(
                                             new String[]{FinderKey.WISHLIST_ID, FinderKey.STATUS},
@@ -338,6 +306,53 @@ public class WishListController extends AbstractApplication {
         });
     }
 
+    public static F.Promise<Result> productsSave() {
+        return F.Promise.<Result>promise(() -> {
+            ObjectNode jsonResponse = Json.newObject();
+            try {
+                User user = authenticateToken();
+                if (user != null) {
+                    if (UserUtil.isAvailable(user)) {
+                        JsonNode body = request().body().asJson();
+                        if (body != null) {
+                            if (body.hasNonNull(ParameterKey.ID)) {
+                                long id = body.get(ParameterKey.ID).asLong();
+
+                                FinderFactory factory = FinderFactory.getInstance();
+                                IFinder<WishList> finder = factory.get(WishList.class);
+                                WishList wishList = finder.selectUnique(
+                                        new String[]{FinderKey.ID},
+                                        new Object[]{id});
+
+                                if (wishList != null && WishListUtil.isOwner(wishList, user)) {
+                                    WishListUtil.fillProducts(body, wishList);
+                                    ActionUtil.feed(wishList);
+                                } else {
+                                    throw new WishListDoesntExistException();
+                                }
+                            } else {
+                                throw new JSONBodyException();
+                            }
+                        } else {
+                            throw new JSONBodyException();
+                        }
+                    } else {
+                        throw new AuthenticationException();
+                    }
+                } else {
+                    throw new AuthenticationException();
+                }
+            } catch (UWException e) {
+                e.printStackTrace();
+                jsonResponse.put(ParameterKey.STATUS, false);
+                jsonResponse.put(ParameterKey.MESSAGE, e.getMessage());
+                jsonResponse.put(ParameterKey.ERROR, e.getCode());
+            }
+
+            return ok(jsonResponse);
+        });
+    }
+
     /**
      * Método responsável por 'deletar' a lista de desejos do usuário.
      * Apenas os donos da lista de desejos podem efetuar tal ação.
@@ -394,45 +409,6 @@ public class WishListController extends AbstractApplication {
             }
 
             return ok(jsonResponse);
-        });
-    }
-
-    public static F.Promise<Result> search() {
-        return F.Promise.<Result>promise(() ->{
-            final ObjectNode objectNode = Json.newObject();
-
-            try {
-                User user = authenticateToken();
-                if (UserUtil.isAvailable(user)) {
-                    JsonNode body = request().body().asJson();
-                    if (body != null && body.hasNonNull(ParameterKey.WISHLIST)) {
-                        String wishListName = body.get(ParameterKey.WISHLIST).asText();
-
-                        FinderFactory factory = FinderFactory.getInstance();
-                        IFinder<WishList> ifinder = factory.get(WishList.class);
-                        Model.Finder<Long, WishList> finder = ifinder.getFinder();
-
-                        List<WishList> wishLists = finder.where()
-                                .icontains(ParameterKey.TITLE, wishListName)
-                                .findList();
-
-                        objectNode.put(ParameterKey.STATUS, true);
-                        objectNode.put(ParameterKey.MESSAGE, "A pesquisa foi realizada com sucesso.");
-                        objectNode.put(ParameterKey.WISHLISTS, Json.toJson(wishLists));
-                    } else {
-                        throw new JSONBodyException();
-                    }
-                } else {
-                    throw new AuthenticationException();
-                }
-            } catch (UWException e) {
-                e.printStackTrace();
-                objectNode.put(ParameterKey.STATUS, false);
-                objectNode.put(ParameterKey.MESSAGE, e.getMessage());
-                objectNode.put(ParameterKey.ERROR, e.getCode());
-            }
-
-            return ok(objectNode);
         });
     }
 

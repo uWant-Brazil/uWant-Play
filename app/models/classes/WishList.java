@@ -44,8 +44,8 @@ public class WishList extends Model {
     @Version
     private Date modifiedAt;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    private Action action;
+    @OneToMany(mappedBy = "wishlist", fetch = FetchType.LAZY)
+    private List<Action> actions;
 
     public String getTitle() {
         return title;
@@ -107,12 +107,12 @@ public class WishList extends Model {
     }
 
     @JsonIgnore
-    public Action getAction() {
-        return action;
+    public List<Action> getAction() {
+        return actions;
     }
 
-    public void setAction(Action action) {
-        this.action = action;
+    public void setAction(List<Action> actions) {
+        this.actions = actions;
     }
 
     public String getUUID() {

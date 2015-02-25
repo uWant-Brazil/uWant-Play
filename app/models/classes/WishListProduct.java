@@ -33,6 +33,9 @@ public class WishListProduct extends Model {
     @Enumerated(EnumType.ORDINAL)
     private Status status;
 
+    @OneToOne(mappedBy = "product", fetch = FetchType.LAZY)
+    private Action action;
+
     public long getId() {
         return id;
     }
@@ -63,5 +66,13 @@ public class WishListProduct extends Model {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
     }
 }

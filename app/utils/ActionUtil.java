@@ -79,9 +79,8 @@ public abstract class ActionUtil {
      */
     private static String activityMessage(Action action) {
         User user = action.getUser();
-        WishList wishList = action.getWishList();
-        List<WishListProduct> products = wishList.getWishLists();
-        int size = products != null ? products.size() : 0;
+        WishList wishList = action.getWishlist();
+        WishListProduct wp = action.getProduct();
 
         StringBuilder builder = new StringBuilder();
 
@@ -89,9 +88,7 @@ public abstract class ActionUtil {
         builder.append(CHAR_SPACE);
         builder.append(Messages.get(AbstractApplication.MessageKey.ADDED));
         builder.append(CHAR_SPACE);
-        builder.append(size);
-        builder.append(CHAR_SPACE);
-        builder.append(size > 1 ? Messages.get(AbstractApplication.MessageKey.WISHES) : Messages.get(AbstractApplication.MessageKey.WISH));
+        builder.append(Messages.get(AbstractApplication.MessageKey.WISH));
         builder.append(CHAR_SPACE);
         builder.append(Messages.get(AbstractApplication.MessageKey.IN_YOUR_LIST));
         builder.append(CHAR_SPACE);
@@ -239,18 +236,17 @@ public abstract class ActionUtil {
      * @param wishList
      */
     public static void feed(WishList wishList) {
-        Action action = new Action();
-        action.setCreatedAt(new Date());
-        action.setType(Action.Type.ACTIVITY);
-        action.setExtra(wishList.getDescription());
-        action.setUser(wishList.getUser());
-        action.setFrom(wishList.getUser());
-        action.save();
-        action.refresh();
-
-        WishList wishListUpdated = new WishList();
-        wishListUpdated.setAction(action);
-        wishListUpdated.update(wishList.getId());
+        for(WishListProduct wp : wishList.getWishLists()) {
+            Action action = new Action();
+            action.setCreatedAt(new Date());
+            action.setType(Action.Type.ACTIVITY);
+            action.setExtra(wishList.getDescription());
+            action.setUser(wishList.getUser());
+            action.setFrom(wishList.getUser());
+            action.setWishlist(wishList);
+            action.setProduct(wp);
+            action.save();
+        }
     }
 
     /**
@@ -289,17 +285,25 @@ public abstract class ActionUtil {
         final IFinder<WishList> finder = factory.get(WishList.class);
         final WishList wishList = finder.selectUnique(wishListId);
         final User owner = wishList.getUser();
-        final Action action = wishList.getAction();
 
         if (WishListUtil.isOwner(wishList, user)
                 || UserUtil.getFriendshipLevel(user.getId(), owner.getId()) == FriendsCircle.FriendshipLevel.MUTUAL) {
-            List<ObjectNode> nodes = null;
-            ObjectNode node = getFeed(factory, action, user);
-            if (node != null) {
-                nodes = new ArrayList<>();
-                nodes.add(node);
+            List<ObjectNode> actionsNode = new ArrayList<>((endIndex - startIndex) + 5);
+            IFinder<Action> finderActions = factory.get(Action.class);
+            List<Action> actions = finderActions.getFinder()
+                    .where()
+                    .eq(AbstractApplication.FinderKey.WISHLIST_ID, wishListId)
+                    .eq(AbstractApplication.FinderKey.TYPE, Action.Type.ACTIVITY.ordinal())
+                    .setFirstRow(startIndex)
+                    .setMaxRows(endIndex - startIndex)
+                    .orderBy(String.format("%s desc", AbstractApplication.FinderKey.CREATED_AT))
+                    .findList();
+
+            for (Action action : actions) {
+                ObjectNode node = getFeed(factory, action, user);
+                actionsNode.add(node);
             }
-            return nodes;
+            return actionsNode;
         } else {
             throw new WishListDoesntExistException();
         }
@@ -374,8 +378,8 @@ public abstract class ActionUtil {
     public static ObjectNode getFeed(FinderFactory factory, Action action, User user) {
         long id = action.getId();
         String message = action.toString();
-        WishList wishList = action.getWishList();
-        List<WishListProduct> wishListProducts = wishList.getWishLists();
+        WishList wishList = action.getWishlist();
+        WishListProduct wishListProducts = action.getProduct();
 
         IFinder<Want> finderWants = factory.get(Want.class);
         int wantsCount = finderWants.getFinder()
@@ -405,12 +409,10 @@ public abstract class ActionUtil {
 
         List<Product> nodesProducts = new ArrayList<>();
         if (wishListProducts != null) {
-            for (WishListProduct product : wishListProducts) {
-                if (product.getStatus() == WishListProduct.Status.ACTIVE) {
-                    Multimedia multimedia = product.getProduct().getMultimedia();
-                    if (multimedia != null) {
-                        nodesProducts.add(product.getProduct());
-                    }
+            if (wishListProducts.getStatus() == WishListProduct.Status.ACTIVE) {
+                Multimedia multimedia = wishListProducts.getProduct().getMultimedia();
+                if (multimedia != null) {
+                    nodesProducts.add(wishListProducts.getProduct());
                 }
             }
         }
