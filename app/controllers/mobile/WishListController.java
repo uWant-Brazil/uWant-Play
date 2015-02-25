@@ -306,6 +306,11 @@ public class WishListController extends AbstractApplication {
         });
     }
 
+    /**
+     * Método responsável por popular os produtos em uma lista de desejos.
+     * @return JSON
+     */
+    @Transactional
     public static F.Promise<Result> productsSave() {
         return F.Promise.<Result>promise(() -> {
             ObjectNode jsonResponse = Json.newObject();
